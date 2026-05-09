@@ -2,10 +2,10 @@
 // Configuration file
 // Update these values to match your database setup
 
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'kahoot_clone');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_HOST', 'mysql-2724c7d5-c3022134-6ea5.k.aivencloud.com');
+define('DB_NAME', 'defaultdb');
+define('DB_USER', 'avnadmin');
+define('DB_PASS', 'AVNS_rubctqa6LspXyXRQ7hB');
 
 try {
     $pdo = new PDO(
