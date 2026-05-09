@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Post-Test | Storyboarding Portal</title>
+    <link rel="icon" href="admin/image/logo.png" type="image/png">
+    <!-- Tailwind CSS + Font Awesome + Google Fonts (matching landing page & pre-test) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        * { font-family: 'Poppins', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-card { background: rgba(255,255,255,0.12); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.2); border-radius: 2rem; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-primary:hover { opacity: 0.9; transform: scale(1.02); }
+        .option-card { transition: all 0.2s ease; cursor: pointer; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+        .option-card:hover:not(.disabled) { transform: translateY(-2px); background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); }
+        .option-card.selected { background: linear-gradient(135deg, rgba(102,126,234,0.9), rgba(118,75,162,0.9)); border-color: #ffd966; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .option-card.correct { background: rgba(72,187,120,0.85); border-color: #48bb78; box-shadow: 0 0 15px rgba(72,187,120,0.5); }
+        .option-card.incorrect { background: rgba(245,101,101,0.85); border-color: #f56565; }
+        .option-card.disabled { cursor: default; opacity: 0.9; }
+        .stopwatch { background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); border: 1px solid rgba(255,215,0,0.5); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .stat-card-glow { background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); transition: all 0.2s; }
+        .stat-card-glow:hover { background: rgba(255,255,255,0.2); transform: scale(1.02); }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg text-white">
+
+    <!-- Navigation (matching landing page and pre-test) -->
+    <nav class="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <img src="../admin/image/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://placehold.co/40x40/667eea/white?text=NL'">
+                    <span class="text-white text-2xl font-bold tracking-tight">Storyboarding Portal</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="index.html" class="text-white/80 hover:text-white transition">Home</a>
+                    <a href="overview.html" class="text-white/80 hover:text-white transition">Overview</a>
+                    <a href="studio.html" class="text-white/80 hover:text-white transition">Studio</a>
+                    <a href="student.html" class="text-white/80 hover:text-white transition">Student</a>
+                </div>
+                <!-- Right side: User info + Mobile menu button -->
+                <div class="flex items-center gap-4">
+                    <!-- User info / login status (desktop) -->
+                    <div id="userInfoDesktop" class="hidden md:flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
+                        <i class="fas fa-user-circle text-white text-xl"></i>
+                        <span id="displayName" class="text-sm font-medium text-white"></span>
+                        <button id="logoutBtnDesktop" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition">Logout</button>
+                    </div>
+                    
+                    <!-- Mobile: User info visible + centered menu button -->
+                    <div class="flex md:hidden items-center gap-2">
+                        <button id="mobileMenuBtn" class="text-white text-2xl focus:outline-none ml-2">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="mobileNavMenu" class="md:hidden hidden py-4 border-t border-white/20 space-y-3">
+                <a href="index.html" class="block text-white/90 px-2 py-1">Home</a>
+                <a href="overview.html" class="block text-white/80 px-2 py-1">Overview</a>
+                <a href="studio.html" class="block text-white/80 px-2 py-1">Studio</a>
+                <a href="student.html" class="block text-white/80 px-2 py-1">Student</a>
+                <div class="pt-2 flex items-center justify-between border-t border-white/20 mt-2">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-user-circle text-white text-xl"></i>
+                        <span id="displayNameMobileMenu" class="text-sm font-medium text-white"></span>
+                    </div>
+                    <button id="logoutBtnMobile" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Stopwatch Timer (hidden initially) -->
+    <div id="stopwatch" class="stopwatch fixed top-20 left-4 z-50 px-5 py-2 rounded-full text-white font-mono text-xl font-bold shadow-lg hidden md:left-6">
+        <i class="fas fa-hourglass-half mr-2 text-yellow-300"></i> <span id="timerDisplay">00:00</span>
+    </div>
+
+    <!-- Start Section (Hero style) -->
+    <div id="startSection" class="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
+        <div class="max-w-2xl w-full text-center fade-in">
+            <div class="inline-flex items-center gap-2 bg-green-400/20 backdrop-blur-sm px-4 py-2 rounded-full text-green-200 text-sm mb-6 border border-green-400/30">
+                <i class="fas fa-chart-line"></i> Post-Test Assessment
+            </div>
+            <h1 class="text-5xl md:text-6xl font-extrabold mb-5 bg-gradient-to-r from-green-300 via-teal-300 to-white bg-clip-text text-transparent">
+                Measure Your Progress
+            </h1>
+            <p class="text-white/80 text-lg md:text-xl mb-8 leading-relaxed">
+                Ready to test your algebraic problem-solving skills after the storyboarding session?<br>
+                Press Start to begin the timed quiz.
+            </p>
+            <button id="startButton" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-10 py-4 rounded-xl text-xl font-bold hover:opacity-90 transition shadow-xl flex items-center gap-3 mx-auto">
+                <i class="fas fa-play-circle"></i> Start Timed Quiz
+            </button>
+            <p class="text-white/60 text-sm mt-6"><i class="fas fa-info-circle"></i> Time starts when you press Start — 10 questions</p>
+        </div>
+    </div>
+
+    <!-- Quiz Section (hidden initially) -->
+    <div id="quizSection" class="hidden py-12 px-4 md:px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="glass-card p-6 md:p-8 shadow-2xl fade-in">
+                <!-- Header with badge + counter -->
+                <div class="flex flex-wrap justify-between items-center mb-6 border-b border-white/20 pb-4">
+                    <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+                        <i class="fas fa-clipboard-list text-green-300"></i>
+                        <span class="font-semibold">Post-Test Quiz</span>
+                    </div>
+                    <div class="text-white/80 font-medium"><span id="questionCounter">Question 1</span> of <span id="totalQuestions">10</span></div>
+                </div>
+                
+                <!-- Question text -->
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-6 leading-tight" id="quizPrompt">
+                    Loading question...
+                </h2>
+                
+                <!-- Options container -->
+                <div id="quizOptions" class="space-y-3 mb-8"></div>
+                
+                <!-- Submit & Next actions -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-between items-center mt-4">
+                    <button id="submitAnswerBtn" class="bg-green-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-600 transition shadow-md w-full sm:w-auto flex items-center justify-center gap-2">
+                        <i class="fas fa-check-circle"></i> Submit Answer
+                    </button>
+                    <button id="nextQuestionBtn" class="bg-white/20 backdrop-blur-sm text-white px-8 py-3 rounded-xl font-semibold hover:bg-white/30 transition border border-white/30 w-full sm:w-auto hidden items-center justify-center gap-2">
+                        Next Question <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                
+                <!-- Feedback area -->
+                <div id="quizFeedback" class="mt-6 text-center text-sm md:text-base font-medium p-3 rounded-xl"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section (hidden initially) -->
+    <div id="resultsSection" class="hidden py-16 px-4">
+        <div class="max-w-3xl mx-auto">
+            <div class="glass-card p-8 md:p-10 text-center fade-in">
+                <div class="inline-flex items-center gap-2 bg-yellow-400/20 rounded-full px-5 py-2 text-yellow-200 text-sm mb-6">
+                    <i class="fas fa-trophy"></i> Quiz Completed
+                </div>
+                <h2 class="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                    Your Results
+                </h2>
+                <div id="totalTimeDisplay" class="text-2xl font-mono text-white/80 mb-8 flex items-center justify-center gap-2">
+                    <i class="fas fa-stopwatch"></i> <span id="completionTime">00:00</span>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-10">
+                    <div class="stat-card-glow rounded-2xl p-6 border border-white/20">
+                        <div class="text-5xl mb-2">🎯</div>
+                        <div class="text-white/70 text-sm uppercase tracking-wide">Final Score</div>
+                        <div id="finalScore" class="text-5xl md:text-6xl font-extrabold text-green-300 mt-2">0/10</div>
+                    </div>
+                    <div class="stat-card-glow rounded-2xl p-6 border border-white/20">
+                        <div class="text-5xl mb-2">✅</div>
+                        <div class="text-white/70 text-sm uppercase tracking-wide">Correct Answers</div>
+                        <div id="correctCount" class="text-5xl md:text-6xl font-extrabold text-yellow-300 mt-2">0</div>
+                        <div class="text-white/60 text-sm mt-1">out of 10</div>
+                    </div>
+                </div>
+                
+                <!-- Pie Chart -->
+                <div class="mb-10">
+                    <div class="text-white/70 text-sm uppercase tracking-wide mb-4 font-semibold">Answer Breakdown</div>
+                    <div class="flex flex-col items-center gap-4">
+                        <canvas id="pieChart" width="220" height="220"></canvas>
+                        <div class="flex items-center gap-6 text-sm font-medium">
+                            <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded-full" style="background:#48bb78;"></span><span class="text-white/80">Correct</span></div>
+                            <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded-full" style="background:#f56565;"></span><span class="text-white/80">Incorrect</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <a href="index.html" class="bg-white/20 hover:bg-white/30 px-6 py-3 rounded-xl font-semibold transition flex items-center gap-2">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="pre-test.html" class="bg-white/20 hover:bg-white/30 px-6 py-3 rounded-xl font-semibold transition flex items-center gap-2">
+                        <i class="fas fa-pen-alt"></i> Pre-Test
+                    </a>
+                    <a href="studio.html" class="bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-900 px-6 py-3 rounded-xl font-bold hover:opacity-90 transition flex items-center gap-2">
+                        <i class="fas fa-paintbrush-fine"></i> Studio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white/5 border-t border-white/10 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-white/50 text-sm">
+            <p>&copy; 2026 Storyboarding Portal — Visual-Strategic Problem-Solving Platform</p>
+        </div>
+    </footer>
+
+    <script>
+        // ---------- SESSION PROTECTION ----------
+        const studentId = localStorage.getItem('student_id');
+        const studentName = localStorage.getItem('student_name');
+        if (!studentId || !studentName) {
+            window.location.href = 'login.html';
+            throw new Error('Redirecting to login...');
+        }
+
+        // ---------- POST-TEST QUESTIONS (identical to original) ----------
+        const questions = [
+            { question: 'There are b people on a bus. At the next stop, 7 people get off and 10 more get on. How many people are on the bus now?', options: ['b + 3', 'b − 17', '17b', 'b − 3'], answer: 0 },
+            { question: 'Johnny has n red marbles and m blue marbles. Pete keeps losing his marbles, and has half as many red marbles and 8 less blue marbles than Johnny. Write an expression for Pete\'s total marbles.', options: ['n + m − 8', '(n/2) + (m − 8)', '2n + (m + 8)', '(n + m)/2 − 8'], answer: 1 },
+            { question: 'Anthony had forty-four pesos last Friday. He earned some amount of money after washing cars last Sunday. Make an expression that represents his total money.', options: ['44x', 'x − 44', '44 − x', '44 + x'], answer: 3 },
+            { question: 'Jay-R takes x hours and y minutes to complete the typing job. His friend Juvy, takes as thrice as long to finish typing. Write an algebraic expression for Juvy\'s typing speed.', options: ['3(x + y)', 'x + y + 3', '3x + y', '(x + y)/3'], answer: 0 },
+            { question: 'If the length of a rectangular vegetable garden is twice a number increased by 3 and its width is a number decreased by 5. Write an algebraic expression to represent the perimeter of the rectangle.', options: ['3n − 2', '6n + 16', '6n − 4', '4n − 10'], answer: 2 },
+            { question: 'A car travels n kilometers in 1 hour. Express the distance traveled by the car after 4 hours.', options: ['n + 4', '4n', 'n⁴', 'n/4'], answer: 1 },
+            { question: 'Marissa is 3 years younger than her sister Ellice. If Ellice\'s age is e, what expression stands for Marissa\'s age?', options: ['e + 3', '3e', 'e − 3', '3 − e'], answer: 2 },
+            { question: 'Maria was asked to buy a ribbon in a store. A pack of ribbon consists r pieces. If Maria wishes to buy 3 packs of ribbon, how many ribbons will she have in all?', options: ['r + 3', 'r/3', 'r³', '3r'], answer: 3 },
+            { question: 'Sheila is 5 years older than her brother Sid. If Sid\'s age is a, what expression stands for Sheila\'s age?', options: ['a − 5', '5a', 'a + 5', '5 − a'], answer: 2 },
+            { question: 'There are b goats and c ducks on the farm. How many legs are there?', options: ['4b + 2c', 'b + c + 6', '2b + 4c', '6(b + c)'], answer: 0 }
+        ];
+
+        // DOM elements
+        const startSectionDiv = document.getElementById('startSection');
+        const quizSectionDiv = document.getElementById('quizSection');
+        const resultsSectionDiv = document.getElementById('resultsSection');
+        const startBtn = document.getElementById('startButton');
+        const stopwatchDiv = document.getElementById('stopwatch');
+        const timerDisplaySpan = document.getElementById('timerDisplay');
+        const quizPrompt = document.getElementById('quizPrompt');
+        const quizOptionsDiv = document.getElementById('quizOptions');
+        const submitBtn = document.getElementById('submitAnswerBtn');
+        const nextBtn = document.getElementById('nextQuestionBtn');
+        const feedbackDiv = document.getElementById('quizFeedback');
+        const questionCounterSpan = document.getElementById('questionCounter');
+        const totalQuestionsSpan = document.getElementById('totalQuestions');
+        const finalScoreSpan = document.getElementById('finalScore');
+        const correctCountSpan = document.getElementById('correctCount');
+        const completionTimeSpan = document.getElementById('completionTime');
+
+        let currentIndex = 0;
+        let score = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let quizActive = false;
+        let answerSubmitted = false;
+
+        totalQuestionsSpan.textContent = questions.length;
+
+        // Timer functions
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            const secs = (timerSeconds % 60).toString().padStart(2, '0');
+            timerDisplaySpan.textContent = `${mins}:${secs}`;
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (quizActive) {
+                    timerSeconds++;
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        // Helper: escape HTML
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Render current question
+        function renderQuestion() {
+            answerSubmitted = false;
+            const q = questions[currentIndex];
+            quizPrompt.textContent = q.question;
+            questionCounterSpan.textContent = `Question ${currentIndex + 1}`;
+            
+            const letters = ['A', 'B', 'C', 'D'];
+            quizOptionsDiv.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option-card p-4 rounded-xl flex items-center gap-4 transition-all cursor-pointer';
+                optionDiv.setAttribute('data-opt-index', idx);
+                optionDiv.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-white shadow-sm">${letters[idx]}</div>
+                    <span class="text-white text-base md:text-lg font-medium">${escapeHtml(opt)}</span>
+                `;
+                optionDiv.addEventListener('click', () => {
+                    if (answerSubmitted) {
+                        feedbackDiv.innerHTML = '<i class="fas fa-lock"></i> Answer already submitted. Proceed to next question.';
+                        feedbackDiv.className = 'text-yellow-200 bg-yellow-500/20 p-3 rounded-xl text-center';
+                        return;
+                    }
+                    document.querySelectorAll('.option-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    optionDiv.classList.add('selected');
+                    optionDiv.setAttribute('data-selected', 'true');
+                });
+                quizOptionsDiv.appendChild(optionDiv);
+            });
+            
+            feedbackDiv.innerHTML = '';
+            feedbackDiv.className = 'mt-6 text-center text-sm md:text-base font-medium p-3 rounded-xl';
+            submitBtn.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            nextBtn.classList.add('hidden');
+            
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('correct', 'incorrect', 'disabled');
+                card.style.pointerEvents = 'auto';
+            });
+        }
+
+        // Handle answer submission
+        function handleSubmit() {
+            if (!quizActive) return;
+            if (answerSubmitted) {
+                feedbackDiv.innerHTML = '<i class="fas fa-info-circle"></i> You already answered this question.';
+                feedbackDiv.className = 'text-yellow-200 bg-yellow-500/20 p-3 rounded-xl text-center';
+                return;
+            }
+            
+            const selectedCard = document.querySelector('.option-card.selected');
+            if (!selectedCard) {
+                feedbackDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please select an answer before submitting.';
+                feedbackDiv.className = 'text-yellow-200 bg-yellow-500/20 p-3 rounded-xl text-center';
+                return;
+            }
+            
+            const selectedIndex = parseInt(selectedCard.getAttribute('data-opt-index'));
+            const currentQ = questions[currentIndex];
+            const isCorrect = (selectedIndex === currentQ.answer);
+            
+            answerSubmitted = true;
+            
+            // Disable all options
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.style.pointerEvents = 'none';
+                card.classList.add('disabled');
+            });
+            
+            // Highlight correct/incorrect
+            const allCards = document.querySelectorAll('.option-card');
+            allCards.forEach((card, idx) => {
+                if (idx === currentQ.answer) {
+                    card.classList.add('correct');
+                }
+                if (idx === selectedIndex && idx !== currentQ.answer) {
+                    card.classList.add('incorrect');
+                }
+            });
+            
+            if (isCorrect) {
+                score++;
+                feedbackDiv.innerHTML = '<i class="fas fa-check-circle"></i> ✅ Correct! Well done.';
+                feedbackDiv.className = 'text-green-300 bg-green-500/20 p-3 rounded-xl text-center';
+            } else {
+                const correctAnswerLetter = String.fromCharCode(65 + currentQ.answer);
+                const correctAnswerText = currentQ.options[currentQ.answer];
+                feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> ❌ Incorrect. The correct answer is ${correctAnswerLetter}: ${escapeHtml(correctAnswerText)}.`;
+                feedbackDiv.className = 'text-red-300 bg-red-500/20 p-3 rounded-xl text-center';
+            }
+            
+            // Show next button or finish
+            if (currentIndex + 1 < questions.length) {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            } else {
+                // Last question answered -> finish quiz after a short delay to show feedback
+                submitBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+                finishQuizAfterDelay();
+            }
+        }
+        
+        function finishQuizAfterDelay() {
+            setTimeout(() => {
+                finishQuiz();
+            }, 1200);
+        }
+        
+        function goToNext() {
+            if (!answerSubmitted) return;
+            if (currentIndex + 1 < questions.length) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+        
+        function finishQuiz() {
+            stopTimer();
+            quizActive = false;
+            // Show results section
+            quizSectionDiv.classList.add('hidden');
+            resultsSectionDiv.classList.remove('hidden');
+            stopwatchDiv.classList.add('hidden');
+            
+            // Display results
+            finalScoreSpan.textContent = `${score}/${questions.length}`;
+            correctCountSpan.textContent = score;
+            const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            const secs = (timerSeconds % 60).toString().padStart(2, '0');
+            const timeConsumed = `${mins}:${secs}`;
+            completionTimeSpan.textContent = timeConsumed;
+            
+            // Store post-test score in localStorage
+            localStorage.setItem('posttest_score', score);
+            localStorage.setItem('posttest_time', timerSeconds);
+
+            // Draw pie chart
+            drawPieChart(score, questions.length - score);
+            
+            // Save to database
+            const studentId = localStorage.getItem('student_id');
+            const sectionId = localStorage.getItem('student_section');
+            
+            console.log('Saving post-test - studentId:', studentId, 'sectionId:', sectionId);
+            
+            if (studentId && sectionId) {
+                const payload = {
+                    student_id: parseInt(studentId),
+                    section_id: parseInt(sectionId),
+                    score: `${score}/${questions.length}`,
+                    time_consumed: timeConsumed
+                };
+                console.log('Sending payload:', payload);
+                
+                fetch('../api/students/post_test.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                .then(res => {
+                    console.log('Response status:', res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    if (data.success) {
+                        console.log('Post-test results saved to database');
+                    } else {
+                        console.error('Server error:', data.error);
+                        alert('Error saving results: ' + data.error);
+                    }
+                })
+                .catch(err => console.error('Error saving post-test:', err));
+            } else {
+                console.error('Missing student_id or section_id');
+                alert('Error: Missing student information. Please login again.');
+            }
+        }
+        
+        // Draw pie chart for results
+        function drawPieChart(correct, incorrect) {
+            const canvas = document.getElementById('pieChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const total = correct + incorrect;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const radius = 90;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (total === 0) return;
+
+            const slices = [
+                { value: correct, color: '#48bb78' },
+                { value: incorrect, color: '#f56565' }
+            ];
+
+            let startAngle = -Math.PI / 2;
+            slices.forEach(slice => {
+                if (slice.value === 0) return;
+                const sliceAngle = (slice.value / total) * 2 * Math.PI;
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, startAngle, startAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fillStyle = slice.color;
+                ctx.fill();
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                if (slice.value / total > 0.08) {
+                    const midAngle = startAngle + sliceAngle / 2;
+                    const lx = cx + Math.cos(midAngle) * radius * 0.65;
+                    const ly = cy + Math.sin(midAngle) * radius * 0.65;
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 15px Poppins, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(`${Math.round((slice.value / total) * 100)}%`, lx, ly);
+                }
+
+                startAngle += sliceAngle;
+            });
+
+            // Donut hole
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.38, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(30, 20, 60, 0.85)';
+            ctx.fill();
+
+            // Center label
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px Poppins, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${correct}/${total}`, cx, cy);
+        }
+
+        // Start quiz
+        function startQuiz() {
+            quizActive = true;
+            currentIndex = 0;
+            score = 0;
+            timerSeconds = 0;
+            updateTimerDisplay();
+            startTimer();
+            
+            startSectionDiv.classList.add('hidden');
+            quizSectionDiv.classList.remove('hidden');
+            stopwatchDiv.classList.remove('hidden');
+            
+            answerSubmitted = false;
+            renderQuestion();
+        }
+        
+        // Event listeners
+        startBtn.addEventListener('click', startQuiz);
+        submitBtn.addEventListener('click', handleSubmit);
+        nextBtn.addEventListener('click', goToNext);
+        
+        // Mobile menu toggle
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNavMenu');
+        if (mobileBtn && mobileNav) {
+            mobileBtn.addEventListener('click', () => {
+                mobileNav.classList.toggle('hidden');
+                const icon = mobileBtn.querySelector('i');
+                if (icon) {
+                    if (icon.classList.contains('fa-bars')) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    } else {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                }
+            });
+        }
+        
+        // ---------- USER LOGIN / LOGOUT (from localStorage) ----------
+        // references for display name and logout buttons (desktop + mobile)
+        const displayNameSpan = document.getElementById('displayName');
+        const displayNameMobile = document.getElementById('displayNameMobile');
+        const displayNameMobileMenu = document.getElementById('displayNameMobileMenu');
+        const userInfoDesktop = document.getElementById('userInfoDesktop');
+        const userInfoMobileNav = document.getElementById('userInfoMobileNav');
+        const logoutBtnDesktop = document.getElementById('logoutBtnDesktop');
+        const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+        
+        function updateUserUI() {
+            if (studentId && studentName) {
+                const welcomeText = `Welcome, ${studentName}`;
+                if (displayNameSpan) displayNameSpan.textContent = welcomeText;
+                if (displayNameMobile) displayNameMobile.textContent = welcomeText;
+                if (displayNameMobileMenu) displayNameMobileMenu.textContent = welcomeText;
+                if (userInfoDesktop) userInfoDesktop.classList.remove('hidden');
+                if (userInfoMobileNav) userInfoMobileNav.classList.remove('hidden');
+            } else {
+                if (userInfoDesktop) userInfoDesktop.classList.add('hidden');
+                if (userInfoMobileNav) userInfoMobileNav.classList.add('hidden');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('student_id');
+            localStorage.removeItem('student_name');
+            localStorage.removeItem('student_email');
+            localStorage.removeItem('student_section');
+            localStorage.removeItem('student_section_name');
+            localStorage.removeItem('student_grade');
+            window.location.href = 'login.html';
+        }
+        
+        if (logoutBtnDesktop) logoutBtnDesktop.addEventListener('click', logout);
+        if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', logout);
+        updateUserUI();
+        
+        // Logo fallback
+        const logoImg = document.querySelector('nav img');
+        if (logoImg) logoImg.addEventListener('error', () => { logoImg.src = 'https://placehold.co/40x40/667eea/white?text=NG'; });
+    </script>
+</body>
+</html>

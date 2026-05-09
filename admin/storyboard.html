@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storyboarding Portal</title>
+    <link rel="icon" href="image/logo.png" type="image/png">
+    <meta name="description" content="Storyboarding Portal">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="templatemo-glass-admin-style.css">
+    <!--
+ 
+TemplateMo 607 Glass Admin
+ 
+https://templatemo.com/tm-607-glass-admin
+ 
+-->
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+ 
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo"><img src="image/logo.png" alt="Storyboarding Portal logo"></div>
+                <span class="logo-text">Storyboarding Portal</span>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-section">
+                    <span class="nav-section-title">Main Menu</span>
+                    <ul>
+                        <li class="nav-item">
+                            <a href="index.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                                    <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                                </svg>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="storyboard.html" class="nav-link active">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                                </svg>
+                                Storyboarding
+                                <span class="nav-badge">New</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="pre-test.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                    <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1"/>
+                                    <path d="M21 12v6c0 .552-.448 1-1 1H4c-.552 0-1-.448-1-1v-6"/>
+                                </svg>
+                                Pre-Test
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="post-test.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                    <path d="M16 13H8"/>
+                                    <path d="M16 17H8"/>
+                                    <path d="M10 9H8"/>
+                                </svg>
+                                Post-Test
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="collaboaration.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM7 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
+                                </svg>
+                                Collaboaration
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="students.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 10L12 5 2 10l10 5 10-5z"/>
+                                    <path d="M6 12.5v5c0 1.657 2.686 3 6 3s6-1.343 6-3v-5"/>
+                                    <path d="M22 10v5"/>
+                                </svg>
+                                Students
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="sections.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                Sections
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="users.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="settings.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                                </svg>
+                                Settings
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+ 
+                <li class="nav-section">
+                    <span class="nav-section-title">Account</span>
+                    <ul>
+                        <li class="nav-item">
+                            <a href="login.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                    <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+ 
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">TM</div>
+                    <div class="user-info">
+                        <div class="user-name">Anami</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+            </div>
+        </aside>
+ 
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Navbar -->
+            <nav class="navbar">
+                <div class="page-header">
+                    <h1 class="page-title">Storyboarding</h1>
+                    <div class="page-breadcrumb">
+                        <a href="index.html">Dashboard</a>
+                        <span>/</span>
+                        <span>Storyboarding</span>
+                    </div>
+                </div>
+                <div class="navbar-right">
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="text" class="search-input" placeholder="Search anything...">
+                    </div>
+                    <button class="nav-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span class="notification-dot"></span>
+                    </button>
+                    <button class="nav-btn" id="theme-toggle" title="Toggle Light/Dark Mode">
+                        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/>
+                            <path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/>
+                            <path d="M2 12h2"/><path d="M20 12h2"/>
+                            <path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/>
+                        </svg>
+                        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+ 
+ 
+            <!-- Storyboarding Quiz Results -->
+            <section class="content-grid" style="grid-template-columns: 1fr;">
+                <div class="glass-card table-card" style="grid-column: span 1;">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Storyboarding Quiz Results</h2>
+                            <p class="card-subtitle">Student rankings by accomplished items</p>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Student Name</th>
+                                    <th>Section</th>
+                                    <th>Accomplished Items</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="storyboardTableBody">
+                                <tr>
+                                    <td colspan="7" style="text-align:center; color:#6b7280; padding: 24px;">Loading storyboards...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Storyboard Gallery Modal -->
+    <div id="storyboardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>🎨 Storyboard Gallery</h2>
+                    <p class="modal-subtitle" id="modalStudentName"></p>
+                </div>
+                <button class="modal-close" onclick="closeStoryboardModal()">&times;</button>
+            </div>
+            <div class="student-info-bar">
+                <span id="modalSection"></span>
+                <span id="modalAccomplished"></span>
+                <span id="modalScore"></span>
+            </div>
+            <div class="modal-body">
+                <div class="storyboard-questions" id="storyboardQuestions">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox for full-size step images -->
+    <div id="galleryLightbox" class="lightbox" onclick="closeLightbox()">
+        <div class="lb-inner" onclick="event.stopPropagation()">
+            <button class="lb-close" onclick="closeLightbox()">&times;</button>
+            <p class="lb-label" id="lbLabel"></p>
+            <img id="lbImg" src="" alt="Full size step image" class="lb-img">
+        </div>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+    </button>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>Copyright © 2026 BSED-MATH. Designed by <a href="" target="_blank" rel="nofollow">Jetty</a></p>
+    </footer>
+
+    <script src="templatemo-glass-admin-script.js"></script>
+    <style>
+        /* ── View button ── */
+        .btn-view {
+            background: linear-gradient(135deg, var(--emerald), var(--success));
+            color: white; border: none;
+            padding: 7px 16px; border-radius: 6px;
+            font-weight: 500; font-size: 12px; cursor: pointer;
+            transition: all 0.25s;
+        }
+        .btn-view:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+        }
+
+        /* ── Modal base ── */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            margin: 3% auto;
+            border-radius: 18px;
+            width: 92%;
+            max-width: 1100px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 32px 64px -12px rgba(0,0,0,0.35);
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, var(--emerald), var(--success));
+            color: white;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-shrink: 0;
+        }
+        .modal-header h2 { margin: 0; font-size: 1.3rem; font-weight: 700; }
+        .modal-subtitle  { margin: 3px 0 0; font-size: 0.9rem; opacity: 0.85; }
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none; color: white;
+            font-size: 26px; width: 38px; height: 38px;
+            border-radius: 50%; cursor: pointer;
+            transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.35); transform: rotate(90deg); }
+
+        .student-info-bar {
+            display: flex; gap: 20px; flex-wrap: wrap;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(5,150,105,0.08));
+            border-bottom: 1px solid rgba(16,185,129,0.15);
+            flex-shrink: 0;
+        }
+        .student-info-bar span { font-weight: 500; color: #374151; font-size: 0.85rem; }
+
+        .modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* ── Loading / error states ── */
+        .gallery-loading, .gallery-error {
+            text-align: center;
+            padding: 48px 24px;
+            color: #6b7280;
+        }
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 3px solid #e5e7eb;
+            border-top-color: var(--emerald);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .gallery-error { color: #ef4444; font-weight: 500; }
+
+        /* ── Progress bar ── */
+        .gallery-progress-bar {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .gpb-stats { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 10px; }
+        .gpb-stat  { display: flex; flex-direction: column; font-size: 0.82rem; }
+        .gpb-label { color: #9ca3af; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .gpb-stat b { color: #111827; font-size: 0.9rem; }
+        .gpb-track { height: 7px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
+        .gpb-fill  { height: 100%; background: linear-gradient(90deg, var(--emerald), #34d399); border-radius: 99px; transition: width 0.6s ease; }
+        .gpb-pct   { font-size: 0.75rem; color: #6b7280; margin-top: 5px; }
+
+        /* ── Filter tabs ── */
+        .gallery-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .gtab {
+            padding: 6px 16px;
+            border-radius: 99px;
+            border: 1.5px solid #e5e7eb;
+            background: white;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        .gtab:hover { border-color: var(--emerald); color: var(--emerald); }
+        .gtab.active { background: var(--emerald); border-color: var(--emerald); color: white; }
+
+        /* ── Gallery grid ── */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+        .gallery-card {
+            background: white;
+            border-radius: 12px;
+            border: 1.5px solid #e5e7eb;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: transform 0.18s, box-shadow 0.18s;
+        }
+        .gallery-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.10); }
+        .gallery-card.status-correct  { border-color: #10b981; }
+        .gallery-card.status-attempted{ border-color: #f59e0b; }
+        .gallery-card.status-skipped  { border-color: #d1d5db; }
+        .gallery-card.status-locked   { border-color: #e5e7eb; opacity: 0.6; }
+
+        .gc-header {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 12px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .gc-num {
+            font-weight: 700; font-size: 0.78rem;
+            background: #f3f4f6; color: #374151;
+            padding: 2px 8px; border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .gc-status {
+            font-size: 0.72rem; font-weight: 500;
+            flex: 1;
+        }
+        .gc-status.correct   { color: #10b981; }
+        .gc-status.attempted { color: #f59e0b; }
+        .gc-status.skipped   { color: #9ca3af; }
+        .gc-status.locked    { color: #d1d5db; }
+        .gc-score {
+            font-size: 0.78rem; font-weight: 700;
+            padding: 2px 8px; border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .gc-score.high { background: rgba(16,185,129,0.12); color: #059669; }
+        .gc-score.low  { background: rgba(245,158,11,0.12); color: #d97706; }
+
+        /* Image area */
+        .gc-img-wrap {
+            position: relative; overflow: hidden;
+            background: #f9fafb;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+        }
+        .gc-img {
+            width: 100%; height: 150px; object-fit: cover;
+            display: block; transition: transform 0.3s;
+        }
+        .gc-img-wrap:hover .gc-img { transform: scale(1.03); }
+        .gc-img-badge {
+            position: absolute; bottom: 6px; right: 6px;
+            background: rgba(0,0,0,0.55); color: white;
+            font-size: 0.68rem; padding: 2px 8px; border-radius: 99px;
+            backdrop-filter: blur(3px);
+        }
+        .gc-img-placeholder {
+            height: 80px; display: flex; align-items: center; justify-content: center;
+            color: #d1d5db; font-size: 0.78rem; font-style: italic;
+        }
+        .gc-img-fallback {
+            height: 80px; display: flex; align-items: center; justify-content: center;
+            background: #f9fafb;
+        }
+        .gc-img-link {
+            font-size: 0.82rem; font-weight: 600;
+            color: var(--emerald); text-decoration: none;
+            padding: 8px 16px; border-radius: 8px;
+            border: 1.5px solid var(--emerald);
+            transition: all 0.2s;
+        }
+        .gc-img-link:hover {
+            background: var(--emerald); color: white;
+        }
+
+        /* Answer text */
+        .gc-answer { padding: 10px 12px; }
+        .gc-answer-text {
+            margin: 0; font-size: 0.82rem; color: #374151;
+            line-height: 1.5;
+            display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .gc-answer-empty {
+            margin: 0; font-size: 0.78rem; color: #d1d5db;
+            font-style: italic;
+        }
+
+        /* ── Lightbox ── */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+        }
+        .lb-inner {
+            position: relative;
+            max-width: 90vw; max-height: 90vh;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .lb-close {
+            position: absolute; top: -14px; right: -14px;
+            background: white; border: none;
+            width: 36px; height: 36px; border-radius: 50%;
+            font-size: 22px; cursor: pointer; color: #374151;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .lb-close:hover { transform: rotate(90deg); }
+        .lb-label { color: white; font-size: 0.85rem; opacity: 0.8; margin: 0; }
+        .lb-img { max-width: 85vw; max-height: 80vh; border-radius: 10px; object-fit: contain; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .modal-content { width: 98%; margin: 2% auto; }
+            .gallery-grid  { grid-template-columns: 1fr 1fr; }
+            .gpb-stats     { gap: 12px; }
+            .student-info-bar { flex-direction: column; gap: 6px; padding: 10px 16px; }
+        }
+        @media (max-width: 480px) {
+            .gallery-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <script>
+        // Check admin session
+        const adminId = localStorage.getItem('admin_id');
+        const adminName = localStorage.getItem('admin_name');
+        
+        if (!adminId) {
+            window.location.href = 'login.html';
+        } else {
+            // Update sidebar profile
+            const initials = adminName.split(' ').map(n => n.charAt(0)).join('');
+            document.querySelector('.user-avatar').textContent = initials;
+            document.querySelector('.user-name').textContent = adminName;
+        }
+
+        // Logout
+        document.querySelector('a[href="login.html"].nav-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+
+        const storyboardRows = [];
+
+        async function fetchStoryboardRows() {
+            try {
+                const response = await fetch('../api/admin/dashboard.php?action=storyboards');
+                const json = await response.json();
+
+                if (json.success && Array.isArray(json.storyboards)) {
+                    storyboardRows.splice(0, storyboardRows.length, ...json.storyboards);
+                } else {
+                    console.warn('Failed to load storyboard data:', json.error || json);
+                }
+            } catch (error) {
+                console.error('Error loading storyboard data:', error);
+            }
+
+            renderStoryboardTable();
+        }
+
+        // Parse the numeric part from a "X/30" string (returns 0 if missing/invalid)
+        function parseSlash(str) {
+            if (!str) return 0;
+            const n = parseInt(str.split('/')[0], 10);
+            return isNaN(n) ? 0 : n;
+        }
+
+        function renderStoryboardTable() {
+            const tbody = document.getElementById('storyboardTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+            if (!storyboardRows.length) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center; color:#6b7280; padding: 24px;">No storyboard records found.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Sort: accomplished_items DESC, then score DESC as tiebreaker
+            const sorted = [...storyboardRows].sort((a, b) => {
+                const accDiff = parseSlash(b.accomplished_items) - parseSlash(a.accomplished_items);
+                if (accDiff !== 0) return accDiff;
+                return parseSlash(b.score) - parseSlash(a.score);
+            });
+
+            // Medal labels for top 3
+            const medals = ['\uD83E\uDD47', '\uD83E\uDD48', '\uD83E\uDD49'];
+
+            sorted.forEach((row, index) => {
+                const rank      = index + 1;
+                // Preserve original index so openStoryboardModal still works
+                const origIndex = storyboardRows.indexOf(row);
+                const medal     = medals[index] ?? null;
+                const rankLabel = medal ? `${medal} ${rank}` : rank;
+                const rankBg    = index === 0
+                    ? 'linear-gradient(135deg, #f59e0b, #d97706)'
+                    : index === 1
+                    ? 'linear-gradient(135deg, #9ca3af, #6b7280)'
+                    : index === 2
+                    ? 'linear-gradient(135deg, #b45309, #92400e)'
+                    : 'linear-gradient(135deg, var(--emerald), var(--success))';
+
+                const initials    = row.student_name.split(' ').map(n => n.charAt(0).toUpperCase()).join('');
+                const accomplished = row.accomplished_items || '0/30';
+                const score       = row.score || '0/30';
+                const isComplete  = parseSlash(accomplished) >= 30;
+                const statusText  = isComplete ? 'Completed' : 'In Progress';
+                const statusColor = isComplete ? 'rgba(34, 197, 94, 0.15)' : 'rgba(251, 146, 60, 0.15)';
+                const statusTextColor = isComplete ? '#10b981' : '#fb923c';
+
+                const rowHtml = `
+                    <tr>
+                        <td><span style="background: ${rankBg}; color: white; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 12px;">${rankLabel}</span></td>
+                        <td><div class="table-user"><div class="table-avatar" style="background: linear-gradient(135deg, var(--info), var(--emerald));">${initials}</div><div class="table-user-info"><span class="table-user-name">${row.student_name}</span><span class="table-user-email">${row.section_name}</span></div></div></td>
+                        <td>${row.section_name}</td>
+                        <td><span style="background: rgba(34, 197, 94, 0.15); color: #10b981; padding: 4px 10px; border-radius: 6px; font-weight: 600;">${accomplished}</span></td>
+                        <td>${score}</td>
+                        <td><span style="background: ${statusColor}; color: ${statusTextColor}; padding: 4px 10px; border-radius: 6px; font-weight: 500; font-size: 12px;">${statusText}</span></td>
+                        <td><button class="btn-view" onclick="openStoryboardModal(${origIndex})">View</button></td>
+                    </tr>
+                `;
+
+                tbody.insertAdjacentHTML('beforeend', rowHtml);
+            });
+        }
+
+        // ── Gallery modal: fetch full detail and render all 30 questions ──
+        async function openStoryboardModal(index) {
+            const data = storyboardRows[index];
+            if (!data) return;
+
+            // Show modal immediately with a loading state
+            document.getElementById('storyboardModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+
+            document.getElementById('modalStudentName').textContent = data.student_name;
+            document.getElementById('modalSection').textContent     = 'Section: ' + data.section_name;
+            document.getElementById('modalScore').textContent       = 'Score: '   + (data.score || '0/30');
+            document.getElementById('modalAccomplished').textContent = 'Items: '  + (data.accomplished_items || '0/30');
+
+            const container = document.getElementById('storyboardQuestions');
+            container.innerHTML = `<div class="gallery-loading"><div class="loading-spinner"></div><p>Loading student work…</p></div>`;
+
+            // Fetch per-question detail
+            let detail = null;
+            try {
+                const res = await fetch(
+                    `../api/admin/dashboard.php?action=storyboard_detail` +
+                    `&student_id=${encodeURIComponent(data.student_id)}` +
+                    `&section_id=${encodeURIComponent(data.section_id)}`
+                );
+                detail = await res.json();
+            } catch (e) {
+                container.innerHTML = `<div class="gallery-error">⚠️ Failed to load details. Please try again.</div>`;
+                return;
+            }
+
+            if (!detail.success) {
+                container.innerHTML = `<div class="gallery-error">⚠️ ${detail.error || 'No data found.'}</div>`;
+                return;
+            }
+
+            const { answers, step_images, submitted, scores, current_step, unlocked_step, saved_at } = detail;
+
+            // Progress bar header
+            const totalDone  = Object.values(submitted).filter(v => v === true || v === 'true').length;
+            const totalScore = Object.values(scores).reduce((s, v) => s + (Number(v) || 0), 0);
+            const pct        = Math.round((totalDone / 30) * 100);
+
+            container.innerHTML = `
+                <!-- Progress summary bar -->
+                <div class="gallery-progress-bar">
+                    <div class="gpb-stats">
+                        <span class="gpb-stat"><span class="gpb-label">Done</span> <b>${totalDone}/30</b></span>
+                        <span class="gpb-stat"><span class="gpb-label">Score</span> <b>${totalScore}/30</b></span>
+                        <span class="gpb-stat"><span class="gpb-label">Step</span> <b>${current_step}/30 unlocked</b></span>
+                        <span class="gpb-stat"><span class="gpb-label">Saved</span> <b>${saved_at ? new Date(saved_at).toLocaleString() : 'N/A'}</b></span>
+                    </div>
+                    <div class="gpb-track">
+                        <div class="gpb-fill" style="width:${pct}%"></div>
+                    </div>
+                    <div class="gpb-pct">${pct}% complete</div>
+                </div>
+
+                <!-- Filter tabs -->
+                <div class="gallery-tabs">
+                    <button class="gtab active" data-filter="all"    onclick="filterGallery('all',this)">All (30)</button>
+                    <button class="gtab"         data-filter="done"   onclick="filterGallery('done',this)">✅ Answered (${totalDone})</button>
+                    <button class="gtab"         data-filter="missed" onclick="filterGallery('missed',this)">⬜ Not started (${30 - totalDone})</button>
+                </div>
+
+                <!-- Question cards grid -->
+                <div class="gallery-grid" id="galleryGrid"></div>
+            `;
+
+            // Build all 30 question cards
+            const grid = document.getElementById('galleryGrid');
+
+            for (let i = 0; i < 30; i++) {
+                const isDone   = submitted[i] === true || submitted[i] === 'true';
+                const pts      = Number(scores[i]) || 0;
+                const answer   = answers[i] || '';
+                const imgSrc   = step_images[i] || null;
+                const isLocked = i >= (unlocked_step || 0);
+
+                let statusClass, statusLabel;
+                if (!isDone && isLocked)         { statusClass = 'locked';    statusLabel = '🔒 Locked'; }
+                else if (!isDone)                 { statusClass = 'skipped';   statusLabel = '⬜ Not started'; }
+                else if (pts >= 1)                { statusClass = 'correct';   statusLabel = '✅ Correct'; }
+                else                              { statusClass = 'attempted'; statusLabel = '🟡 Attempted'; }
+
+                const card = document.createElement('div');
+                card.className = `gallery-card status-${statusClass}`;
+                card.dataset.filter = isDone ? 'done' : 'missed';
+
+                // Image section
+                let imgHtml = '';
+                if (imgSrc) {
+                    // Never prepend ../ to already-absolute or root-relative URLs.
+                    // External CDN URLs like cdn.picsart.io block hotlinking; adding
+                    // referrerpolicy="no-referrer" bypasses it in most cases. If the
+                    // img still fails to load, a fallback "Open in new tab" link appears.
+                    const isAbsolute = /^(https?:\/\/|data:)/i.test(imgSrc);
+                    const resolvedSrc = (isAbsolute || imgSrc.startsWith('/')) ? imgSrc : `../${imgSrc}`;
+                    const safeAttr = resolvedSrc.replace(/"/g, '&quot;');
+
+                    imgHtml = `<div class="gc-img-wrap" data-q="${i+1}" data-src="${safeAttr}">
+                        <img src="${safeAttr}"
+                             alt="Step ${i+1}"
+                             class="gc-img"
+                             referrerpolicy="no-referrer"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                        <div class="gc-img-fallback" style="display:none">
+                            <a href="${safeAttr}" target="_blank" rel="noopener" class="gc-img-link">
+                                🖼 Open image in new tab
+                            </a>
+                        </div>
+                        <span class="gc-img-badge">🖼 Click to expand</span>
+                    </div>`;
+                } else if (isDone) {
+                    imgHtml = `<div class="gc-img-wrap"><div class="gc-img-placeholder">No image uploaded</div></div>`;
+                }
+
+                card.innerHTML = `
+                    <div class="gc-header">
+                        <span class="gc-num">Q${i + 1}</span>
+                        <span class="gc-status ${statusClass}">${statusLabel}</span>
+                        <span class="gc-score ${pts >= 1 ? 'high' : (isDone ? 'low' : '')}">${isDone ? pts + '/1' : '—/1'}</span>
+                    </div>
+                    ${imgHtml}
+                    <div class="gc-answer">
+                        ${isDone && answer
+                            ? `<p class="gc-answer-text">${escapeHtml(answer)}</p>`
+                            : `<p class="gc-answer-empty">${isLocked ? 'Step not yet unlocked' : 'No answer submitted'}</p>`
+                        }
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        // Filter gallery by tab
+        function filterGallery(filter, btn) {
+            document.querySelectorAll('.gtab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.gallery-card').forEach(card => {
+                card.style.display = (filter === 'all' || card.dataset.filter === filter) ? '' : 'none';
+            });
+        }
+
+        // Lightbox — opened via event delegation on the grid (safe for large/special-char src)
+        document.getElementById('storyboardQuestions').addEventListener('click', function(e) {
+            const wrap = e.target.closest('.gc-img-wrap[data-q]');
+            if (!wrap) return;
+            const img = wrap.querySelector('.gc-img');
+            if (!img || img.style.display === 'none') return; // image failed, don't open lightbox
+            const src  = wrap.dataset.src || img.src;
+            const qNum = wrap.dataset.q;
+            const lb   = document.getElementById('galleryLightbox');
+            document.getElementById('lbImg').src = src;
+            document.getElementById('lbImg').setAttribute('referrerpolicy', 'no-referrer');
+            document.getElementById('lbLabel').textContent = `Question ${qNum} — Step Image`;
+            lb.style.display = 'flex';
+        });
+
+        function openLightbox(src, qNum) { /* unused — handled by delegation above */ }
+        function closeLightbox() {
+            document.getElementById('galleryLightbox').style.display = 'none';
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function closeStoryboardModal() {
+            document.getElementById('storyboardModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('storyboardModal');
+            const lb    = document.getElementById('galleryLightbox');
+            if (event.target === modal) closeStoryboardModal();
+            if (event.target === lb)    closeLightbox();
+        };
+
+        fetchStoryboardRows();
+    </script>
+    <!-- TemplateMo 607 Glass Admin -->
+</body>
+</html>
+    <!-- TemplateMo 607 Glass Admin -->
+</body>
+</html>

@@ -1,0 +1,205 @@
+ /* ===== Edit User Modal ===== */
+
+        /* Overlay — tinted with the page gradient colour in both modes */
+        .eu-overlay {
+            position: fixed;
+            inset: 0;
+            background: #3b82f6(0, 0, 0, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: euFadeIn 0.2s ease;
+        }
+        [data-theme="light"] .eu-overlay {
+            background: rgba(59, 130, 246, 0.18);
+        }
+        @keyframes euFadeIn  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes euSlideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Glass card — fully driven by the theme's CSS variables */
+        .eu-glass {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 0 0 1px rgba(22,147,210,0.15),
+                        0 0 36px rgba(22,147,210,0.12),
+                        0 24px 64px var(--glass-shadow);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 560px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 28px;
+            animation: euSlideUp 0.25s ease;
+            scrollbar-width: thin;
+            scrollbar-color: var(--glass-border) transparent;
+            color: var(--text-primary);
+        }
+
+        /* Header */
+        .eu-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .eu-user-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .eu-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .eu-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 2px;
+        }
+        .eu-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+        .eu-close {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .eu-close:hover { background: var(--glass-hover); }
+
+        /* Divider */
+        .eu-divider {
+            height: 1px;
+            background: var(--glass-border);
+            margin-bottom: 22px;
+        }
+
+        /* Fields grid */
+        .eu-fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .eu-field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .eu-field-half { width: calc(50% - 8px); }
+        .eu-field-full  { width: 100%; }
+        @media (max-width: 480px) {
+            .eu-field-half { width: 100%; }
+        }
+        .eu-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .eu-optional {
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        /* Inputs — inherit theme tokens for both modes */
+        .eu-input {
+            background: var(--glass-hover);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        .eu-input::placeholder { color: var(--text-muted); }
+        .eu-input:focus {
+            border-color: var(--emerald);
+            box-shadow: 0 0 0 3px rgba(22,147,210,0.15);
+        }
+        /* Select dropdown background for dark mode */
+        .eu-input option {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+        }
+        .eu-select { appearance: none; cursor: pointer; }
+        .eu-textarea {
+            resize: vertical;
+            min-height: 80px;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .eu-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 20px;
+        }
+        .eu-btn {
+            padding: 9px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s, opacity 0.2s, transform 0.1s;
+        }
+        .eu-btn:active { transform: scale(0.97); }
+        .eu-btn-primary {
+            background: var(--emerald);
+            color: #fff;
+            border-color: var(--emerald);
+        }
+        .eu-btn-primary:hover { opacity: 0.88; }
+        .eu-btn-secondary {
+            background: var(--glass-bg);
+            color: var(--text-secondary);
+        }
+        .eu-btn-secondary:hover { background: var(--glass-hover); }
+        .eu-btn-danger {
+            background: transparent;
+            color: var(--danger, #dc2626);
+            border-color: rgba(220,38,38,0.3);
+        }
+        .eu-btn-danger:hover {
+            background: rgba(220,38,38,0.08);
+            border-color: rgba(220,38,38,0.5);
+        }

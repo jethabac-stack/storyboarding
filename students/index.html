@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Storyboarding Portal | Visual Strategic Learning</title>
+    <link rel="icon" href="admin/image/logo.png" type="image/png">
+    <!-- Tailwind CSS + Font Awesome + Google Fonts (matching landing page style) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        * { font-family: 'Poppins', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-primary:hover { opacity: 0.9; transform: scale(1.02); }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-nav { background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .slide-transition { transition: opacity 0.4s ease, transform 0.4s ease; }
+        .step-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); border-radius: 1.5rem; transition: all 0.2s; }
+        .step-card:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+        .dot-indicator { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.4); transition: all 0.2s; cursor: pointer; }
+        .dot-indicator.active { background: white; transform: scale(1.3); box-shadow: 0 0 8px rgba(255,255,255,0.6); }
+        /* custom scroll for overview cards if needed */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg text-white">
+
+    <!-- Navigation (same style as landing page but with user info and mobile toggle) -->
+    <nav class="glass-nav sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo + brand -->
+                <div class="flex items-center gap-3">
+                    <img src="../admin/image/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://placehold.co/40x40/667eea/white?text=NL'">
+                    <span class="text-white text-2xl font-bold tracking-tight">Storyboarding Portal</span>
+                </div>
+                
+                <!-- Desktop nav links -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="index.html" class="text-white/90 hover:text-white font-medium transition">Home</a>
+                    <a href="overview.html" class="text-white/70 hover:text-white transition">Overview</a>
+                    <a href="studio.html" class="text-white/70 hover:text-white transition">Studio</a>
+                    <a href="student.html" class="text-white/70 hover:text-white transition">Student</a>
+                </div>
+                
+                <!-- Right side: User info + Mobile menu button (centered) -->
+                <div class="flex items-center gap-4">
+                    <!-- User info / login status (desktop) -->
+                    <div id="userInfoDesktop" class="hidden md:flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
+                        <i class="fas fa-user-circle text-white text-xl"></i>
+                        <span id="displayName" class="text-sm font-medium text-white"></span>
+                        <button id="logoutBtnDesktop" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition">Logout</button>
+                    </div>
+                    
+                    <!-- Mobile: User info visible + centered menu button -->
+                    <div class="flex md:hidden items-center gap-2">
+                        <!-- mobile menu button (centered) -->
+                        <button id="mobileMenuBtn" class="text-white text-2xl focus:outline-none ml-2">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Mobile nav dropdown -->
+            <div id="mobileNavMenu" class="md:hidden hidden py-4 border-t border-white/20 mt-2 space-y-3">
+                <a href="index.html" class="block text-white/90 font-medium px-2 py-1">Home</a>
+                <a href="overview.html" class="block text-white/70 px-2 py-1">Overview</a>
+                <a href="studio.html" class="block text-white/70 px-2 py-1">Studio</a>
+                <a href="student.html" class="block text-white/70 px-2 py-1">Student</a>
+                <div class="pt-2 flex items-center justify-between border-t border-white/20 mt-2">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-user-circle text-white text-xl"></i>
+                        <span id="displayNameMobileMenu" class="text-sm font-medium text-white"></span>
+                    </div>
+                    <button id="logoutBtnMobile" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main slides container (3 slides: Hero, Portal Overview, Learning Objectives) -->
+    <main class="relative overflow-hidden">
+        <!-- slides wrapper with fade effect -->
+        <div class="relative min-h-[calc(100vh-4rem)]">
+            <!-- Slide 0: Hero / Welcome -->
+            <div id="slide0" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible flex items-center justify-center px-4 py-8">
+                <div class="max-w-5xl mx-auto text-center fade-in">
+                    <h1 class="text-5xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent drop-shadow-lg">
+                        Visual-Strategic Problem-Solving Portal
+                    </h1>
+                    <p class="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto mb-10 leading-relaxed">
+                        Let’s unlock the power of thinking visually and strategically in solving problems involving algebraic expressions!
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-5 justify-center items-center">
+                        <a href="pre-test.html" class="bg-yellow-400 text-purple-900 px-8 py-4 rounded-xl text-lg font-bold hover:bg-yellow-300 transition shadow-xl flex items-center gap-2">
+                            <i class="fas fa-pen-alt"></i> Pre Test
+                        </a>
+                        <a href="post-test.html" class="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/30 transition border border-white/30 flex items-center gap-2">
+                            <i class="fas fa-check-circle"></i> Post Test
+                        </a>
+                    </div>
+                    <div class="mt-12">
+                        <button id="learnMoreBtn" class="group bg-white/10 hover:bg-white/20 backdrop-blur-sm px-7 py-3 rounded-full text-white font-medium transition-all inline-flex items-center gap-2 border border-white/20">
+                            Learn More <i class="fas fa-arrow-right group-hover:translate-x-1 transition"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 1: Portal Overview (rich content) -->
+            <div id="slide1" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+                <div class="max-w-6xl mx-auto bg-white/10 backdrop-blur-md rounded-3xl p-6 md:p-10 border border-white/20 shadow-2xl my-6">
+                    <div class="text-center mb-8">
+                        <i class="fas fa-globe-americas text-5xl text-yellow-300 mb-3"></i>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white">Portal Overview</h2>
+                        <div class="w-24 h-1 bg-yellow-400 mx-auto mt-3 rounded-full"></div>
+                    </div>
+                    <div class="space-y-6 text-white/90 text-base md:text-lg leading-relaxed">
+                        <p class="bg-white/5 p-5 rounded-2xl border-l-4 border-yellow-400">In today’s digital age, learning mathematics should go beyond formulas and memorization. It should be engaging, interactive, and meaningful. This project presents an innovative web-based platform designed to help students better understand algebra through visual storytelling and structured problem-solving.</p>
+                        <p>At the heart of the platform is the idea that students learn best when they can see, create, and apply concepts. By combining the <strong class="text-yellow-300">5-step problem-solving process</strong> with a storyboarding approach, learners are guided step-by-step in solving real-life algebraic problems such as age, motion, geometry, work, and financial situations.</p>
+                        <div class="grid md:grid-cols-2 gap-4 mt-6">
+                            <div class="flex items-start gap-3 bg-white/5 p-4 rounded-xl"><i class="fas fa-check-circle text-yellow-400 mt-1"></i><span>Home Page & pre/post assessments</span></div>
+                            <div class="flex items-start gap-3 bg-white/5 p-4 rounded-xl"><i class="fas fa-check-circle text-yellow-400 mt-1"></i><span>Overview (Module) & learning guides</span></div>
+                            <div class="flex items-start gap-3 bg-white/5 p-4 rounded-xl"><i class="fas fa-check-circle text-yellow-400 mt-1"></i><span>Storyboarding Studio (Main interactive)</span></div>
+                            <div class="flex items-start gap-3 bg-white/5 p-4 rounded-xl"><i class="fas fa-check-circle text-yellow-400 mt-1"></i><span>Collaboration Corner & Student/Teacher sections</span></div>
+                        </div>
+                        <p class="italic text-white/70 text-sm text-center mt-6">✨ The website also includes <strong>The Researchers</strong> section, honoring the creators of this transformative educational tool.</p>
+                    </div>
+                    <div class="flex justify-between gap-4 mt-10">
+                        <button class="prevBtn bg-white/20 hover:bg-white/30 px-6 py-2 rounded-full font-medium transition flex items-center gap-2"><i class="fas fa-arrow-left"></i> Back</button>
+                        <button class="nextBtn bg-yellow-400 text-purple-900 hover:bg-yellow-300 px-6 py-2 rounded-full font-bold transition flex items-center gap-2">Next <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Learning Objectives + Start studio action -->
+            <div id="slide2" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible flex items-center justify-center px-4">
+                <div class="max-w-4xl mx-auto bg-white/10 backdrop-blur-md rounded-3xl p-8 md:p-12 border border-white/20 shadow-2xl text-center">
+                    <i class="fas fa-bullseye text-6xl text-yellow-300 mb-5"></i>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Learning Objectives</h2>
+                    <div class="space-y-4 text-left text-white/90 text-lg mb-8">
+                        <div class="flex gap-3 items-start bg-white/5 p-4 rounded-xl"><span class="font-bold text-yellow-400 text-xl">1.</span> Demonstrate understanding of algebraic problem-solving through a structured <strong class="text-white">5-step process</strong>.</div>
+                        <div class="flex gap-3 items-start bg-white/5 p-4 rounded-xl"><span class="font-bold text-yellow-400 text-xl">2.</span> Apply visual storyboarding techniques to solve and interpret real-life algebraic problems (age, motion, geometry, work, finance).</div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-5 justify-center items-center mt-6">
+                        <a href="studio.html" class="bg-yellow-400 text-purple-900 px-8 py-4 rounded-xl text-lg font-bold hover:bg-yellow-300 transition shadow-xl flex items-center gap-2">
+                            <i class="fas fa-paintbrush-fine"></i> Start Storyboarding Studio →
+                        </a>
+                        <button class="prevBtn2 bg-white/20 hover:bg-white/30 px-6 py-3 rounded-full font-medium transition">← Back to Overview</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Dots (3 dots) -->
+        <div class="fixed bottom-6 left-0 right-0 flex justify-center gap-4 z-20">
+            <div class="dot-indicator" data-index="0"></div>
+            <div class="dot-indicator" data-index="1"></div>
+            <div class="dot-indicator" data-index="2"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/5 border-t border-white/10 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-white/60 text-sm">
+            <p>&copy; 2026 Storyboarding Portal — Visual-Strategic Problem-Solving Platform. Built for innovative math education.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ---------- SESSION PROTECTION ----------
+        const studentId = localStorage.getItem('student_id');
+        const studentName = localStorage.getItem('student_name');
+        if (!studentId || !studentName) {
+            window.location.href = 'login.html';
+            throw new Error('Redirecting to login...');
+        }
+
+        // ---------- SLIDESHOW LOGIC (3 slides) ----------
+        let currentSlide = 0;
+        const slides = [document.getElementById('slide0'), document.getElementById('slide1'), document.getElementById('slide2')];
+        const dots = document.querySelectorAll('.dot-indicator');
+        
+        function updateSlides(index) {
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.remove('opacity-0', 'invisible');
+                    slide.classList.add('opacity-100', 'visible', 'relative');
+                    slide.style.position = 'relative';
+                } else {
+                    slide.classList.add('opacity-0', 'invisible');
+                    slide.classList.remove('opacity-100', 'visible');
+                    slide.style.position = 'absolute';
+                }
+            });
+            dots.forEach((dot, i) => {
+                if (i === index) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+            currentSlide = index;
+        }
+        
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) updateSlides(currentSlide + 1);
+        }
+        function prevSlide() {
+            if (currentSlide > 0) updateSlides(currentSlide - 1);
+        }
+        
+        // attach event listeners to all navigation buttons
+        document.querySelectorAll('.nextBtn').forEach(btn => btn.addEventListener('click', nextSlide));
+        document.querySelectorAll('.prevBtn, .prevBtn2').forEach(btn => btn.addEventListener('click', prevSlide));
+        document.getElementById('learnMoreBtn')?.addEventListener('click', () => { if (currentSlide === 0) updateSlides(1); else nextSlide(); });
+        
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const idx = parseInt(dot.getAttribute('data-index'));
+                if (!isNaN(idx)) updateSlides(idx);
+            });
+        });
+        
+        // keyboard navigation
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+        
+        // initialize first slide
+        updateSlides(0);
+        
+        // ---------- USER LOGIN / LOGOUT (from localStorage) ----------
+        // references for display name and logout buttons (desktop + mobile)
+        const displayNameSpan = document.getElementById('displayName');
+        const displayNameMobile = document.getElementById('displayNameMobile');
+        const displayNameMobileMenu = document.getElementById('displayNameMobileMenu');
+        const userInfoDesktop = document.getElementById('userInfoDesktop');
+        const userInfoMobileNav = document.getElementById('userInfoMobileNav');
+        const logoutBtnDesktop = document.getElementById('logoutBtnDesktop');
+        const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+        
+        function updateUserUI() {
+            if (studentId && studentName) {
+                const welcomeText = `Welcome, ${studentName}`;
+                if (displayNameSpan) displayNameSpan.textContent = welcomeText;
+                if (displayNameMobile) displayNameMobile.textContent = welcomeText;
+                if (displayNameMobileMenu) displayNameMobileMenu.textContent = welcomeText;
+                if (userInfoDesktop) userInfoDesktop.classList.remove('hidden');
+                if (userInfoMobileNav) userInfoMobileNav.classList.remove('hidden');
+            } else {
+                if (userInfoDesktop) userInfoDesktop.classList.add('hidden');
+                if (userInfoMobileNav) userInfoMobileNav.classList.add('hidden');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('student_id');
+            localStorage.removeItem('student_name');
+            localStorage.removeItem('student_email');
+            localStorage.removeItem('student_section');
+            localStorage.removeItem('student_section_name');
+            localStorage.removeItem('student_grade');
+            window.location.href = 'login.html';
+        }
+        
+        if (logoutBtnDesktop) logoutBtnDesktop.addEventListener('click', logout);
+        if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', logout);
+        updateUserUI();
+        
+        // Mobile menu toggle
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNavMenu');
+        if (mobileBtn && mobileNav) {
+            mobileBtn.addEventListener('click', () => {
+                mobileNav.classList.toggle('hidden');
+                const icon = mobileBtn.querySelector('i');
+                if (icon) icon.classList.toggle('fa-bars');
+                if (icon) icon.classList.toggle('fa-times');
+            });
+        }
+        
+        // also handle scenario where no image assets exist gracefully (prevent 404s)
+        const researcherImgs = document.querySelectorAll('img[src="image/12.png"], img[src="image/13.png"]');
+        researcherImgs.forEach(img => {
+            img.addEventListener('error', function() {
+                this.src = 'https://placehold.co/180x180/667eea/white?text=Researcher';
+            });
+        });
+        const logoImg = document.querySelector('nav img');
+        if (logoImg) logoImg.addEventListener('error', () => { logoImg.src = 'https://placehold.co/40x40/667eea/white?text=NG'; });
+        
+        // optional: smooth transition when using learn more from hero
+        const heroLearn = document.getElementById('learnMoreBtn');
+        if (heroLearn) {
+            heroLearn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentSlide === 0) updateSlides(1);
+                else nextSlide();
+            });
+        }
+        
+        // ensure all CTA buttons that had original "Learn More" behavior are linked properly 
+        // extra: sync any hidden pre/post test redirections as per original index
+    </script>
+    <!-- additional style to make slides stack properly -->
+    <style>
+        .slide {
+            transition: opacity 0.5s ease-in-out, visibility 0.5s;
+        }
+        .slide.visible, .slide.opacity-100 {
+            opacity: 1 !important;
+            visibility: visible !important;
+            z-index: 10;
+        }
+        .slide.opacity-0 {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            z-index: 0;
+        }
+        .dot-indicator.active {
+            background-color: white;
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(255,255,240,0.8);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        body {
+            overflow-x: hidden;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #fbbf24;
+            border-radius: 10px;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Game - Storyboarding Portal</title>
+    <link rel="icon" href="admin/image/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+        
+        .kahoot-purple { background: #46178f; }
+        .kahoot-blue { background: #2dabe1; }
+        .kahoot-yellow { background: #f9a825; }
+        .kahoot-green { background: #69c924; }
+        
+        .answer-bar-0 { background: #46178f; }
+        .answer-bar-1 { background: #2dabe1; }
+        .answer-bar-2 { background: #f9a825; }
+        .answer-bar-3 { background: #69c924; }
+        
+        .player-pod {
+            animation: popIn 0.3s ease-out;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .slide-up { animation: slideUp 0.5s ease-out; }
+        
+        .count-up {
+            animation: countUp 0.5s ease-out;
+        }
+        
+        @keyframes countUp {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Custom Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            animation: scaleIn 0.3s ease-out;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .modal-icon.warning {
+            background: linear-gradient(135deg, #f9a825, #f57f17);
+        }
+        
+        .modal-icon.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        .modal-icon.info {
+            background: linear-gradient(135deg, #46178f, #6b21a8);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-900">
+    <!-- Game PIN Display -->
+    <div id="gameHeader" class="kahoot-purple py-4">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="dashboard.html" class="flex items-center gap-3">
+                    <img src="admin/image/logo.png" alt="Logo" class="h-10">
+                    <span class="text-white text-xl font-bold">Storyboarding Portal</span>
+                </a>
+                <button onclick="exitGame()" class="text-white/80 hover:text-white font-semibold">
+                    <i class="fas fa-arrow-left mr-2"></i>Exit
+                </button>
+            </div>
+            <div class="text-center">
+                <p class="text-white/60 text-sm uppercase tracking-wider">Game PIN</p>
+                <p id="gamePin" class="text-5xl font-bold text-white tracking-widest"></p>
+            </div>
+            <div class="text-white/80 font-semibold">
+                <i class="fas fa-users mr-2"></i><span id="playerCount">0</span> players
+            </div>
+        </div>
+    </div>
+
+    <!-- Realtime Leaderboard (Bottom Right) -->
+    <div id="leaderboardPanel" class="fixed bottom-4 right-4 w-64 bg-white/10 backdrop-blur-sm rounded-2xl p-4 hidden">
+        <h3 class="text-white font-bold text-lg mb-3 flex items-center">
+            <i class="fas fa-trophy mr-2 text-yellow-400"></i>Leaderboard
+        </h3>
+        <div id="leaderboardList" class="space-y-2 max-h-64 overflow-y-auto">
+            <!-- Players will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="min-h-[calc(100vh-80px)]">
+        <!-- Lobby Screen -->
+        <div id="lobbyScreen" class="h-full flex flex-col items-center justify-center p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-5xl font-bold text-white mb-4">Waiting for players...</h1>
+                <p class="text-white/70 text-2xl">Share the Game PIN with your players</p>
+            </div>
+            
+            <!-- Big PIN Display -->
+            <div class="bg-white rounded-3xl p-16 mb-10 shadow-2xl">
+                <p class="text-gray-400 text-lg mb-2 uppercase tracking-wider">Game PIN</p>
+                <p id="lobbyGamePin" class="text-8xl font-bold text-purple-600 tracking-widest"></p>
+            </div>
+
+            <!-- Players Grid -->
+            <div class="w-full max-w-4xl">
+                <h3 class="text-white/80 text-xl font-semibold mb-6 text-center">Players joined</h3>
+                <div id="playersGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Players will appear here -->
+                </div>
+            </div>
+
+            <button onclick="startGame()" id="startBtn" class="mt-10 bg-green-500 hover:bg-green-400 text-white px-16 py-5 rounded-2xl text-2xl font-bold transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <i class="fas fa-play mr-3"></i>Start Game
+            </button>
+            <p id="startHint" class="text-white/50 mt-4">Need at least 1 player to start</p>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="questionScreen" class="hidden h-full flex flex-col p-6">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+                <div class="text-white">
+                    <span class="text-2xl font-bold">Question <span id="questionNumber">1</span></span>
+                    <span id="questionPoints" class="ml-4 text-lg text-yellow-300 font-semibold"></span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="bg-white/20 rounded-full px-6 py-2">
+                        <span id="timerText" class="text-3xl font-bold text-white">20</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timer Bar -->
+            <div class="w-full bg-white/20 rounded-full h-2 mb-8">
+                <div id="timerBar" class="bg-yellow-400 h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
+            </div>
+
+            <!-- Question & Answers -->
+            <div class="flex-1 flex flex-col items-center justify-center">
+                <div class="w-full max-w-5xl">
+                    <!-- Question Text -->
+                    <div class="bg-white rounded-2xl p-8 mb-8 shadow-lg">
+                        <p id="questionText" class="text-3xl font-semibold text-gray-800 text-center"></p>
+                        <div id="questionImage" class="mt-6 hidden">
+                            <img id="questionImg" class="max-h-56 mx-auto rounded-lg">
+                        </div>
+                    </div>
+
+                    <!-- Answer Bars -->
+                    <div id="answerBars" class="grid grid-cols-2 gap-4">
+                        <div class="answer-bar-0 rounded-xl p-6 text-white font-bold text-xl text-center relative overflow-hidden">
+                            <div id="bar0" class="absolute inset-0 bg-white/20 transition-all duration-500" style="width: 0%"></div>
+                            <span id="answer0" class="relative z-10">Answer 1</span>
+                            <span id="count0" class="absolute right-4 text-lg opacity-0">0</span>
+                        </div>
+                        <div class="answer-bar-1 rounded-xl p-6 text-white font-bold text-xl text-center relative overflow-hidden">
+                            <div id="bar1" class="absolute inset-0 bg-white/20 transition-all duration-500" style="width: 0%"></div>
+                            <span id="answer1" class="relative z-10">Answer 2</span>
+                            <span id="count1" class="absolute right-4 text-lg opacity-0">0</span>
+                        </div>
+                        <div class="answer-bar-2 rounded-xl p-6 text-white font-bold text-xl text-center relative overflow-hidden">
+                            <div id="bar2" class="absolute inset-0 bg-white/20 transition-all duration-500" style="width: 0%"></div>
+                            <span id="answer2" class="relative z-10">Answer 3</span>
+                            <span id="count2" class="absolute right-4 text-lg opacity-0">0</span>
+                        </div>
+                        <div class="answer-bar-3 rounded-xl p-6 text-white font-bold text-xl text-center relative overflow-hidden">
+                            <div id="bar3" class="absolute inset-0 bg-white/20 transition-all duration-500" style="width: 0%"></div>
+                            <span id="answer3" class="relative z-10">Answer 4</span>
+                            <span id="count3" class="absolute right-4 text-lg opacity-0">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-6">
+                <button onclick="showAnswer()" class="bg-yellow-400 hover:bg-yellow-300 text-purple-900 px-10 py-4 rounded-xl text-xl font-bold transition transform hover:scale-105">
+                    <i class="fas fa-eye mr-2"></i>Show Answer
+                </button>
+            </div>
+        </div>
+
+        <!-- Answer Reveal Screen -->
+        <div id="answerScreen" class="hidden h-full flex flex-col items-center justify-center p-8">
+            <h2 class="text-5xl font-bold text-white mb-10">Correct Answer</h2>
+            <div class="w-full max-w-4xl">
+                <div id="correctAnswer" class="bg-green-500 text-white text-4xl font-bold text-center p-12 rounded-3xl shadow-2xl">
+                    Answer
+                </div>
+            </div>
+            <div class="mt-10">
+                <button onclick="nextQuestion()" class="bg-purple-600 hover:bg-purple-500 text-white px-10 py-4 rounded-xl text-xl font-bold transition transform hover:scale-105">
+                    Next Question <i class="fas fa-arrow-right ml-3"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Leaderboard Screen -->
+        <div id="leaderboardScreen" class="hidden h-full flex flex-col items-center justify-center p-8">
+            <h2 class="text-5xl font-bold text-white mb-10">Leaderboard</h2>
+            <div class="w-full max-w-2xl">
+                <div id="leaderboardList" class="space-y-3">
+                    <!-- Players will be loaded here -->
+                </div>
+            </div>
+            <div class="mt-10">
+                <button onclick="showQuestion()" class="bg-purple-600 hover:bg-purple-500 text-white px-10 py-4 rounded-xl text-xl font-bold transition transform hover:scale-105">
+                    Next Question <i class="fas fa-arrow-right ml-3"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Final Results Screen -->
+        <div id="resultsScreen" class="hidden h-full flex flex-col items-center justify-center p-8">
+            <h2 class="text-6xl font-bold text-white mb-10">Game Over!</h2>
+            <div class="w-full max-w-2xl bg-white rounded-3xl p-8 shadow-2xl">
+                <h3 class="text-2xl font-bold text-gray-800 text-center mb-6">Final Rankings</h3>
+                <div id="finalResults" class="space-y-4">
+                    <!-- Results will be loaded here -->
+                </div>
+            </div>
+            <div class="mt-10">
+                <a href="dashboard.html" class="bg-green-500 hover:bg-green-400 text-white px-10 py-4 rounded-xl text-xl font-bold transition transform hover:scale-105 inline-block">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div id="modalIcon" class="modal-icon">
+                <i id="modalIconClass" class="fas fa-exclamation-triangle text-4xl text-white"></i>
+            </div>
+            <h3 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-3"></h3>
+            <p id="modalMessage" class="text-gray-600 mb-6"></p>
+            <div id="modalButtons" class="flex gap-3 justify-center"></div>
+        </div>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="music/Lofi Pencil Dust.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameId = urlParams.get('game_id');
+        const gamePin = urlParams.get('game_pin');
+
+        if (!gameId || !gamePin) {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Custom Modal Functions
+        function showModal(options) {
+            const modal = document.getElementById('customModal');
+            const icon = document.getElementById('modalIcon');
+            const iconClass = document.getElementById('modalIconClass');
+            const title = document.getElementById('modalTitle');
+            const message = document.getElementById('modalMessage');
+            const buttons = document.getElementById('modalButtons');
+
+            // Set icon based on type
+            icon.className = 'modal-icon ' + (options.type || 'info');
+            const iconMap = {
+                warning: 'fa-exclamation-triangle',
+                error: 'fa-times-circle',
+                info: 'fa-info-circle',
+                success: 'fa-check-circle'
+            };
+            iconClass.className = 'fas ' + (iconMap[options.type] || iconMap.info) + ' text-4xl text-white';
+
+            title.textContent = options.title || 'Notice';
+            message.textContent = options.message || '';
+
+            // Clear and add buttons
+            buttons.innerHTML = '';
+            if (options.buttons) {
+                options.buttons.forEach(btn => {
+                    const button = document.createElement('button');
+                    button.textContent = btn.text;
+                    button.className = btn.primary 
+                        ? 'bg-purple-600 hover:bg-purple-500 text-white px-6 py-3 rounded-xl font-bold transition flex-1'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold transition flex-1';
+                    button.onclick = () => {
+                        if (btn.onClick) btn.onClick();
+                        modal.classList.add('hidden');
+                    };
+                    buttons.appendChild(button);
+                });
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function showConfirm(title, message, onConfirm) {
+            showModal({
+                type: 'warning',
+                title: title,
+                message: message,
+                buttons: [
+                    { text: 'Cancel', primary: false },
+                    { text: 'Exit Game', primary: true, onClick: onConfirm }
+                ]
+            });
+        }
+
+        function showAlert(title, message, type = 'info') {
+            showModal({
+                type: type,
+                title: title,
+                message: message,
+                buttons: [
+                    { text: 'OK', primary: true }
+                ]
+            });
+        }
+
+        document.getElementById('gamePin').textContent = gamePin;
+        document.getElementById('lobbyGamePin').textContent = gamePin;
+
+        let currentQuestion = null;
+        let currentQuestionNumber = 0;
+        let timerInterval = null;
+        let gameStatus = 'waiting';
+        let pollInterval = null;
+
+        // Exit game
+        async function exitGame() {
+            showConfirm(
+                'Exit Game?',
+                'Are you sure you want to exit? The game will be ended for all players.',
+                async () => {
+                    stopBackgroundMusic();
+                    // End the game via API
+                    try {
+                        await fetch('api/game.php?action=end_game', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ game_id: gameId })
+                        });
+                    } catch (e) {
+                        console.error('Error ending game:', e);
+                    }
+                    window.location.href = 'dashboard.html';
+                }
+            );
+        }
+
+        // Poll for game updates
+        async function updateGameStatus() {
+            try {
+                const response = await fetch(`api/game.php?action=game_status&game_id=${gameId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update player count
+                    document.getElementById('playerCount').textContent = data.players.length;
+                    
+                    // Enable/disable start button
+                    const startBtn = document.getElementById('startBtn');
+                    const startHint = document.getElementById('startHint');
+                    if (data.players.length > 0) {
+                        startBtn.disabled = false;
+                        startHint.textContent = `${data.players.length} player${data.players.length > 1 ? 's' : ''} ready`;
+                    } else {
+                        startBtn.disabled = true;
+                        startHint.textContent = 'Need at least 1 player to start';
+                    }
+
+                    // Update players grid
+                    updatePlayersGrid(data.players);
+
+                    // Update leaderboard panel
+                    updateLeaderboardPanel(data.players);
+
+                    // Check if game started
+                    if (data.game.status === 'active' && gameStatus === 'waiting') {
+                        gameStatus = 'active';
+                        showQuestion();
+                    }
+                    
+                    // Check if question changed (for leaderboard -> question transition)
+                    if (gameStatus === 'active' && data.game.current_question !== currentQuestionNumber && currentQuestionNumber > 0) {
+                        showQuestion();
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating game status:', error);
+            }
+        }
+
+        // Update players grid
+        function updatePlayersGrid(players) {
+            const grid = document.getElementById('playersGrid');
+            if (players.length > 0) {
+                grid.innerHTML = players.map((p, i) => `
+                    <div class="player-pod bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                        <div class="w-16 h-16 mx-auto mb-2 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-white">${p.nickname.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <p class="text-white font-semibold truncate">${p.nickname}</p>
+                        <p class="text-yellow-300 text-sm">${p.score} pts</p>
+                    </div>
+                `).join('');
+            } else {
+                grid.innerHTML = '<p class="text-white/50 text-center col-span-4">No players yet...</p>';
+            }
+        }
+
+        // Background music control
+        function playBackgroundMusic() {
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.volume = 0.1;
+            bgMusic.play().catch(e => console.log('Music autoplay blocked:', e));
+        }
+
+        function stopBackgroundMusic() {
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
+        }
+
+        // Start game
+        async function startGame() {
+            try {
+                const response = await fetch('api/game.php?action=start_game', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ game_id: gameId })
+                });
+
+                if (response.ok) {
+                    gameStatus = 'active';
+                    playBackgroundMusic();
+                    showQuestion();
+                } else {
+                    const data = await response.json();
+                    showAlert('Error', data.error || 'Failed to start game', 'error');
+                }
+            } catch (error) {
+                showAlert('Error', 'Failed to start game', 'error');
+            }
+        }
+
+        // Show question
+        async function showQuestion() {
+            try {
+                const response = await fetch(`api/game.php?action=current_question&game_id=${gameId}&include_correct=true`);
+                const data = await response.json();
+
+                if (data.finished) {
+                    showFinalResults();
+                    return;
+                }
+
+                currentQuestion = data.question;
+                currentQuestionNumber = data.question_number;
+                
+                // Hide other screens, show question screen
+                document.getElementById('lobbyScreen').classList.add('hidden');
+                document.getElementById('answerScreen').classList.add('hidden');
+                document.getElementById('leaderboardScreen').classList.add('hidden');
+                document.getElementById('questionScreen').classList.remove('hidden');
+                document.getElementById('questionScreen').classList.add('slide-up');
+
+                document.getElementById('questionNumber').textContent = data.question_number;
+                document.getElementById('questionPoints').textContent = currentQuestion.points ? `(${currentQuestion.points} pts)` : '';
+                document.getElementById('questionText').textContent = currentQuestion.question_text;
+
+                if (currentQuestion.question_image) {
+                    document.getElementById('questionImage').classList.remove('hidden');
+                    document.getElementById('questionImg').src = currentQuestion.question_image;
+                } else {
+                    document.getElementById('questionImage').classList.add('hidden');
+                }
+
+                // Display answers (handle up to 4 answers)
+                for (let i = 0; i < 4; i++) {
+                    const answerEl = document.getElementById(`answer${i}`);
+                    const barEl = document.getElementById(`bar${i}`);
+                    const countEl = document.getElementById(`count${i}`);
+                    if (currentQuestion.answers[i]) {
+                        answerEl.textContent = currentQuestion.answers[i].answer_text;
+                        answerEl.style.display = 'block';
+                        barEl.style.width = '0%';
+                        countEl.textContent = '0';
+                        countEl.classList.add('opacity-0');
+                    } else {
+                        answerEl.style.display = 'none';
+                    }
+                }
+
+                // Start timer and polling
+                startTimer(currentQuestion.time_limit);
+                startAnswerPolling();
+            } catch (error) {
+                console.error('Error showing question:', error);
+            }
+        }
+
+        // Timer
+        function startTimer(seconds) {
+            let timeLeft = seconds;
+            const timerBar = document.getElementById('timerBar');
+            const timerText = document.getElementById('timerText');
+            
+            timerBar.style.width = '100%';
+            timerText.textContent = timeLeft;
+
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                timerBar.style.width = (timeLeft / seconds * 100) + '%';
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+        }
+
+        // Poll for answer distribution
+        function startAnswerPolling() {
+            if (pollInterval) clearInterval(pollInterval);
+            
+            pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`api/game.php?action=answer_distribution&game_id=${gameId}`);
+                    const data = await response.json();
+                    
+                    if (data.distribution && data.distribution.length > 0) {
+                        const maxCount = Math.max(...data.distribution.map(d => d.count));
+                        
+                        data.distribution.forEach((d, i) => {
+                            const percentage = maxCount > 0 ? (d.count / maxCount * 100) : 0;
+                            document.getElementById(`bar${i}`).style.width = percentage + '%';
+                            document.getElementById(`count${i}`).textContent = d.count;
+                            document.getElementById(`count${i}`).classList.remove('opacity-0');
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error polling answers:', error);
+                }
+            }, 1000);
+        }
+
+        // Show answer
+        async function showAnswer() {
+            if (timerInterval) clearInterval(timerInterval);
+            if (pollInterval) clearInterval(pollInterval);
+
+            // Call API to show answer to all players
+            try {
+                await fetch('api/game.php?action=show_answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ game_id: gameId })
+                });
+            } catch (error) {
+                console.error('Error showing answer:', error);
+            }
+
+            document.getElementById('questionScreen').classList.add('hidden');
+            document.getElementById('answerScreen').classList.remove('hidden');
+            document.getElementById('answerScreen').classList.add('slide-up');
+
+            // Find correct answer
+            const correctAnswer = currentQuestion.answers.find(a => a.is_correct);
+            document.getElementById('correctAnswer').textContent = correctAnswer.answer_text;
+        }
+
+        // Update leaderboard panel
+        function updateLeaderboardPanel(players) {
+            const panel = document.getElementById('leaderboardPanel');
+            const list = document.getElementById('leaderboardList');
+            
+            if (players.length > 0) {
+                panel.classList.remove('hidden');
+                list.innerHTML = players.slice(0, 10).map((p, i) => `
+                    <div class="flex items-center justify-between bg-white/10 rounded-lg px-3 py-2">
+                        <div class="flex items-center">
+                            <span class="w-6 h-6 rounded-full ${i < 3 ? 'bg-yellow-400' : 'bg-white/20'} flex items-center justify-center text-xs font-bold text-purple-900 mr-2">${i + 1}</span>
+                            <span class="text-white text-sm font-medium truncate">${p.nickname}</span>
+                        </div>
+                        <span class="text-yellow-300 text-sm font-bold">${p.score}</span>
+                    </div>
+                `).join('');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+
+        // Next question
+        async function nextQuestion() {
+            try {
+                const response = await fetch('api/game.php?action=next_question', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ game_id: gameId })
+                });
+                const data = await response.json();
+
+                if (data.finished) {
+                    showFinalResults();
+                } else {
+                    showLeaderboard();
+                }
+            } catch (error) {
+                console.error('Error moving to next question:', error);
+            }
+        }
+
+        // Show leaderboard
+        async function showLeaderboard() {
+            try {
+                const response = await fetch(`api/game.php?action=leaderboard&game_id=${gameId}`);
+                const players = await response.json();
+
+                document.getElementById('answerScreen').classList.add('hidden');
+                document.getElementById('leaderboardScreen').classList.remove('hidden');
+                document.getElementById('leaderboardScreen').classList.add('slide-up');
+
+                const leaderboardList = document.getElementById('leaderboardList');
+                leaderboardList.innerHTML = players.map((p, i) => `
+                    <div class="flex items-center justify-between ${i < 3 ? 'bg-gradient-to-r from-yellow-50 to-yellow-100' : 'bg-gray-50'} rounded-xl px-6 py-4 transform transition hover:scale-102">
+                        <div class="flex items-center gap-4">
+                            <span class="w-10 h-10 ${i === 0 ? 'bg-yellow-400' : i === 1 ? 'bg-gray-400' : i === 2 ? 'bg-orange-400' : 'bg-gray-300'} rounded-full flex items-center justify-center text-white font-bold text-lg">${i + 1}</span>
+                            <span class="font-semibold text-gray-800 text-xl">${p.nickname}</span>
+                        </div>
+                        <span class="text-2xl font-bold text-purple-600">${p.score}</span>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+            }
+        }
+
+        // Show final results
+        async function showFinalResults() {
+            if (pollInterval) clearInterval(pollInterval);
+            stopBackgroundMusic();
+            
+            try {
+                const response = await fetch(`api/game.php?action=game_results&game_id=${gameId}`);
+                const data = await response.json();
+
+                // Hide header and all other screens
+                document.getElementById('gameHeader').classList.add('hidden');
+                document.getElementById('lobbyScreen').classList.add('hidden');
+                document.getElementById('questionScreen').classList.add('hidden');
+                document.getElementById('answerScreen').classList.add('hidden');
+                document.getElementById('leaderboardScreen').classList.add('hidden');
+                document.getElementById('leaderboardPanel').classList.add('hidden');
+                
+                // Show results screen
+                document.getElementById('resultsScreen').classList.remove('hidden');
+                document.getElementById('resultsScreen').classList.add('slide-up');
+
+                const finalResults = document.getElementById('finalResults');
+                finalResults.innerHTML = data.players.map((p, i) => `
+                    <div class="flex items-center justify-between ${i === 0 ? 'bg-gradient-to-r from-yellow-400 to-yellow-300' : 'bg-gray-50'} rounded-xl px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <span class="w-12 h-12 ${i === 0 ? 'bg-white text-yellow-600' : i === 1 ? 'bg-gray-400 text-white' : i === 2 ? 'bg-orange-400 text-white' : 'bg-gray-300 text-white'} rounded-full flex items-center justify-center font-bold text-lg">${i + 1}</span>
+                            <span class="font-semibold ${i === 0 ? 'text-yellow-900' : 'text-gray-800'} text-xl">${p.nickname}</span>
+                        </div>
+                        <span class="text-3xl font-bold ${i === 0 ? 'text-yellow-900' : 'text-purple-600'}">${p.score}</span>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading final results:', error);
+            }
+        }
+
+        // Start polling
+        setInterval(updateGameStatus, 2000);
+        updateGameStatus();
+    </script>
+</body>
+</html>

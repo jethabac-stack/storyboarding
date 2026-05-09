@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storyboarding Portal</title>
+    <link rel="icon" href="admin/image/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-primary:hover { opacity: 0.9; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg">
+    <!-- Navigation -->
+    <nav class="bg-white/10 backdrop-blur-md border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center gap-3">
+                        <img src="admin/image/logo.png" alt="Logo" class="h-10">
+                        <span class="text-white text-2xl font-bold">Storyboarding Portal</span>
+                    </a>
+                </div>
+                <a href="landing_page.html" class="bg-white/20 text-white px-5 py-2 rounded-lg text-base font-semibold hover:bg-white/30 transition border border-white/30">
+                    <i class="fas fa-arrow-left mr-2"></i>Back
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="text-center text-white">
+            <h1 class="text-5xl md:text-6xl font-extrabold mb-6 fade-in">
+                Make Learning <span class="text-yellow-300">Awesome!</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-white/80 mb-10 max-w-3xl mx-auto">
+                Create engaging quizzes, host live games, and watch your students or team learn through play.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="login.html" class="bg-yellow-400 text-purple-900 px-8 py-4 rounded-xl text-lg font-bold hover:bg-yellow-300 transition shadow-lg">
+                    <i class="fas fa-plus mr-2"></i>Create a Quiz
+                </a>
+                <a href="join.html" class="bg-white/20 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/30 transition border border-white/30">
+                    <i class="fas fa-play mr-2"></i>Join a Game
+                </a>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="mt-24 grid md:grid-cols-3 gap-8">
+            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 card-hover border border-white/20">
+                <div class="w-16 h-16 bg-yellow-400 rounded-xl flex items-center justify-center mb-6">
+                    <i class="fas fa-bolt text-purple-900 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Live Games</h3>
+                <p class="text-white/70">Host real-time quiz games where players compete using game pins on any device.</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 card-hover border border-white/20">
+                <div class="w-16 h-16 bg-pink-400 rounded-xl flex items-center justify-center mb-6">
+                    <i class="fas fa-question text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Create Quizzes</h3>
+                <p class="text-white/70">Build engaging quizzes with images, videos, and multiple question types.</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 card-hover border border-white/20">
+                <div class="w-16 h-16 bg-green-400 rounded-xl flex items-center justify-center mb-6">
+                    <i class="fas fa-chart-line text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Track Progress</h3>
+                <p class="text-white/70">Get detailed reports and analytics on player performance and quiz results.</p>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="mt-24 text-center">
+            <h2 class="text-3xl font-bold text-white mb-12">How It Works</h2>
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold">1</div>
+                    <p class="text-white/80">Create a quiz</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold">2</div>
+                    <p class="text-white/80">Host a game</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold">3</div>
+                    <p class="text-white/80">Share game PIN</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold">4</div>
+                    <p class="text-white/80">Play & learn!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white/5 border-t border-white/10 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-white/60">
+            <p>&copy; 2026 Storyboarding Portal. Built for education.</p>
+        </div>
+    </footer>
+</body>
+</html>

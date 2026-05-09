@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Your Growth Tracking | Storyboarding Effectiveness</title>
+    <link rel="icon" href="admin/image/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN for modern bar charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        * { font-family: 'Poppins', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.2); border-radius: 2rem; }
+        .stat-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); transition: all 0.2s; }
+        .stat-card:hover { background: rgba(255,255,255,0.12); transform: scale(1.02); }
+        .improvement-badge { transition: all 0.2s; }
+        .fade-in { animation: fadeInUp 0.4s ease-out; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .chart-container canvas { max-height: 400px; width: 100% !important; }
+        .student-row { transition: all 0.2s; }
+        .student-row:hover { background: rgba(255,255,255,0.08); }
+        .tooltip-custom { background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); border-radius: 0.75rem; padding: 0.25rem 0.75rem; font-size: 0.75rem; }
+
+        /* ── Improved "Show per-question breakdown" button ── */
+        .breakdown-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 1.25rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            border: 1.5px solid rgba(250, 204, 21, 0.4);
+            background: linear-gradient(135deg, rgba(250,204,21,0.12) 0%, rgba(167,139,250,0.10) 100%);
+            color: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 0 0 0 rgba(250,204,21,0);
+            white-space: nowrap;
+        }
+        .breakdown-toggle-btn:hover {
+            background: linear-gradient(135deg, rgba(250,204,21,0.22) 0%, rgba(167,139,250,0.18) 100%);
+            border-color: rgba(250, 204, 21, 0.75);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 18px rgba(250,204,21,0.18);
+        }
+        .breakdown-toggle-btn:active { transform: translateY(0); }
+        .breakdown-toggle-btn .btn-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: rgba(250,204,21,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            flex-shrink: 0;
+            transition: background 0.2s, transform 0.3s;
+        }
+        .breakdown-toggle-btn:hover .btn-icon { background: rgba(250,204,21,0.3); }
+        .breakdown-toggle-btn .btn-chevron { transition: transform 0.3s ease; }
+        .breakdown-toggle-btn.open .btn-chevron { transform: rotate(180deg); }
+        .breakdown-toggle-btn .btn-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #facc15;
+            animation: pulse-dot 1.6s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        .breakdown-toggle-btn.open .btn-dot { animation: none; background: rgba(255,255,255,0.4); }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+        /* question breakdown slide-in */
+        #questionBreakdown td > div {
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="gradient-bg text-white min-h-screen">
+
+    <!-- Navigation (consistent with portal) -->
+    <nav class="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <img src="../admin/image/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://placehold.co/40x40/667eea/white?text=NL'">
+                    <span class="text-white text-2xl font-bold tracking-tight">Storyboarding Portal</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="index.html" class="text-white/80 hover:text-white transition">Home</a>
+                    <a href="overview.html" class="text-white/80 hover:text-white transition">Overview</a>
+                    <a href="studio.html" class="text-white/80 hover:text-white transition">Studio</a>
+                    <a href="student.html" class="text-white font-semibold border-b-2 border-yellow-400 pb-0.5">Student</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div id="userInfoDesktop" class="hidden md:flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
+                        <i class="fas fa-user-circle text-white text-xl"></i>
+                        <span id="displayName" class="text-sm font-medium text-white"></span>
+                        <button id="logoutBtnDesktop" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition">Logout</button>
+                    </div>
+                    <div class="flex md:hidden items-center gap-2">
+                        <button id="mobileMenuBtn" class="text-white text-2xl ml-2"><i class="fas fa-bars"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div id="mobileNavMenu" class="md:hidden hidden py-4 border-t border-white/20 space-y-3">
+                <a href="index.html" class="block text-white/90 px-2 py-1">Home</a>
+                <a href="overview.html" class="block text-white/80 px-2 py-1">Overview</a>
+                <a href="studio.html" class="block text-white/80 px-2 py-1">Studio</a>
+                <a href="student.html" class="block text-white font-semibold px-2 py-1">Student</a>
+                <div class="pt-2 flex items-center justify-between border-t border-white/20 mt-2">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-user-circle text-white text-xl"></i>
+                        <span id="displayNameMobileMenu" class="text-sm font-medium text-white"></span>
+                    </div>
+                    <button id="logoutBtnMobile" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Growth Tracking Dashboard -->
+    <section class="py-12 px-4 md:px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="glass-card p-6 md:p-8 fade-in">
+                <!-- Header with effectiveness messaging -->
+                <div class="text-center mb-10">
+                    <div class="inline-flex items-center gap-2 bg-green-400/20 rounded-full px-4 py-1.5 text-sm mb-4 border border-green-400/30">
+                        <i class="fas fa-chart-line"></i> 📊 Your Growth Analysis
+                    </div>
+                    <h1 class="text-3xl md:text-5xl font-extrabold bg-gradient-to-r from-yellow-300 via-green-300 to-pink-300 bg-clip-text text-transparent">
+                        Personal Growth Tracking
+                    </h1>
+                    <p class="text-white/80 max-w-2xl mx-auto mt-3 text-lg">
+                        Your pre-test vs post-test comparison — tracking your storyboarding learning journey.
+                    </p>
+                </div>
+
+                <!-- Summary Stats Cards: Overall improvement metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10" id="summaryStats">
+                    <!-- dynamic summary from JS -->
+                </div>
+
+                <!-- Main Chart: Pre-test vs Post-test (Bar Chart) -->
+                <div class="bg-white/5 rounded-2xl p-5 border border-white/15 mb-10">
+                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fas fa-chart-simple text-yellow-300"></i> Your Performance Comparison</h2>
+                    <p class="text-white/60 text-sm mb-5">Compare your pre-test (Yellow) vs post-test (Red) scores. See your improvement through storyboarding.</p>
+                    <div class="chart-container relative" style="height: auto; min-height: 400px;">
+                        <canvas id="growthChart" width="800" height="400" style="max-width:100%; height:auto;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Detailed Table: Students, Pre/Post scores, Improvement % & Points -->
+                <div class="bg-white/5 rounded-2xl p-5 border border-white/15">
+                    <div class="flex justify-between items-center flex-wrap mb-4">
+                        <h2 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-table-list text-yellow-300"></i> Your Performance Details</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm md:text-base">
+                            <thead class="border-b border-white/20">
+                                <tr class="text-left text-white/70">
+                                    <th class="pb-3 font-semibold">Student Name</th>
+                                    <th class="pb-3 font-semibold">Section</th>
+                                    <th class="pb-3 font-semibold">Accomplished Items</th>
+                                    <th class="pb-3 font-semibold">Score</th>
+                                    <th class="pb-3 font-semibold">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentTableBody">
+                                <!-- dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mt-10 pt-6 border-t border-white/20">
+                    <a href="studio.html" class="action-btn bg-yellow-400 text-purple-900 px-6 py-3 rounded-xl font-bold hover:bg-yellow-300 transition shadow-lg text-center flex items-center justify-center gap-2">
+                        <i class="fas fa-paintbrush-fine"></i> Go to Studio
+                    </a>
+                    <a href="index.html" class="action-btn bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/30 transition border border-white/30 text-center flex items-center justify-center gap-2">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-white/5 border-t border-white/10 py-6 text-center text-white/50 text-sm mt-8">
+        <p>© 2026 Storyboarding Portal — Visual-Strategic Problem-Solving Platform | Growth Analytics</p>
+    </footer>
+
+    <script>
+        // ---------- SESSION PROTECTION ----------
+        const studentId = localStorage.getItem('student_id');
+        const studentName = localStorage.getItem('student_name');
+        if (!studentId || !studentName) {
+            window.location.href = 'login.html';
+            throw new Error('Redirecting to login...');
+        }
+
+        // ---------- STUDENT DATA (loaded from database) ----------
+        let students = [];
+        let studentGrowthData = [];
+
+        const studentSectionId   = localStorage.getItem('student_section');
+        const studentSectionName = localStorage.getItem('student_section_name') || 'N/A';
+
+        // Fetch growth + storyboard data — single call with student_id + section_id
+        let perQuestionProgress = null;
+
+        async function loadStudentData() {
+            // Pass student_id + section_id so growth_data.php also returns storyboard_progress detail
+            const url = `../api/students/growth_data.php?student_id=${studentId}&section_id=${studentSectionId || ''}`;
+            const growthData = await fetch(url).then(r => r.json()).catch(() => null);
+
+            // ── Storyboard summary ───────────────────────────────────────
+            let accomplishedItems = '0/30';
+            let storyboardScore   = '0/30';
+
+            let baseStudent = null;
+            if (growthData?.success && Array.isArray(growthData.students)) {
+                baseStudent = growthData.students.find(s => s.id == studentId) || null;
+            }
+            if (baseStudent) {
+                accomplishedItems = baseStudent.accomplished_items || '0/30';
+                storyboardScore   = baseStudent.storyboard_score   || '0/30';
+            }
+
+            const accomplishedNum = parseInt(accomplishedItems.split('/')[0]) || 0;
+            const scoreNum        = parseInt(storyboardScore.split('/')[0])   || 0;
+
+            // ── Per-question detail from storyboard_progress ─────────────
+            perQuestionProgress = growthData?.progress || null;
+
+            // Status: complete = all 30 done, in-progress = at least 1, not-started = 0
+            let storyboardStatus;
+            if (accomplishedNum >= 30)    storyboardStatus = 'complete';
+            else if (accomplishedNum > 0) storyboardStatus = 'in-progress';
+            else                          storyboardStatus = 'not-started';
+
+            const preTestRaw  = baseStudent ? (parseFloat(baseStudent.pre_test_raw)  || 0) : 0;
+            const postTestRaw = baseStudent ? (parseFloat(baseStudent.post_test_raw) || 0) : 0;
+
+            const nameParts = studentName.split(' ');
+            const avatar = (nameParts.length >= 2
+                ? nameParts[0][0] + nameParts[1][0]
+                : studentName.substring(0, 2)).toUpperCase();
+
+            students = [{
+                id:               studentId,
+                name:             studentName,
+                avatar,
+                section:          studentSectionName,
+                preTestScore:     preTestRaw,
+                postTestScore:    postTestRaw,
+                preTestScoreRaw:  baseStudent?.pre_test_score  || '0/10',
+                postTestScoreRaw: baseStudent?.post_test_score || '0/10',
+                accomplishedItems,
+                accomplishedNum,
+                storyboardScore,
+                scoreNum,
+                storyboardStatus
+            }];
+
+            studentGrowthData = students.map(s => ({
+                ...s,
+                prePercent:            s.preTestScore * 10,
+                postPercent:           s.postTestScore * 10,
+                improvementPoints:     s.postTestScore - s.preTestScore,
+                improvementPercentRaw: ((s.postTestScore - s.preTestScore) / 10) * 100
+            }));
+
+            renderSummaryStats();
+            initChart();
+            renderStudentTable();
+        }
+
+        // Load data on page load
+        loadStudentData();
+
+        // Update summary stats cards dynamically
+        function renderSummaryStats() {
+            if (studentGrowthData.length === 0) return;
+            
+            // Show individual student metrics (only one student now)
+            const student = studentGrowthData[0];
+            const improvement = student.postPercent - student.prePercent;
+            const improvementText = improvement >= 0 ? `+${improvement.toFixed(1)}%` : `${improvement.toFixed(1)}%`;
+            const improvementColor = improvement >= 0 ? 'text-green-300' : 'text-red-300';
+            
+            const statsContainer = document.getElementById('summaryStats');
+            statsContainer.innerHTML = `
+                <div class="stat-card rounded-2xl p-5 text-center">
+                    <div class="text-4xl font-bold text-yellow-300">${student.prePercent.toFixed(1)}%</div>
+                    <div class="text-sm text-white/70 mt-1">📊 Your Pre-test Score</div>
+                    <div class="text-xs text-white/40 mt-2">Baseline before storyboarding</div>
+                </div>
+                <div class="stat-card rounded-2xl p-5 text-center relative overflow-hidden">
+                    <div class="text-4xl font-bold text-red-500">${student.postPercent.toFixed(1)}%</div>
+                    <div class="text-sm text-white/70 mt-1">📈 Your Post-test Score</div>
+                    <div class="text-xs ${improvementColor} mt-2"><i class="fas fa-arrow-${improvement >= 0 ? 'up' : 'down'}"></i> ${improvementText} improvement</div>
+                </div>
+                <div class="stat-card rounded-2xl p-5 text-center">
+                    <div class="text-4xl font-bold text-green-400">${student.accomplishedItems}</div>
+                    <div class="text-sm text-white/70 mt-1">🎨 Storyboard Progress</div>
+                    <div class="text-xs text-white/40 mt-2">Items accomplished</div>
+                </div>
+            `;
+        }
+
+        // Initialize Chart.js bar chart
+        let growthChart = null;
+        function initChart() {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            
+            // Since we only have one student now, create a simple comparison chart
+            const student = studentGrowthData[0];
+            const labels = ['Your Performance'];
+            const preData = [student.prePercent];
+            const postData = [student.postPercent];
+
+            if (growthChart) growthChart.destroy();
+            growthChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Pre-test Score (%)',
+                            data: preData,
+                            backgroundColor: 'rgba(255, 153, 0, 0.7)',
+                            borderRadius: 10,
+                            borderSkipped: false,
+                            barPercentage: 0.4,
+                            categoryPercentage: 0.8,
+                            hoverBackgroundColor: 'rgb(254, 195, 0)'
+                        },
+                        {
+                            label: 'Post-test Score (%)',
+                            data: postData,
+                            backgroundColor: 'rgba(255, 0, 0, 0.7)',
+                            borderRadius: 10,
+                            borderSkipped: false,
+                            barPercentage: 0.4,
+                            categoryPercentage: 0.8,
+                            hoverBackgroundColor: 'rgb(255, 0, 0)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    let val = context.raw;
+                                    return `${label}: ${val}%`;
+                                },
+                                afterBody: function(tooltipItems) {
+                                    const improvement = student.postPercent - student.prePercent;
+                                    return `📈 Growth: +${improvement.toFixed(0)}%`;
+                                }
+                            },
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fbbf24',
+                            bodyColor: '#fff',
+                            padding: 8,
+                            cornerRadius: 8
+                        },
+                        legend: {
+                            labels: { color: 'white', font: { size: 12, weight: 'bold' }, usePointStyle: true, boxWidth: 10 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            title: { display: true, text: 'Score (%)', color: '#ddd', font: { weight: 'bold' } },
+                            ticks: { color: '#fff', stepSize: 20 }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#fff', font: { weight: '500' } }
+                        }
+                    },
+                    animation: { duration: 800, easing: 'easeOutQuart' }
+                }
+            });
+        }
+
+        // Render detailed student table — live data from storyboard_progress
+        function renderStudentTable() {
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '';
+
+            const student = studentGrowthData[0];
+
+            // ── Summary row ──────────────────────────────────────────────
+            const statusMap = {
+                'complete':    { label: 'Complete',    cls: 'bg-green-500/30 text-green-200',  icon: 'fa-circle-check' },
+                'in-progress': { label: 'In Progress', cls: 'bg-yellow-500/30 text-yellow-200', icon: 'fa-spinner' },
+                'not-started': { label: 'Not Started', cls: 'bg-gray-500/30 text-gray-300',    icon: 'fa-circle-xmark' }
+            };
+            const status = statusMap[student.storyboardStatus] || statusMap['not-started'];
+            const statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${status.cls}">
+                <i class="fas ${status.icon} text-[10px]"></i> ${status.label}
+            </span>`;
+
+            const pct = Math.round((student.accomplishedNum / 30) * 100);
+            const barColor = student.storyboardStatus === 'complete'
+                ? 'bg-green-400' : student.storyboardStatus === 'in-progress'
+                ? 'bg-yellow-400' : 'bg-gray-500';
+
+            // Summary row
+            const summaryRow = document.createElement('tr');
+            summaryRow.className = 'student-row border-b border-white/10';
+            summaryRow.innerHTML = `
+                <td class="py-4 flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 to-orange-500 flex items-center justify-center text-xs font-bold flex-shrink-0">${student.avatar}</div>
+                    <span>${student.name}</span>
+                    <span class="text-yellow-300 text-xs">(You)</span>
+                </td>
+                <td class="py-4 text-white/80">${student.section || 'N/A'}</td>
+                <td class="py-4">
+                    <div class="flex items-center gap-2">
+                        <span class="font-mono font-semibold">${student.accomplishedItems}</span>
+                        <div class="flex-1 min-w-[60px] bg-white/10 rounded-full h-1.5">
+                            <div class="${barColor} h-1.5 rounded-full transition-all" style="width:${pct}%"></div>
+                        </div>
+                        <span class="text-white/40 text-xs">${pct}%</span>
+                    </div>
+                </td>
+                <td class="py-4 font-mono font-semibold text-green-200">${student.storyboardScore}</td>
+                <td class="py-4">${statusBadge}</td>
+            `;
+            tbody.appendChild(summaryRow);
+
+            // ── Per-question breakdown ───────────────────────────────────
+            if (perQuestionProgress) {
+                const { submitted, scores, answers } = perQuestionProgress;
+
+                // Expandable section toggle row
+                const toggleRow = document.createElement('tr');
+                toggleRow.innerHTML = `
+                    <td colspan="5" class="pt-3 pb-2">
+                        <div class="flex items-center gap-3">
+                            <button id="toggleQBtn" class="breakdown-toggle-btn">
+                                <span class="btn-dot"></span>
+                                <i class="fas fa-table-cells-large text-yellow-300/80 text-[11px]"></i>
+                                <span id="toggleQLabel">Show per-question breakdown</span>
+                                <span class="btn-icon">
+                                    <i class="fas fa-chevron-down btn-chevron" id="toggleQIcon"></i>
+                                </span>
+                            </button>
+                            <span class="text-white/30 text-xs hidden sm:inline">30 questions</span>
+                        </div>
+                    </td>`;
+                tbody.appendChild(toggleRow);
+
+                // Question rows container (hidden by default)
+                const qSection = document.createElement('tr');
+                qSection.id = 'questionBreakdown';
+                qSection.innerHTML = `<td colspan="5" class="pb-4"><div id="qBreakdownInner"></div></td>`;
+                tbody.appendChild(qSection);
+
+                // Build the 30-question grid
+                const inner = document.getElementById('qBreakdownInner') ||
+                              qSection.querySelector('#qBreakdownInner');
+
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-2';
+
+                for (let i = 0; i < 30; i++) {
+                    const done  = submitted?.[i] === true || submitted?.[i] === 'true';
+                    const pts   = Number(scores?.[i]) || 0;
+                    const ans   = answers?.[i] || '';
+                    const label = done
+                        ? (pts === 1 ? 'correct' : 'attempted')
+                        : 'not-started';
+                    const colors = {
+                        correct:     'border-green-500/40 bg-green-500/10',
+                        attempted:   'border-yellow-500/40 bg-yellow-500/10',
+                        'not-started': 'border-white/10 bg-white/5'
+                    };
+                    const icons = {
+                        correct:     '<i class="fas fa-circle-check text-green-400 text-xs"></i>',
+                        attempted:   '<i class="fas fa-circle-xmark text-yellow-400 text-xs"></i>',
+                        'not-started': '<i class="fas fa-circle text-white/20 text-xs"></i>'
+                    };
+                    const scoreTag = done
+                        ? `<span class="font-mono text-xs ${pts === 1 ? 'text-green-300' : 'text-yellow-300'}">${pts}/1</span>`
+                        : `<span class="font-mono text-xs text-white/30">—/1</span>`;
+
+                    // Truncate long answers for display
+                    const shortAns = ans.length > 60 ? ans.substring(0, 57) + '…' : ans;
+
+                    const card = document.createElement('div');
+                    card.className = `rounded-xl border p-3 ${colors[label]}`;
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-white/60 text-xs font-semibold">Q${i + 1}</span>
+                            <div class="flex items-center gap-1.5">${icons[label]} ${scoreTag}</div>
+                        </div>
+                        ${done && shortAns
+                            ? `<p class="text-white/70 text-[11px] leading-relaxed line-clamp-2">${shortAns}</p>`
+                            : `<p class="text-white/30 text-[11px] italic">Not attempted</p>`
+                        }`;
+                    grid.appendChild(card);
+                }
+
+                // Append grid after toggle is created
+                setTimeout(() => {
+                    const breakdownInner = document.getElementById('qBreakdownInner');
+                    if (breakdownInner) breakdownInner.appendChild(grid);
+                }, 0);
+
+                // Hide by default; toggle on click
+                qSection.style.display = 'none';
+                document.getElementById('toggleQBtn')?.addEventListener('click', () => {
+                    const hidden = qSection.style.display === 'none';
+                    qSection.style.display = hidden ? '' : 'none';
+                    const icon  = document.getElementById('toggleQIcon');
+                    const btn   = document.getElementById('toggleQBtn');
+                    const label = document.getElementById('toggleQLabel');
+                    if (icon)  icon.className  = `fas fa-chevron-down btn-chevron`;
+                    if (btn)   btn.classList.toggle('open', hidden);
+                    if (label) label.textContent = hidden
+                        ? 'Hide per-question breakdown'
+                        : 'Show per-question breakdown';
+                });
+            }
+        }
+
+        // Mobile menu logic
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNavMenu');
+        if (mobileBtn) {
+            mobileBtn.onclick = () => {
+                mobileNav.classList.toggle('hidden');
+                const icon = mobileBtn.querySelector('i');
+                if (icon) icon.classList.toggle('fa-times');
+            };
+        }
+
+        // Logout functionality and user UI
+        const displayNameSpan = document.getElementById('displayName');
+        const displayNameMobileMenu = document.getElementById('displayNameMobileMenu');
+        const logoutBtnDesktop = document.getElementById('logoutBtnDesktop');
+        const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+
+        function updateUserUI() {
+            if (studentId && studentName) {
+                const welcomeText = `Welcome, ${studentName}`;
+                if (displayNameSpan) displayNameSpan.textContent = welcomeText;
+                if (displayNameMobileMenu) displayNameMobileMenu.textContent = welcomeText;
+                document.getElementById('userInfoDesktop')?.classList.remove('hidden');
+            } else {
+                document.getElementById('userInfoDesktop')?.classList.add('hidden');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('student_id');
+            localStorage.removeItem('student_name');
+            localStorage.removeItem('student_email');
+            localStorage.removeItem('student_section');
+            localStorage.removeItem('student_section_name');
+            localStorage.removeItem('student_grade');
+            window.location.href = 'login.html';
+        }
+
+        if (logoutBtnDesktop) logoutBtnDesktop.addEventListener('click', logout);
+        if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', logout);
+        updateUserUI();
+    </script>
+</body>
+</html>

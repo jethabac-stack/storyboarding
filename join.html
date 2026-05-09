@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Game - Storyboarding Portal</title>
+    <link rel="icon" href="admin/image/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+        
+        .kahoot-purple { background: #46178f; }
+        .kahoot-blue { background: #2dabe1; }
+        .kahoot-yellow { background: #f9a825; }
+        .kahoot-green { background: #69c924; }
+        
+        .answer-btn-0 { background: #46178f; }
+        .answer-btn-1 { background: #2dabe1; }
+        .answer-btn-2 { background: #f9a825; }
+        .answer-btn-3 { background: #69c924; }
+        
+        .answer-btn-0.selected { background: #6a2eb8; border: 4px solid white; }
+        .answer-btn-1.selected { background: #4bc4e6; border: 4px solid white; }
+        .answer-btn-2.selected { background: #fbb740; border: 4px solid white; }
+        .answer-btn-3.selected { background: #85d630; border: 4px solid white; }
+        
+        .answer-btn-0.correct { background: #46178f; }
+        .answer-btn-1.correct { background: #2dabe1; }
+        .answer-btn-2.correct { background: #f9a825; }
+        .answer-btn-3.correct { background: #69c924; }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .shake { animation: shake 0.3s ease-in-out; }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .pop-in { animation: popIn 0.3s ease-out; }
+        
+        @keyframes slideUp {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .slide-up { animation: slideUp 0.5s ease-out; }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .bounce {
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Custom Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: white; border-radius: 1.5rem; padding: 2rem; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .modal-icon { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+        .modal-icon.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .modal-icon.info { background: linear-gradient(135deg, #46178f, #6b21a8); }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+    <!-- Join Screen -->
+    <div id="joinScreen" class="w-full max-w-lg">
+        <div class="text-center mb-8">
+            <a href="index.html" class="inline-block mb-4 flex flex-col items-center">
+                <img src="admin/image/logo.png" alt="Logo" class="h-16 mb-2">
+                <span class="text-3xl font-bold text-white">Storyboarding Portal</span>
+            </a>
+            <a href="index.html" class="text-white/60 hover:text-white font-semibold inline-block">
+                <i class="fas fa-arrow-left mr-2"></i>Back
+            </a>
+        </div>
+        
+        <div class="bg-white rounded-3xl p-8 shadow-2xl">
+            <h1 class="text-3xl font-bold text-gray-800 mb-8">Enter game PIN</h1>
+            
+            <form id="joinForm">
+                <input type="text" id="gamePin" maxlength="6" required
+                    class="w-full text-center text-5xl font-bold tracking-widest py-6 rounded-2xl border-4 border-gray-200 text-gray-800 placeholder-gray-300 focus:border-purple-500 focus:outline-none"
+                    placeholder="000000">
+                
+                <button type="submit"
+                    class="w-full mt-8 kahoot-blue text-white py-5 rounded-2xl text-2xl font-bold hover:opacity-90 transition transform hover:scale-102">
+                    <i class="fas fa-play mr-3"></i>Join
+                </button>
+            </form>
+        </div>
+        
+        <p class="text-white/50 text-center mt-6">Ask your teacher for the game PIN</p>
+    </div>
+
+    <!-- Nickname Screen -->
+    <div id="nicknameScreen" class="hidden w-full max-w-lg">
+        <div class="bg-white rounded-3xl p-8 shadow-2xl">
+            <h1 class="text-3xl font-bold text-gray-800 mb-8">Enter your nickname</h1>
+            
+            <form id="nicknameForm">
+                <input type="text" id="nickname" maxlength="20" required
+                    class="w-full text-center text-3xl font-bold py-6 rounded-2xl border-4 border-gray-200 text-gray-800 placeholder-gray-300 focus:border-purple-500 focus:outline-none"
+                    placeholder="Nickname">
+                
+                <button type="submit"
+                    class="w-full mt-8 kahoot-green text-white py-5 rounded-2xl text-2xl font-bold hover:opacity-90 transition transform hover:scale-102">
+                    <i class="fas fa-check mr-3"></i>OK
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Single Fixed Leaderboard Panel -->
+    <div id="leaderboardPanel" class="fixed top-4 right-4 w-56 bg-white/10 backdrop-blur-sm rounded-2xl p-3 z-50 hidden">
+        <h3 class="text-white font-bold text-sm mb-2 flex items-center">
+            <i class="fas fa-trophy mr-2 text-yellow-400"></i>Leaderboard
+        </h3>
+        <div id="leaderboardList" class="space-y-1 max-h-48 overflow-y-auto">
+            <!-- Players will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Waiting Screen -->
+    <div id="waitingScreen" class="hidden w-full max-w-lg text-center">
+        <div class="bg-white rounded-3xl p-10 shadow-2xl mb-8">
+            <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                <span id="nicknameInitial" class="text-4xl font-bold text-white"></span>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">You're in!</h1>
+            <p id="playerNickname" class="text-2xl text-purple-600 font-semibold mb-4"></p>
+            <p class="text-gray-500">Waiting for the host to start...</p>
+        </div>
+        
+        <div class="bg-white/10 rounded-2xl p-6">
+            <div class="flex items-center justify-center gap-2 text-white/80">
+                <i class="fas fa-spinner fa-spin text-2xl"></i>
+                <span class="text-xl">Waiting for question...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Screen -->
+    <div id="questionScreen" class="w-full max-w-2xl hidden">
+        <!-- Timer -->
+        <div class="text-center mb-6">
+            <div class="inline-block bg-white/20 rounded-full px-8 py-3">
+                <span id="timerText" class="text-4xl font-bold text-white">20</span>
+            </div>
+        </div>
+        
+        <!-- Timer Bar -->
+        <div class="w-full bg-white/20 rounded-full h-2 mb-8">
+            <div id="timerBar" class="bg-yellow-400 h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
+        </div>
+
+        <!-- Question -->
+        <div class="bg-white rounded-2xl p-6 mb-6 shadow-lg">
+            <p id="questionText" class="text-2xl font-semibold text-gray-800 text-center"></p>
+            <p id="questionPoints" class="text-center text-purple-600 font-bold mt-2"></p>
+        </div>
+        
+        <!-- Answer Buttons -->
+        <div class="grid grid-cols-2 gap-4">
+            <button id="answer0" onclick="selectAnswer(0)" class="answer-btn-0 rounded-xl p-8 text-white font-bold text-xl hover:opacity-90 transition transform hover:scale-102 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="inline-block w-10 h-10 bg-white/20 rounded-full mr-3 text-center leading-10"></span>
+                <span id="answerText0">Answer 1</span>
+            </button>
+            <button id="answer1" onclick="selectAnswer(1)" class="answer-btn-1 rounded-xl p-8 text-white font-bold text-xl hover:opacity-90 transition transform hover:scale-102 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="inline-block w-10 h-10 bg-white/20 rounded-full mr-3 text-center leading-10"></span>
+                <span id="answerText1">Answer 2</span>
+            </button>
+            <button id="answer2" onclick="selectAnswer(2)" class="answer-btn-2 rounded-xl p-8 text-white font-bold text-xl hover:opacity-90 transition transform hover:scale-102 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="inline-block w-10 h-10 bg-white/20 rounded-full mr-3 text-center leading-10"></span>
+                <span id="answerText2">Answer 3</span>
+            </button>
+            <button id="answer3" onclick="selectAnswer(3)" class="answer-btn-3 rounded-xl p-8 text-white font-bold text-xl hover:opacity-90 transition transform hover:scale-102 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="inline-block w-10 h-10 bg-white/20 rounded-full mr-3 text-center leading-10"></span>
+                <span id="answerText3">Answer 4</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Answer Feedback Screen -->
+    <div id="feedbackScreen" class="w-full max-w-lg text-center hidden">
+        <div id="feedbackIcon" class="w-40 h-40 mx-auto mb-6 rounded-full flex items-center justify-center">
+            <i class="fas fa-check text-7xl text-white"></i>
+        </div>
+        <p id="feedbackText" class="text-5xl font-bold text-white mb-4"></p>
+        <p id="pointsEarned" class="text-2xl text-white/80"></p>
+    </div>
+
+    <!-- Waiting for Next Question -->
+    <div id="nextQuestionScreen" class="w-full max-w-lg text-center hidden">
+        <div class="bg-white rounded-3xl p-10 shadow-2xl">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-purple-100 flex items-center justify-center">
+                <i class="fas fa-clock text-4xl text-purple-600 bounce"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Waiting...</h2>
+            <p class="text-gray-600">Next question coming up!</p>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="w-full max-w-lg text-center hidden">
+        <h1 class="text-5xl font-bold text-white mb-8">Game Over!</h1>
+        <div class="bg-white rounded-3xl p-8 shadow-2xl mb-8">
+            <p class="text-gray-500 text-lg mb-2">Your Score</p>
+            <p id="finalScore" class="text-7xl font-bold text-purple-600"></p>
+        </div>
+        <div id="finalRank" class="text-2xl text-white mb-8"></div>
+        <a href="index.html" class="inline-block kahoot-green text-white px-10 py-4 rounded-2xl text-xl font-bold hover:opacity-90 transition transform hover:scale-105">
+            Play Again
+        </a>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div id="modalIcon" class="modal-icon"><i id="modalIconClass" class="fas fa-exclamation-circle text-3xl text-white"></i></div>
+            <h3 id="modalTitle" class="text-xl font-bold text-gray-800 mb-2"></h3>
+            <p id="modalMessage" class="text-gray-600 mb-5"></p>
+            <button onclick="document.getElementById('customModal').classList.add('hidden')" class="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2.5 rounded-xl font-semibold transition w-full">OK</button>
+        </div>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="music/Lofi Pencil Dust.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        let gameId = null;
+        let playerId = null;
+        let currentQuestion = null;
+        let currentQuestionNumber = 0;
+        let selectedAnswer = null;
+        let timerInterval = null;
+        let gameStatus = 'join';
+        let checkNextTimeout = null;
+        let timeRemaining = 0;
+        let totalTime = 0;
+
+        // Background music control
+        function playBackgroundMusic() {
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.volume = 0.1;
+            bgMusic.play().catch(e => console.log('Music autoplay blocked:', e));
+        }
+
+        function stopBackgroundMusic() {
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
+        }
+
+        // Clear any stale session data on page load
+        sessionStorage.removeItem('gamePin');
+        sessionStorage.removeItem('playerId');
+        sessionStorage.removeItem('nickname');
+
+        // Join game
+        document.getElementById('joinForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const gamePin = document.getElementById('gamePin').value;
+            
+            if (gamePin.length !== 6) {
+                showAlert('Invalid PIN', 'Please enter a 6-digit game PIN', 'info');
+                return;
+            }
+            
+            // Store game PIN and show nickname screen
+            sessionStorage.setItem('gamePin', gamePin);
+            document.getElementById('joinScreen').classList.add('hidden');
+            document.getElementById('nicknameScreen').classList.remove('hidden');
+            document.getElementById('nicknameScreen').classList.add('pop-in');
+        });
+
+        // Enter nickname
+        document.getElementById('nicknameForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nickname = document.getElementById('nickname').value.trim();
+            const gamePin = sessionStorage.getItem('gamePin');
+
+            if (!nickname) {
+                showAlert('Missing Nickname', 'Please enter a nickname to join the game', 'info');
+                return;
+            }
+
+            try {
+                const response = await fetch('api/game.php?action=join_game', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ game_pin: gamePin, nickname })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    gameId = data.game_id;
+                    playerId = data.player_id;
+                    sessionStorage.setItem('playerId', playerId);
+                    sessionStorage.setItem('nickname', nickname);
+                    
+                    document.getElementById('nicknameScreen').classList.add('hidden');
+                    document.getElementById('waitingScreen').classList.remove('hidden');
+                    document.getElementById('waitingScreen').classList.add('pop-in');
+                    
+                    document.getElementById('playerNickname').textContent = nickname;
+                    document.getElementById('nicknameInitial').textContent = nickname.charAt(0).toUpperCase();
+                } else {
+                    showAlert('Join Failed', data.error || 'Failed to join game. Please check the PIN and try again.', 'error');
+                    document.getElementById('joinScreen').classList.remove('hidden');
+                    document.getElementById('nicknameScreen').classList.add('hidden');
+                }
+            } catch (error) {
+                showAlert('Error', 'An error occurred. Please try again.', 'error');
+            }
+
+            function showAlert(title, message, type) {
+                const modal = document.getElementById('customModal');
+                const icon = document.getElementById('modalIcon');
+                const iconClass = document.getElementById('modalIconClass');
+                document.getElementById('modalTitle').textContent = title;
+                document.getElementById('modalMessage').textContent = message;
+                icon.className = 'modal-icon ' + type;
+                iconClass.className = 'fas ' + (type === 'success' ? 'fa-check-circle' : type === 'info' ? 'fa-info-circle' : 'fa-times-circle') + ' text-3xl text-white';
+                modal.classList.remove('hidden');
+            }
+        });
+
+        // Poll for game updates
+        async function updateGameStatus() {
+            // Only poll if user has joined (gameId and playerId are set)
+            if (!gameId || !playerId) return;
+
+            try {
+                const response = await fetch(`api/game.php?action=game_status&game_id=${gameId}`);
+                const data = await response.json();
+
+                if (response.ok && data.game) {
+                    // Update leaderboard
+                    updateLeaderboard(data.players);
+                    
+                    // Check if game started
+                    if (data.game.status === 'active' && gameStatus !== 'playing') {
+                        gameStatus = 'playing';
+                        playBackgroundMusic();
+                        showQuestion();
+                    }
+                    
+                    // Check if answer is shown (host clicked show answer)
+                    const questionScreen = document.getElementById('questionScreen');
+                    const feedbackScreen = document.getElementById('feedbackScreen');
+                    if (data.game.answer_shown && currentQuestion && (!questionScreen.classList.contains('hidden') || !feedbackScreen.classList.contains('hidden'))) {
+                        showAnswerReveal();
+                    }
+                    
+                    // Check if question changed (for leaderboard -> question transition)
+                    // or if answer was shown and host moved to next question
+                    if (gameStatus === 'playing' && data.game.current_question !== currentQuestionNumber && currentQuestionNumber > 0) {
+                        // Clear any pending check and hide waiting/feedback screens
+                        if (checkNextTimeout) clearTimeout(checkNextTimeout);
+                        document.getElementById('nextQuestionScreen').classList.add('hidden');
+                        document.getElementById('feedbackScreen').classList.add('hidden');
+                        showQuestion();
+                    }
+                    
+                    // Check if game finished
+                    if (data.game.status === 'finished') {
+                        showFinalResults();
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating game status:', error);
+            }
+        }
+
+        // Update leaderboard panel
+        function updateLeaderboard(players) {
+            const panel = document.getElementById('leaderboardList');
+            
+            if (players.length > 0) {
+                const html = players.slice(0, 10).map((p, i) => `
+                    <div class="flex items-center justify-between bg-white/10 rounded-lg px-2 py-1 ${p.id == playerId ? 'border border-yellow-400' : ''}">
+                        <div class="flex items-center">
+                            <span class="w-5 h-5 rounded-full ${i < 3 ? 'bg-yellow-400' : 'bg-white/20'} flex items-center justify-center text-xs font-bold text-purple-900 mr-2">${i + 1}</span>
+                            <span class="text-white text-xs font-medium truncate">${p.nickname}</span>
+                        </div>
+                        <span class="text-yellow-300 text-xs font-bold">${p.score}</span>
+                    </div>
+                `).join('');
+                
+                if (panel) panel.innerHTML = html;
+                
+                // Show the single fixed leaderboard panel when game is active
+                const leaderboardPanel = document.getElementById('leaderboardPanel');
+                if (leaderboardPanel) {
+                    const waitingScreen = document.getElementById('waitingScreen');
+                    const questionScreen = document.getElementById('questionScreen');
+                    const feedbackScreen = document.getElementById('feedbackScreen');
+                    const nextQuestionScreen = document.getElementById('nextQuestionScreen');
+                    
+                    if (!waitingScreen.classList.contains('hidden') || 
+                        !questionScreen.classList.contains('hidden') || 
+                        !feedbackScreen.classList.contains('hidden') || 
+                        !nextQuestionScreen.classList.contains('hidden')) {
+                        leaderboardPanel.classList.remove('hidden');
+                    }
+                }
+            }
+        }
+
+        // Show answer reveal (when host shows answer)
+        function showAnswerReveal() {
+            if (!currentQuestion) return;
+            
+            // Stop timer if running
+            if (timerInterval) clearInterval(timerInterval);
+            
+            // Make sure question screen is visible
+            document.getElementById('feedbackScreen').classList.add('hidden');
+            document.getElementById('nextQuestionScreen').classList.add('hidden');
+            document.getElementById('questionScreen').classList.remove('hidden');
+            
+            // Find correct answer
+            const correctAnswer = currentQuestion.answers.find(a => a.is_correct);
+            if (!correctAnswer) return;
+            
+            // Disable all answer buttons and highlight correct one
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`answer${i}`);
+                if (btn) {
+                    btn.disabled = true;
+                    if (currentQuestion.answers[i] && currentQuestion.answers[i].id === correctAnswer.id) {
+                        btn.className = `answer-btn-${i} correct rounded-xl p-8 text-white font-bold text-xl border-4 border-white`;
+                    } else {
+                        btn.className = `answer-btn-${i} opacity-50 rounded-xl p-8 text-white font-bold text-xl`;
+                    }
+                }
+            }
+        }
+
+        // Show question
+        async function showQuestion() {
+            try {
+                const response = await fetch(`api/game.php?action=game_status&game_id=${gameId}`);
+                const data = await response.json();
+
+                if (data.game.status === 'finished') {
+                    showFinalResults();
+                    return;
+                }
+
+                currentQuestion = data.current_question;
+                currentQuestionNumber = data.game.current_question;
+                selectedAnswer = null;
+
+                if (!currentQuestion) {
+                    console.error('No question data');
+                    return;
+                }
+
+                // Hide other screens, show question screen
+                document.getElementById('waitingScreen').classList.add('hidden');
+                document.getElementById('feedbackScreen').classList.add('hidden');
+                document.getElementById('nextQuestionScreen').classList.add('hidden');
+                document.getElementById('questionScreen').classList.remove('hidden');
+                document.getElementById('questionScreen').classList.add('slide-up');
+
+                document.getElementById('questionText').textContent = currentQuestion.question_text;
+                document.getElementById('questionPoints').textContent = currentQuestion.points ? `(${currentQuestion.points} points)` : '';
+
+                // Display answers (handle up to 4 answers)
+                for (let i = 0; i < 4; i++) {
+                    const btn = document.getElementById(`answer${i}`);
+                    const textEl = document.getElementById(`answerText${i}`);
+                    if (currentQuestion.answers[i]) {
+                        textEl.textContent = currentQuestion.answers[i].answer_text;
+                        btn.className = `answer-btn-${i} rounded-xl p-8 text-white font-bold text-xl hover:opacity-90 transition transform hover:scale-102`;
+                        btn.style.display = 'block';
+                        btn.disabled = false;
+                    } else {
+                        btn.style.display = 'none';
+                    }
+                }
+
+                // Check if answer is already shown (host already clicked show answer)
+                if (data.game.answer_shown) {
+                    showAnswerReveal();
+                } else {
+                    // Start timer
+                    startTimer(currentQuestion.time_limit);
+                }
+            } catch (error) {
+                console.error('Error showing question:', error);
+            }
+        }
+
+        // Timer
+        function startTimer(seconds) {
+            totalTime = seconds;
+            timeRemaining = seconds;
+            const timerBar = document.getElementById('timerBar');
+            const timerText = document.getElementById('timerText');
+            
+            timerBar.style.width = '100%';
+            timerText.textContent = timeRemaining;
+
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                timerText.textContent = timeRemaining;
+                timerBar.style.width = (timeRemaining / totalTime * 100) + '%';
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    // Auto-submit if no answer selected
+                    if (selectedAnswer === null) {
+                        submitAnswer(-1);
+                    }
+                }
+            }, 1000);
+        }
+
+        // Select answer
+        function selectAnswer(index) {
+            if (selectedAnswer !== null) return;
+            
+            selectedAnswer = index;
+            
+            // Highlight selected answer
+            currentQuestion.answers.forEach((a, i) => {
+                const btn = document.getElementById(`answer${i}`);
+                if (i === index) {
+                    btn.className = `answer-btn-${i} selected rounded-xl p-8 text-white font-bold text-xl`;
+                } else {
+                    btn.className = `answer-btn-${i} opacity-50 rounded-xl p-8 text-white font-bold text-xl`;
+                }
+                btn.disabled = true;
+            });
+
+            // Submit answer
+            const answerId = currentQuestion.answers[index].id;
+            submitAnswer(answerId);
+        }
+
+        // Calculate points based on time remaining (uses question's own points value)
+        function calculatePoints() {
+            if (!currentQuestion || !currentQuestion.points) return 0;
+            
+            const maxPoints = currentQuestion.points;
+            const minPoints = Math.round(maxPoints * 0.1); // 10% minimum
+            
+            if (timeRemaining <= 0) return minPoints;
+            const timeRatio = timeRemaining / totalTime;
+            return Math.round(maxPoints * timeRatio);
+        }
+
+        // Submit answer
+        async function submitAnswer(answerId) {
+            if (timerInterval) clearInterval(timerInterval);
+
+            // Calculate points based on time remaining
+            const calculatedPoints = calculatePoints();
+
+            try {
+                const response = await fetch('api/game.php?action=submit_answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        game_id: gameId,
+                        player_id: playerId,
+                        answer_id: answerId,
+                        points_earned: calculatedPoints
+                    })
+                });
+                const data = await response.json();
+
+                // Show feedback
+                document.getElementById('questionScreen').classList.add('hidden');
+                document.getElementById('feedbackScreen').classList.remove('hidden');
+                document.getElementById('feedbackScreen').classList.add('pop-in');
+
+                const feedbackIcon = document.getElementById('feedbackIcon');
+                const feedbackText = document.getElementById('feedbackText');
+                const pointsEl = document.getElementById('pointsEarned');
+
+                if (data.is_correct) {
+                    feedbackIcon.className = 'w-40 h-40 mx-auto mb-6 rounded-full flex items-center justify-center kahoot-green';
+                    feedbackIcon.innerHTML = '<i class="fas fa-check text-7xl text-white"></i>';
+                    feedbackText.textContent = 'Correct!';
+                    pointsEl.textContent = `+${data.points_earned} points`;
+                } else {
+                    feedbackIcon.className = 'w-40 h-40 mx-auto mb-6 rounded-full flex items-center justify-center kahoot-purple';
+                    feedbackIcon.innerHTML = '<i class="fas fa-times text-7xl text-white"></i>';
+                    feedbackText.textContent = 'Wrong!';
+                    pointsEl.textContent = answerId === -1 ? 'Time\'s up!' : 'Better luck next time!';
+                }
+
+                // Wait then show next question or leaderboard
+                // Clear any pending check
+                if (checkNextTimeout) clearTimeout(checkNextTimeout);
+                checkNextTimeout = setTimeout(async () => {
+                    await checkNextQuestion();
+                }, 3000);
+            } catch (error) {
+                console.error('Error submitting answer:', error);
+            }
+        }
+
+        // Check for next question
+        async function checkNextQuestion() {
+            try {
+                const response = await fetch(`api/game.php?action=game_status&game_id=${gameId}`);
+                const data = await response.json();
+
+                if (data.game.status === 'finished') {
+                    showFinalResults();
+                } else if (data.game.current_question !== currentQuestionNumber) {
+                    // Question changed, clear timeout and show new question
+                    if (checkNextTimeout) clearTimeout(checkNextTimeout);
+                    document.getElementById('nextQuestionScreen').classList.add('hidden');
+                    document.getElementById('feedbackScreen').classList.add('hidden');
+                    showQuestion();
+                } else if (data.game.answer_shown) {
+                    // Host showed answer - show the answer reveal on question screen
+                    if (checkNextTimeout) clearTimeout(checkNextTimeout);
+                    document.getElementById('feedbackScreen').classList.add('hidden');
+                    document.getElementById('questionScreen').classList.remove('hidden');
+                    showAnswerReveal();
+                    
+                    // After showing answer, wait for next question
+                    checkNextTimeout = setTimeout(async () => {
+                        await checkNextQuestion();
+                    }, 2000);
+                } else {
+                    // Host hasn't shown answer yet - show waiting screen
+                    const feedbackScreen = document.getElementById('feedbackScreen');
+                    const nextScreen = document.getElementById('nextQuestionScreen');
+                    
+                    // Only show waiting screen if feedback is still visible
+                    if (!feedbackScreen.classList.contains('hidden')) {
+                        feedbackScreen.classList.add('hidden');
+                        nextScreen.classList.remove('hidden');
+                        nextScreen.classList.add('fade-in');
+                    }
+                    
+                    // Keep polling for host to show answer or advance
+                    checkNextTimeout = setTimeout(async () => {
+                        await checkNextQuestion();
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Error checking next question:', error);
+            }
+        }
+
+        // Show final results
+        async function showFinalResults() {
+            if (timerInterval) clearInterval(timerInterval);
+            stopBackgroundMusic();
+            
+            try {
+                const response = await fetch(`api/game.php?action=game_status&game_id=${gameId}`);
+                const data = await response.json();
+
+                document.getElementById('questionScreen').classList.add('hidden');
+                document.getElementById('feedbackScreen').classList.add('hidden');
+                document.getElementById('nextQuestionScreen').classList.add('hidden');
+                document.getElementById('waitingScreen').classList.add('hidden');
+                document.getElementById('resultsScreen').classList.remove('hidden');
+                document.getElementById('resultsScreen').classList.add('slide-up');
+
+                // Find player's score
+                const player = data.players.find(p => p.id == playerId);
+                const score = player ? player.score : 0;
+                
+                // Find player's rank
+                const rank = data.players.findIndex(p => p.id == playerId) + 1;
+                
+                document.getElementById('finalScore').textContent = score;
+                document.getElementById('finalRank').textContent = `You finished #${rank} of ${data.players.length}`;
+            } catch (error) {
+                console.error('Error loading final results:', error);
+            }
+        }
+
+        // Start polling
+        setInterval(updateGameStatus, 2000);
+        updateGameStatus();
+    </script>
+</body>
+</html>

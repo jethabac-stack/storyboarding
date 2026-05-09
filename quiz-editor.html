@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Editor - Storyboarding Portal</title>
+    <link rel="icon" href="admin/image/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+        
+        /* Custom Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: white; border-radius: 1.5rem; padding: 2rem; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .modal-icon { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+        .modal-icon.success { background: linear-gradient(135deg, #69c924, #4a9e1c); }
+        .modal-icon.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="dashboard.html" class="flex items-center gap-3">
+                        <img src="admin/image/logo.png" alt="Logo" class="h-10">
+                        <span class="text-2xl font-bold text-purple-600">Storyboarding Portal</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-arrow-left mr-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Quiz Info -->
+        <div id="quizInfo" class="bg-white rounded-xl shadow-sm border p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 id="quizTitle" class="text-2xl font-bold text-gray-800"></h1>
+                    <p id="quizDescription" class="text-gray-500 mt-1"></p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="saveQuiz()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition">
+                        <i class="fas fa-save mr-1"></i>Save
+                    </button>
+                    <button onclick="publishQuiz()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition">
+                        <i class="fas fa-check mr-1"></i>Publish
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions List -->
+        <div id="questionsList" class="space-y-4 mb-6">
+            <!-- Questions will be loaded here -->
+        </div>
+
+        <!-- Add Question Button -->
+        <button onclick="showAddQuestionModal()" class="w-full bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 text-gray-500 hover:border-purple-500 hover:text-purple-600 transition">
+            <i class="fas fa-plus-circle text-2xl mb-2"></i>
+            <p class="font-medium">Add a question</p>
+        </button>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="text-center py-12 hidden">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-question text-3xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">No questions yet</h3>
+            <p class="text-gray-500">Add your first question to this quiz</p>
+        </div>
+    </div>
+
+    <!-- Add/Edit Question Modal -->
+    <div id="questionModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b flex items-center justify-between">
+                <h2 id="modalTitle" class="text-2xl font-bold text-gray-800">Add Question</h2>
+                <button onclick="hideQuestionModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="questionForm" class="p-6 space-y-4">
+                <input type="hidden" id="questionId">
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
+                    <textarea id="questionText" required rows="2"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition"
+                        placeholder="Enter your question"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Question Image URL (optional)</label>
+                    <input type="url" id="questionImage"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition"
+                        placeholder="https://example.com/image.jpg">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Time Limit (seconds)</label>
+                        <select id="questionTimeLimit" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition">
+                            <option value="20">20 seconds</option>
+                            <option value="30">30 seconds</option>
+                            <option value="60">60 seconds</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Points</label>
+                        <select id="questionPoints" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition">
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="150">150</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Answers</label>
+                    <p class="text-sm text-gray-500 mb-3">Select the correct answer(s)</p>
+                    <div id="answersContainer" class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <input type="radio" name="correctAnswer" value="0" checked class="w-5 h-5 text-purple-600">
+                            <input type="text" id="answer0" required
+                                class="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition"
+                                placeholder="Answer 1">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="radio" name="correctAnswer" value="1" class="w-5 h-5 text-purple-600">
+                            <input type="text" id="answer1" required
+                                class="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition"
+                                placeholder="Answer 2">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="radio" name="correctAnswer" value="2" class="w-5 h-5 text-purple-600">
+                            <input type="text" id="answer2" required
+                                class="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition"
+                                placeholder="Answer 3">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="radio" name="correctAnswer" value="3" class="w-5 h-5 text-purple-600">
+                            <input type="text" id="answer3" required
+                                class="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition"
+                                placeholder="Answer 4">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="hideQuestionModal()" class="flex-1 px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700 transition">
+                        Save Question
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div id="modalIcon" class="modal-icon"><i id="modalIconClass" class="fas fa-check-circle text-3xl text-white"></i></div>
+            <h3 id="modalTitle" class="text-xl font-bold text-gray-800 mb-2"></h3>
+            <p id="modalMessage" class="text-gray-600 mb-5"></p>
+            <button onclick="document.getElementById('customModal').classList.add('hidden')" class="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2.5 rounded-xl font-semibold transition w-full">OK</button>
+        </div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = 'login.html';
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const quizId = urlParams.get('quiz_id');
+
+        if (!quizId) {
+            window.location.href = 'dashboard.html';
+        }
+
+        let currentQuiz = null;
+
+        // Load quiz
+        async function loadQuiz() {
+            try {
+                const response = await fetch(`api/quiz.php?action=get_quiz&quiz_id=${quizId}`);
+                currentQuiz = await response.json();
+
+                document.getElementById('quizTitle').textContent = currentQuiz.title;
+                document.getElementById('quizDescription').textContent = currentQuiz.description || 'No description';
+
+                renderQuestions();
+            } catch (error) {
+                console.error('Error loading quiz:', error);
+            }
+        }
+
+        // Render questions
+        function renderQuestions() {
+            const questionsList = document.getElementById('questionsList');
+            const emptyState = document.getElementById('emptyState');
+            const questions = currentQuiz.questions || [];
+
+            if (questions.length === 0) {
+                questionsList.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            } else {
+                questionsList.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+                questionsList.innerHTML = questions.map((q, index) => `
+                    <div class="bg-white rounded-xl shadow-sm border p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <span class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-bold">${index + 1}</span>
+                                    <span class="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">${q.time_limit}s</span>
+                                    <span class="px-2 py-1 bg-yellow-100 rounded text-xs text-yellow-700">${q.points} pts</span>
+                                </div>
+                                <p class="text-gray-800 font-medium mb-3">${q.question_text}</p>
+                                ${q.question_image ? `<img src="${q.question_image}" class="h-32 rounded-lg mb-3 object-cover">` : ''}
+                                <div class="grid grid-cols-2 gap-2">
+                                    ${q.answers.map((a, i) => `
+                                        <div class="px-3 py-2 rounded-lg text-sm ${a.is_correct ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-gray-50 text-gray-600'}">
+                                            ${a.answer_text} ${a.is_correct ? '<i class="fas fa-check ml-1"></i>' : ''}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="flex gap-2 ml-4">
+                                <button onclick="editQuestion(${q.id})" class="text-purple-600 hover:text-purple-800 p-2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteQuestion(${q.id})" class="text-red-600 hover:text-red-800 p-2">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        loadQuiz();
+
+        // Modal functions
+        function showAddQuestionModal() {
+            document.getElementById('modalTitle').textContent = 'Add Question';
+            document.getElementById('questionId').value = '';
+            document.getElementById('questionForm').reset();
+            document.getElementById('questionModal').classList.remove('hidden');
+        }
+
+        function hideQuestionModal() {
+            document.getElementById('questionModal').classList.add('hidden');
+        }
+
+        // Edit question
+        function editQuestion(questionId) {
+            const question = currentQuiz.questions.find(q => q.id === questionId);
+            if (!question) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Question';
+            document.getElementById('questionId').value = questionId;
+            document.getElementById('questionText').value = question.question_text;
+            document.getElementById('questionImage').value = question.question_image || '';
+            document.getElementById('questionTimeLimit').value = question.time_limit;
+            document.getElementById('questionPoints').value = question.points;
+
+            question.answers.forEach((a, i) => {
+                document.getElementById(`answer${i}`).value = a.answer_text;
+            });
+
+            // Set correct answer
+            const correctIndex = question.answers.findIndex(a => a.is_correct);
+            document.querySelector(`input[name="correctAnswer"][value="${correctIndex}"]`).checked = true;
+
+            document.getElementById('questionModal').classList.remove('hidden');
+        }
+
+        // Save question
+        document.getElementById('questionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const questionId = document.getElementById('questionId').value;
+            const question_text = document.getElementById('questionText').value;
+            const question_image = document.getElementById('questionImage').value || null;
+            const time_limit = parseInt(document.getElementById('questionTimeLimit').value);
+            const points = parseInt(document.getElementById('questionPoints').value);
+
+            const correctAnswer = document.querySelector('input[name="correctAnswer"]:checked').value;
+            const answers = [
+                { text: document.getElementById('answer0').value, is_correct: correctAnswer === '0' },
+                { text: document.getElementById('answer1').value, is_correct: correctAnswer === '1' },
+                { text: document.getElementById('answer2').value, is_correct: correctAnswer === '2' },
+                { text: document.getElementById('answer3').value, is_correct: correctAnswer === '3' }
+            ];
+
+            const action = questionId ? 'update_question' : 'add_question';
+            const body = questionId 
+                ? { question_id: parseInt(questionId), question_text, question_image, time_limit, points, answers }
+                : { quiz_id: parseInt(quizId), question_text, question_image, time_limit, points, answers };
+
+            try {
+                const response = await fetch(`api/quiz.php?action=${action}`, {
+                    method: questionId ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                if (response.ok) {
+                    hideQuestionModal();
+                    loadQuiz();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to save question');
+                }
+            } catch (error) {
+                alert('An error occurred');
+            }
+        });
+
+        // Delete question
+        async function deleteQuestion(questionId) {
+            if (!confirm('Are you sure you want to delete this question?')) return;
+
+            try {
+                const response = await fetch(`api/quiz.php?action=delete_question&question_id=${questionId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadQuiz();
+                } else {
+                    alert('Failed to delete question');
+                }
+            } catch (error) {
+                alert('An error occurred');
+            }
+        }
+
+        // Save quiz
+        async function saveQuiz() {
+            try {
+                const response = await fetch('api/quiz.php?action=update_quiz', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        quiz_id: parseInt(quizId),
+                        title: currentQuiz.title,
+                        description: currentQuiz.description,
+                        time_limit: currentQuiz.time_limit,
+                        is_published: 0
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('Quiz Saved!', 'Your quiz has been saved successfully.', 'success');
+                } else {
+                    showAlert('Error', 'Failed to save quiz. Please try again.', 'error');
+                }
+            } catch (error) {
+                showAlert('Error', 'An error occurred. Please try again.', 'error');
+            }
+        }
+
+        // Publish quiz
+        async function publishQuiz() {
+            if (!currentQuiz.questions || currentQuiz.questions.length === 0) {
+                showAlert('No Questions', 'Please add at least one question before publishing your quiz.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('api/quiz.php?action=update_quiz', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        quiz_id: parseInt(quizId),
+                        title: currentQuiz.title,
+                        description: currentQuiz.description,
+                        time_limit: currentQuiz.time_limit,
+                        is_published: 1
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('Quiz Published!', 'Your quiz is now live and ready to play.', 'success');
+                    loadQuiz();
+                } else {
+                    showAlert('Error', 'Failed to publish quiz. Please try again.', 'error');
+                }
+            } catch (error) {
+                showAlert('Error', 'An error occurred. Please try again.', 'error');
+            }
+        }
+
+        function showAlert(title, message, type) {
+            const modal = document.getElementById('customModal');
+            const icon = document.getElementById('modalIcon');
+            const iconClass = document.getElementById('modalIconClass');
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            icon.className = 'modal-icon ' + type;
+            iconClass.className = 'fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-times-circle') + ' text-3xl text-white';
+            modal.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

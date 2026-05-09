@@ -1,0 +1,2634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Storyboarding Studio | Algebra Visual Lab</title>
+    <link rel="icon" href="../admin/image/logo.png" type="image/png">
+    <!-- Tailwind + Font Awesome + Google Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.2); border-radius: 2rem; }
+        .step-card { background: rgba(0 0 0 / 36%); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.2); border-radius: 2rem; transition: all 0.2s; box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
+        .step-card:hover { transform: translateY(-3px); }
+        .step-card.locked { /* all problems available */ }
+        .step-card.complete { border-left: 6px solid #fbbf24; }
+        .btn-gradient { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
+        .btn-gradient:hover { opacity: 0.9; transform: scale(1.02); }
+        .nav-dot {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);
+            color: white; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+        }
+        .nav-dot.unlocked { background: linear-gradient(135deg, #10b981, #059669); border-color: #34d399; }
+        .nav-dot.active { background: linear-gradient(135deg, #fbbf24, #f59e0b); transform: scale(1.15); box-shadow: 0 0 15px #fbbf24; border-color: #fef08a; }
+        .nav-dot.disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.2); }
+        .progress-fill { transition: width 0.4s ease; }
+        .image-placeholder { background: rgba(255,255,255,0.05); border: 2px dashed rgba(255,255,255,0.3); border-radius: 1rem; padding: 2rem; text-align: center; color: #cbd5e1; }
+        .step-image { max-height: 200px; width: auto; border-radius: 1rem; object-fit: cover; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .feedback-step { background: rgba(59,130,246,0.15); border-left: 3px solid #3b82f6; }
+        .results-card { background: rgba(255,255,255,0.1); border-radius: 1.25rem; overflow: hidden; transition: all 0.2s; }
+        .results-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.15); }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #fbbf24; border-radius: 10px; }
+
+        /* Modal Notebook Layout */
+        #modalContent {
+            position: relative;
+            max-height: calc(100vh - 2rem);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(139,92,246,0.6) rgba(255,255,255,0.05);
+        }
+        #modalContent::-webkit-scrollbar { width: 6px; }
+        #modalContent::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.04);
+            border-radius: 10px;
+            margin: 12px 0;
+        }
+        #modalContent::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #8b5cf6, #3b82f6);
+            border-radius: 10px;
+        }
+        #modalContent::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #7c3aed, #2563eb);
+        }
+        .close-modal-btn { flex-shrink: 0; }
+        .solver-wrapper { position: relative; z-index: 1; width: 100%; max-width: 1400px; margin: 0 auto; }
+        .solver-wrapper header {
+            position: sticky; top: 0; z-index: 15;
+            padding: 0;
+            background: transparent;
+            display: flex; align-items: stretch; justify-content: space-between; gap: 0;
+            margin-bottom: 24px;
+            border-radius: 1.25rem;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.25);
+        }
+        .solver-wrapper header .header-body {
+            flex: 1;
+            padding: 20px 24px 18px;
+            background: linear-gradient(135deg, rgba(17,12,40,0.95) 0%, rgba(30,18,60,0.95) 60%, rgba(20,30,60,0.95) 100%);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+        .solver-wrapper header .header-body::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(59,130,246,0.08) 100%);
+            pointer-events: none;
+        }
+        .solver-wrapper header .header-body::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(139,92,246,0.8), rgba(59,130,246,0.8), transparent);
+        }
+        .solver-wrapper header .header-close {
+            display: flex; align-items: center; justify-content: center;
+            width: 64px; flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(59,130,246,0.15));
+            border-left: 1px solid rgba(139,92,246,0.2);
+            cursor: pointer; transition: background 0.2s;
+        }
+        .solver-wrapper header .header-close:hover { background: linear-gradient(135deg, rgba(139,92,246,0.3), rgba(59,130,246,0.3)); }
+        .solver-wrapper header .header-close i { font-size: 1rem; color: rgba(255,255,255,0.7); transition: color 0.2s, transform 0.2s; }
+        .solver-wrapper header .header-close:hover i { color: #fff; transform: rotate(90deg); }
+        .solver-wrapper header .header-meta {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+        }
+        .solver-wrapper header .header-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(139,92,246,0.4);
+        }
+        .solver-wrapper header .header-titles { flex: 1; }
+        .solver-wrapper header .header-eyebrow {
+            font-family: 'DM Mono', monospace; font-size: 9px;
+            letter-spacing: 0.25em; text-transform: uppercase;
+            color: rgba(196,181,253,0.7); margin-bottom: 2px;
+        }
+        .solver-wrapper header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+            letter-spacing: -0.01em; line-height: 1.1; color: #ffffff;
+            margin: 0;
+        }
+        .solver-wrapper header .header-stats {
+            display: flex; align-items: center; gap: 12px; margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+        .solver-wrapper header .header-stat {
+            display: flex; align-items: center; gap: 6px;
+            font-family: 'DM Mono', monospace; font-size: 0.65rem;
+            color: rgba(255,255,255,0.5); letter-spacing: 0.05em;
+        }
+        .solver-wrapper header .header-stat i { font-size: 0.6rem; color: #8b5cf6; }
+        .solver-wrapper header .header-stat strong { color: rgba(255,255,255,0.8); }
+        .solver-wrapper .problem-label { display: inline-block; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: #c7c0b4; border-bottom: 1px solid rgba(255,255,255,0.25); padding-bottom: 4px; margin-bottom: 12px; }
+        .solver-wrapper .problem-area { background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.25); border-radius: 1rem; padding: 18px 20px; margin: 0 auto 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.12); position: relative; }
+        .solver-wrapper .problem-area label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #d8d2c4; display: block; margin-bottom: 8px; }
+        .solver-wrapper .problem-area textarea { width: 100%; background: transparent; border: none; outline: none; font-family: 'DM Serif Display', serif; font-size: 1rem; color: #f8f5f1; resize: none; min-height: 90px; line-height: 1.6; }
+        .solver-wrapper .problem-area textarea::placeholder { color: rgba(255,255,255,0.55); font-style: italic; }
+        .solver-wrapper .flow-label { text-align: center; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #d8d2c4; margin-bottom: 16px; }
+        .solver-wrapper .steps-track { display: flex; align-items: flex-start; gap: 0; overflow-x: auto; padding-bottom: 12px; margin-bottom: 28px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.25) transparent; }
+        .solver-wrapper .step-wrapper { display: flex; align-items: flex-start; flex-shrink: 0; }
+        .solver-wrapper .step-card { width: 240px; background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.18); border-radius: 1rem; padding: 18px 16px 14px; position: relative; transition: box-shadow 0.2s, transform 0.2s; cursor: default; }
+        .solver-wrapper .step-card.active { box-shadow: 0 16px 40px rgba(0,0,0,0.22); transform: translateY(-2px); background: rgba(255,255,255,0.14); }
+        .solver-wrapper .step-card.completed { border-color: #75b09b; background: rgba(119,170,146,0.18); }
+        .solver-wrapper .step-card.completed::after { content: '✓'; position: absolute; top: 10px; right: 12px; color: #75b09b; font-size: 14px; font-weight: 700; }
+        .solver-wrapper .step-num { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #d8d2c4; margin-bottom: 6px; }
+        .solver-wrapper .step-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.75rem; line-height: 1.3; color: #fff; margin-bottom: 10px; }
+        .solver-wrapper .step-lines { display: flex; flex-direction: column; gap: 6px; }
+        .solver-wrapper .step-line { height: 2px; background: rgba(255,255,255,0.2); border-radius: 1px; width: 100%; transition: background 0.3s, width 0.4s; }
+        .solver-wrapper .step-card.active .step-line { background: #f8ebd8; }
+        .solver-wrapper .step-card.completed .step-line { background: #a0c4b6; }
+        .solver-wrapper .step-line:nth-child(2) { width: 80%; }
+        .solver-wrapper .step-line:nth-child(3) { width: 60%; }
+        .solver-wrapper .step-input { width: 100%; background: transparent; border: none; border-bottom: 1px dashed rgba(255,255,255,0.35); outline: none; font-family: 'DM Mono', monospace; font-size: 0.75rem; color: #fff; margin-top: 8px; padding: 4px 0; resize: none; min-height: 50px; display: none; }
+        .solver-wrapper .step-card.active .step-input { display: block; }
+        .solver-wrapper .step-card.active .step-lines { display: none; }
+        .solver-wrapper .arrow-connector { display: flex; align-items: center; padding: 0 6px; padding-top: 40px; color: rgba(255,255,255,0.45); flex-shrink: 0; font-size: 22px; transition: color 0.3s; }
+        .solver-wrapper .arrow-connector.lit { color: #a0c4b6; }
+        .solver-wrapper .buttons-row { display: flex; align-items: flex-start; justify-content: center; gap: 12px; margin-bottom: 16px; }
+        .solver-wrapper .btn-slot { width: 240px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .solver-wrapper .btn-gap { width: 34px; flex-shrink: 0; }
+        .solver-wrapper .btn { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 8px 12px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); color: #fff; cursor: pointer; transition: background 0.15s, transform 0.1s, box-shadow 0.15s; border-radius: 4px; white-space: nowrap; }
+        .solver-wrapper .btn:hover:not(:disabled) { background: rgba(255,255,255,0.18); transform: translate(-1px, -1px); }
+        .solver-wrapper .btn:active:not(:disabled) { transform: translate(1px, 1px); box-shadow: none; }
+        .solver-wrapper .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .solver-wrapper .btn.proceed { border-color: #f8ebd8; }
+        .solver-wrapper .btn.back-up { border-color: #d16363; color: #f8ebd8; font-size: 0.6rem; }
+        .solver-wrapper .btn.back-up:hover:not(:disabled) { background: #d16363; color: #fff; }
+        .solver-wrapper .feedback-section { text-align: center; margin-bottom: 22px; min-height: 28px; }
+        .solver-wrapper .feedback-text { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: rgba(255,255,255,0.7); font-style: italic; opacity: 0; transition: opacity 0.4s; }
+        .solver-wrapper .feedback-text.visible { opacity: 1; }
+        .solver-wrapper .feedback-text.success { color: #b8d8c4; font-style: normal; font-weight: 500; }
+        .solver-wrapper .feedback-text.error { color: #f7c6c7; font-style: normal; }
+        .solver-wrapper .next-wrap { text-align: center; margin-top: 14px; }
+        .solver-wrapper .btn-next { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 14px 42px; border: 2px solid #fff; background: #fff; color: #1f2937; cursor: pointer; transition: background 0.2s, color 0.2s, box-shadow 0.15s, transform 0.1s; border-radius: 6px; box-shadow: 4px 4px 0 rgba(255,255,255,0.6); }
+        .solver-wrapper .btn-next:hover:not(:disabled) { background: #f7f1e4; color: #1f2937; box-shadow: 4px 4px 0 rgba(255,255,255,0.25); transform: translate(-2px, -2px); }
+        .solver-wrapper .btn-next:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: none; }
+        .solver-wrapper .btn-next:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: 2px 2px 0 rgba(255,255,255,0.2); }
+        .solver-wrapper .celebration { display: none; text-align: center; padding: 24px; background: rgba(255,255,255,0.08); border: 2px solid #86b49d; box-shadow: 6px 6px 0 rgba(134,180,157,0.55); max-width: 100%; margin: 24px auto 0; border-radius: 1rem; }
+        .solver-wrapper .celebration.show { display: block; }
+        .solver-wrapper .celebration h2 { font-family: 'DM Serif Display', serif; font-size: 2rem; color: #dbe8dd; margin-bottom: 8px; }
+        .solver-wrapper .celebration p { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: rgba(255,255,255,0.75); margin-bottom: 16px; }
+        .solver-wrapper .btn-restart { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 10px 28px; border: 2px solid rgba(255,255,255,0.75); background: transparent; color: #fff; cursor: pointer; border-radius: 4px; transition: all 0.15s; }
+        .solver-wrapper .btn-restart:hover { background: rgba(255,255,255,0.15); }
+        .solver-wrapper .progress-bar-wrap { width: 100%; margin: 0 auto 24px; height: 3px; background: rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; }
+        .solver-wrapper .progress-fill { height: 100%; background: #fff; border-radius: 2px; transition: width 0.4s ease; }
+        .solver-wrapper .students-note { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: rgba(255,255,255,0.65); font-style: italic; text-align: center; margin-bottom: 8px; display: none; }
+        .solver-wrapper .ka-ref { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: rgba(255,255,255,0.45); text-align: center; margin-top: 16px; letter-spacing: 0.1em; }
+        @media (max-width: 864px) { .solver-wrapper .step-card { width: 200px; } .solver-wrapper .btn-slot { width: 200px; } }
+        @media (max-width: 640px) { .solver-wrapper .step-card { width: 170px; } .solver-wrapper .btn-slot { width: 170px; } .solver-wrapper header h1 { font-size: 1.9rem; } }
+
+        /* === Enhanced Question Modal === */
+        #questionModal {
+            background: rgba(0,0,0,0.82);
+            backdrop-filter: blur(20px);
+        }
+        #modalContent {
+            background: linear-gradient(145deg, rgba(17,24,39,0.97) 0%, rgba(30,20,60,0.97) 100%);
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+
+        /* Modal progress stepper */
+        .modal-stepper {
+            display: flex; align-items: center; gap: 6px;
+            padding: 12px 0 4px; margin-bottom: 16px;
+        }
+        .modal-stepper-dot {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.65rem; font-weight: 700; flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        .modal-stepper-dot.done {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white; box-shadow: 0 0 12px rgba(16,185,129,0.4);
+        }
+        .modal-stepper-dot.active {
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: white; box-shadow: 0 0 16px rgba(139,92,246,0.6);
+            transform: scale(1.15);
+        }
+        .modal-stepper-dot.pending {
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.3);
+        }
+        .modal-stepper-line {
+            flex: 1; height: 2px; border-radius: 1px;
+            background: rgba(255,255,255,0.1); overflow: hidden;
+        }
+        .modal-stepper-line-fill {
+            height: 100%; border-radius: 1px;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            transition: width 0.4s ease;
+        }
+
+        /* Enhanced step cards in modal */
+        .solver-wrapper .step-card {
+            width: 260px;
+        }
+        .solver-wrapper .step-card.active {
+            background: rgba(139,92,246,0.12);
+            border-color: rgba(139,92,246,0.45);
+            box-shadow: 0 0 0 1px rgba(139,92,246,0.2), 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        /* Enhanced textarea */
+        .solver-wrapper .step-input {
+            border-bottom: 2px solid rgba(139,92,246,0.4);
+            background: rgba(255,255,255,0.04);
+            border-radius: 0.5rem;
+            padding: 8px;
+            font-size: 0.8rem;
+            transition: border-color 0.2s;
+        }
+        .solver-wrapper .step-input:focus {
+            border-bottom-color: #8b5cf6;
+            background: rgba(139,92,246,0.06);
+            outline: none;
+        }
+        .solver-wrapper .step-input:not([readonly]):focus-within {
+            outline: none;
+        }
+
+        /* Hint tooltip on active step */
+        .step-hint {
+            font-size: 0.65rem; color: rgba(196,181,253,0.7);
+            margin-top: 6px; font-style: italic;
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* Feedback section - enhanced */
+        .solver-wrapper .feedback-section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 0.75rem;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+        }
+        .solver-wrapper .feedback-text {
+            font-size: 0.82rem;
+        }
+        .solver-wrapper .feedback-text.success {
+            color: #6ee7b7;
+        }
+        .solver-wrapper .feedback-text.error {
+            color: #fca5a5;
+        }
+
+        /* Proceed button - enhanced */
+        .solver-wrapper .btn.proceed {
+            background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(59,130,246,0.25));
+            border-color: rgba(139,92,246,0.6);
+            color: #c4b5fd;
+            font-size: 0.7rem;
+            padding: 9px 24px;
+            border-radius: 6px;
+            width: 100%;
+            text-align: center;
+        }
+        .solver-wrapper .btn.proceed:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(139,92,246,0.45), rgba(59,130,246,0.45));
+            transform: translate(-1px, -2px);
+            box-shadow: 0 4px 16px rgba(139,92,246,0.3);
+        }
+
+        /* Next button - enhanced */
+        .solver-wrapper .btn-next {
+            background: linear-gradient(135deg, #7c3aed, #2563eb);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+            letter-spacing: 0.12em;
+        }
+        .solver-wrapper .btn-next:hover:not(:disabled) {
+            background: linear-gradient(135deg, #6d28d9, #1d4ed8);
+            box-shadow: 0 6px 28px rgba(124,58,237,0.55);
+            color: white;
+            transform: translate(-2px, -3px);
+        }
+        .solver-wrapper .btn-next:disabled {
+            background: rgba(255,255,255,0.07);
+            border: 2px solid rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.3);
+            box-shadow: none;
+        }
+
+        /* Celebration panel - enhanced */
+        .solver-wrapper .celebration {
+            background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(59,130,246,0.15));
+            border-color: #10b981;
+            box-shadow: 0 0 40px rgba(16,185,129,0.2), 6px 6px 0 rgba(16,185,129,0.3);
+            animation: celebrationPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes celebrationPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .solver-wrapper .celebration h2 {
+            background: linear-gradient(135deg, #6ee7b7, #93c5fd);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* Step 5 Review Panel */
+        .step5-review { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        .step5-verdict {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 10px 12px; border-radius: 0.75rem;
+            font-size: 0.75rem; line-height: 1.4;
+        }
+        .step5-verdict.correct { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.35); }
+        .step5-verdict.incorrect { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); }
+        .step5-verdict-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+        .step5-verdict-title { font-weight: 700; color: #fff; margin-bottom: 2px; }
+        .step5-verdict-sub { color: rgba(255,255,255,0.65); font-size: 0.7rem; }
+        .step5-item {
+            border-radius: 0.6rem; padding: 8px 10px;
+            border: 1px solid transparent;
+        }
+        .step5-item.done { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); }
+        .step5-item.missing { background: rgba(239,68,68,0.07); border-color: rgba(239,68,68,0.2); }
+        .step5-item-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .step5-check {
+            width: 18px; height: 18px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.6rem; font-weight: 700; flex-shrink: 0;
+        }
+        .step5-item.done .step5-check { background: rgba(16,185,129,0.3); color: #6ee7b7; }
+        .step5-item.missing .step5-check { background: rgba(239,68,68,0.25); color: #fca5a5; }
+        .step5-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+        .step5-answer { font-size: 0.72rem; color: rgba(255,255,255,0.8); padding-left: 24px; line-height: 1.5; white-space: pre-wrap; }
+        .step5-expected {
+            margin-top: 4px; padding: 8px 10px;
+            background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2);
+            border-radius: 0.6rem; font-size: 0.7rem; color: rgba(255,255,255,0.65);
+        }
+        .step5-expected strong { color: #fcd34d; }
+
+        /* Score badge on studio cards */
+        .score-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px; border-radius: 999px;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em;
+        }
+        .score-badge.correct { background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.35); }
+        .score-badge.incorrect { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+        .score-badge.pending { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.1); }
+        @keyframes generatingPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        .generating-pulse {
+            animation: generatingPulse 1.2s ease-in-out infinite;
+        }
+
+        /* Image loaded animation */
+        @keyframes imageReveal {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .step-image-loaded {
+            animation: imageReveal 0.4s ease forwards;
+        }
+    </style>
+</head>
+<body class="gradient-bg text-white min-h-screen">
+
+    <!-- Navigation (landing page style) -->
+    <nav class="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <img src="../admin/image/logo.png" alt="Logo" class="h-10 w-auto object-contain">
+                    <span class="text-white text-2xl font-bold tracking-tight">Storyboarding Portal</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="index.html" class="text-white/80 hover:text-white transition">Home</a>
+                    <a href="overview.html" class="text-white/80 hover:text-white transition">Overview</a>
+                    <a href="studio.html" class="text-white font-semibold border-b-2 border-yellow-400 pb-0.5">Studio</a>
+                    <a href="student.html" class="text-white/80 hover:text-white transition">Student</a>
+                </div>
+                <!-- Right side: User info + Mobile menu button -->
+                <div class="flex items-center gap-4">
+                    <!-- User info / login status (desktop) -->
+                    <div id="userInfoDesktop" class="hidden md:flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
+                        <i class="fas fa-user-circle text-white text-xl"></i>
+                        <span id="displayName" class="text-sm font-medium text-white"></span>
+                        <button id="logoutBtnDesktop" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition">Logout</button>
+                    </div>
+                    
+                    <!-- Mobile: User info visible + centered menu button -->
+                    <div class="flex md:hidden items-center gap-2">
+                        <button id="mobileMenuBtn" class="text-white text-2xl ml-2"><i class="fas fa-bars"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div id="mobileNavMenu" class="md:hidden hidden py-4 border-t border-white/20 space-y-3">
+                <a href="index.html" class="block text-white/90 px-2 py-1">Home</a>
+                <a href="overview.html" class="block text-white/80 px-2 py-1">Overview</a>
+                <a href="studio.html" class="block text-white font-semibold px-2 py-1">Studio</a>
+                <a href="student.html" class="block text-white/80 px-2 py-1">Student</a>
+                <div class="pt-2 flex items-center justify-between border-t border-white/20 mt-2">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-user-circle text-white text-xl"></i>
+                        <span id="displayNameMobileMenu" class="text-sm font-medium text-white"></span>
+                    </div>
+                    <button id="logoutBtnMobile" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Studio Section -->
+    <section class="py-8 px-4 md:px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="glass-card p-5 md:p-8">
+                <!-- Header -->
+                <div class="text-center mb-6">
+                    <h1 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-yellow-300 to-pink-300 bg-clip-text text-transparent">🎨 Algebra Storyboarding Studio</h1>
+                    <p class="text-white/70 mt-2">Write expressions, generate AI visuals, unlock step-by-step feedback</p>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-white/60 mb-1"><span>Progress</span><span id="progressPercent">0%</span></div>
+                    <div class="w-full bg-white/20 rounded-full h-3 overflow-hidden">
+                        <div id="progressFill" class="progress-fill bg-gradient-to-r from-yellow-400 to-orange-500 h-full rounded-full" style="width:0%"></div>
+                    </div>
+                    <div class="text-center text-white/70 text-sm mt-2">Problem <span id="currentStepDisplay">1</span> of 30</div>
+                </div>
+
+                <!-- Navigation Dots (horizontal scroll) -->
+                <div id="navDotsContainer" class="flex gap-2 overflow-x-auto pb-3 mb-6 custom-scrollbar justify-center md:justify-start"></div>
+
+                <!-- Steps Horizontal Scroller -->
+                <div id="stepsWrapper" class="overflow-x-auto pb-4 custom-scrollbar">
+                    <div id="stepsContainer" class="flex gap-5" style="min-width: max-content;"></div>
+                </div>
+
+                <!-- Final Results Panel (hidden initially) -->
+                <div id="finalResults" class="mt-8 hidden">
+                    <div class="bg-white/10 rounded-2xl p-6 border border-white/20">
+                        <h2 class="text-2xl font-bold text-center mb-4">🎉 Complete Storyboards 🎉</h2>
+                        <div id="resultsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-h-[500px] overflow-y-auto p-2"></div>
+                        <div class="flex justify-center mt-6">
+                            <button onclick="resetAll()" class="bg-yellow-400 text-purple-900 px-6 py-3 rounded-xl font-bold hover:bg-yellow-300 transition shadow-lg"><i class="fas fa-sync-alt mr-2"></i> New Session</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-white/5 border-t border-white/10 py-4 text-center text-white/50 text-sm mt-8">© 2026 Storyboarding Portal — AI-Powered Algebra Visual Learning</footer>
+
+    <!-- Question Modal -->
+    <div id="questionModal" class="fixed inset-0 z-50 hidden opacity-0 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 transition-all duration-300 overflow-y-auto">
+        <div class="w-full max-w-[1400px] rounded-[2rem] border border-white/10 bg-black/70 p-6 md:p-8 transform scale-95 transition-all duration-300" id="modalContent" style="box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);">
+            <div class="solver-wrapper">
+                <header>
+                    <div class="header-body">
+                        <div class="header-meta">
+                            <div class="header-icon">🧮</div>
+                            <div class="header-titles">
+                                <div class="header-eyebrow">Step-by-Step Solver</div>
+                                <h1>Solve the Problem</h1>
+                            </div>
+                        </div>
+                        <div class="header-stats">
+                            <div class="header-stat">
+                                <i class="fas fa-hashtag"></i>
+                                <span id="modalQuestionBadge">Question 1 of 30</span>
+                            </div>
+                            <div class="header-stat">
+                                <i class="fas fa-shoe-prints"></i>
+                                <span>5 Steps to complete</span>
+                            </div>
+                            <div class="header-stat">
+                                <i class="fas fa-image"></i>
+                                <span>AI illustration per step</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="header-close" onclick="closeQuestionModal()" aria-label="Close modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </header>
+
+                <!-- Visual step stepper -->
+                <div class="modal-stepper" id="modalStepper"></div>
+
+                <div class="problem-area">
+                    <label>Problem Statement</label>
+                    <textarea id="modalProblemText" rows="2" readonly></textarea>
+                </div>
+
+                <div class="progress-bar-wrap">
+                    <div class="progress-fill" id="modalProgressFill" style="width:0%"></div>
+                </div>
+
+                <div class="flow-label">Follow each step carefully — fill in your answer, then generate the illustration</div>
+                <div class="steps-track" id="modalStepsTrack"></div>
+                <div class="buttons-row" id="modalButtonsRow"></div>
+
+                <p class="students-note" id="modalStudentsNote">Direct input from students</p>
+
+                <div class="feedback-section">
+                    <div class="feedback-text" id="modalFeedbackText">Fill in each step before proceeding.</div>
+                </div>
+
+                <div class="ka-ref" id="modalKaRef"></div>
+
+                <div class="next-wrap">
+                    <button class="btn-next" id="modalBtnNext" disabled>
+                        <i class="fas fa-check-circle mr-2"></i> Finish & Submit
+                    </button>
+                </div>
+
+                <div class="celebration" id="modalCelebration">
+                    <div style="font-size:2.5rem;margin-bottom:8px;">🎉</div>
+                    <h2>Well done!</h2>
+                    <p>You've completed all 5 steps of the problem-solving process.</p>
+                    <button class="btn-restart" onclick="restartModal()">Solve Another Problem</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---------- SESSION PROTECTION ----------
+        const studentId = localStorage.getItem('student_id');
+        const studentName = localStorage.getItem('student_name');
+        const studentSectionId = localStorage.getItem('student_section');
+        if (!studentId || !studentName || !studentSectionId) {
+            window.location.href = 'login.html';
+            throw new Error('Redirecting to login...');
+        }
+
+        // ---------- API KEY ----------
+        const PICSART_API_KEY = "paat-UFNcJYyYb4pwsJNqts3UeKTn7U9";
+
+        async function generateImage(prompt) {
+            try {
+                const createRes = await fetch("https://genai-api.picsart.io/v1/text2image", {
+                    method: "POST",
+                    headers: {
+                        accept: "application/json",
+                        "content-type": "application/json",
+                        "X-Picsart-API-Key": PICSART_API_KEY
+                    },
+                    body: JSON.stringify({
+                        prompt: `algebra math storyboard step: ${prompt}. clean whiteboard style, educational illustration, simple math sketch`,
+                        width: 384,
+                        height: 384,
+                        count: 1
+                    })
+                });
+                if (!createRes.ok) throw new Error(`API Error: ${createRes.status}`);
+                const createData = await createRes.json();
+                if (!createData.inference_id) throw new Error("No inference ID");
+                return await pollImage(createData.inference_id);
+            } catch(e) {
+                console.error("Gen error:", e);
+                throw e;
+            }
+        }
+
+        async function pollImage(inferenceId) {
+            for (let i = 0; i < 48; i++) {
+                await new Promise(r => setTimeout(r, 2500));
+                try {
+                    const statusRes = await fetch(`https://genai-api.picsart.io/v1/text2image/inferences/${inferenceId}`, {
+                        headers: { "X-Picsart-API-Key": PICSART_API_KEY }
+                    });
+                    if (!statusRes.ok) throw new Error(`Poll error: ${statusRes.status}`);
+                    const statusData = await statusRes.json();
+                    if (statusData.status === "success" && statusData.data?.length) return statusData.data[0].url;
+                    if (statusData.status === "failed") throw new Error("Generation failed");
+                } catch(e) { console.warn(e); }
+            }
+            throw new Error("Timeout generating image");
+        }
+
+        async function generateImageForModal(prompt) {
+            const index = activeQuestionIndex;
+            try {
+                const imageUrl = await generateImage(prompt);
+                stepImages[index] = imageUrl;
+                return imageUrl;
+            } catch (err) {
+                throw err;
+            }
+        }
+
+        // ---------- DATA ----------
+        const questions = [
+            "Agnes is x years old. How old will she be in 12 years?",
+            "A bus travels n miles in 1 hour (h). Express the distance traveled by the bus after 3 hours.",
+            "The length of a rectangular vegetable garden is twice a number increased by 12 and its width is a number decreased by 5. Write an algebraic expression to represent the perimeter of the rectangle.",
+            "A chicken is g pounds. It needs to be cooked for 15 minutes per pound plus an extra 5 minutes. What is the total cooking time?",
+            "Maria had b pesos. She spends 50 pesos for a snack and d pesos for her cellular load. How much money is left?",
+            "Bong has v chocolates and w drinks. Brian has three fewer chocolates but twice as many drinks than Bong. Write the equation for Brian's snack.",
+            "In a bowl of vegetables, there are r squash and s eggplant. In a paper bag there are 6 squash and 10 eggplants. Write the total number of vegetables as an expression.",
+            "Jaymark is h years old. How old will he be in 22 years?",
+            "A tricycle travels m kilometers in 1 hour (h). Express the distance traveled by the tricycle after 4 hours.",
+            "Robert wants to fence his rectangular lot. If the length of the lot is 3 meters longer than its width. What is the perimeter of the rectangular lot if its width is y meters?",
+            "Michael takes u hours and v minutes to complete the typing job. His friend Shane takes twice as long to finish typing. Write an algebraic expression for Shane's typing speed.",
+            "Printing of greeting cards consists of a fixed charge of Php 150 and a charge of Php 5 for each card printed. What is the cost of printing d cards?",
+            "Mhackie helps his father feed the chickens in their farm. Each day, a chicken z eats 95 grams of growing mash. What is the algebraic expression for the daily food budget?",
+            "Rose had four rare caladiums h in her garden. During weekends she buys additional rare caladiums. Express her total rare caladiums in algebraic expression.",
+            "A bicycle travels f meters in 45 minutes. Express the speed of the bicycle after 180 minutes.",
+            "Karen plans to fence her rectangular garden. If the length is 5m longer than its width c, what is the perimeter?",
+            "Johan takes w hours and x minutes to complete a planting job. Kenneth takes twice as long. Write an algebraic expression.",
+            "Flora bought w shirts. How much will she pay if each shirt costs Php 95?",
+            "Rejie has s cokes and t breads. Christian has six fewer cokes but thrice as many breads. Write the expression.",
+            "A water tank has 155 liters of water. What is the amount left if c liters have been used?",
+            "A motorcycle travels n miles in 1 hour. Express the distance after 15 hours.",
+            "Harry plans to fence a rectangular garden. Length is 10m longer than width p. What is the perimeter?",
+            "Ace takes x hours and y minutes to fetch water. James takes four times longer. Write an expression.",
+            "Kein bought n shoes. How much will he pay if each pair costs Php 300?",
+            "A cow q eats 56 grams of grass daily. What is the algebraic expression for the food budget?",
+            "A train travels d miles in 1 hour. Express the distance after 4 hours.",
+            "The length of a rectangular basketball court is thrice a number increased by 5 and width is decreased by 7. Find the perimeter expression.",
+            "A beef is m kilograms. Cooking time is 30 minutes per kg plus 10 minutes. What is the total cooking time?",
+            "Abby had Php 1,500. She bought 5 lipsticks worth m pesos each. How much money is left?",
+            "Ezekiel has p white shirts and q black shirts. Zein has half as many white shirts and 10 less black shirts. Write an expression for Zein's total shirts."
+        ];
+
+        const feedbacks = [
+            { steps: [
+                `Given:
+                Agnes's current age = x
+                Time passed = 12 years
+                Asked:
+                How old will she be in 12 years?`,
+                `x = Agnes's current age`,
+                `To find the future age, add the number of years passed to the current age.
+                x + 12`,
+                `Agnes will be x + 12 years old.`,
+                `The problem indicates that the phrase "in 12 years" represents adding 12 to the current age x.
+                Adding the current age (x) and the years passed (12) results in the expression x + 12.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Distance of the bus traveled in 1 hour = n miles
+                Time passed = 3 hours
+                Asked:
+                Express the distance traveled by the bus after 3 hours`,
+                `n = miles traveled of the bus in 1 hour`,
+                `Since the bus travels n miles every hour, we multiply the rate by the total number of hours.
+                3×n=3n`,
+                `The distance traveled by the bus is 3n miles.`,
+                `The problem indicates that traveling a certain distance (n) consistently for 3 hours represents multiplication.
+                Multiplying the distance per hour (n) by the number of hours (3) results in the expression 3n.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                length = twice a number increased by 3
+                width = a number decreased by 5
+                Asked:
+                Write an algebraic expression to represent the perimeter of the rectangle`,
+                `x = a number
+                length of the rectangular vegetable garden= 2x + 3
+                width of the rectangular vegetable garden = x - 5`,
+                `Perimeter = length + length + width + width
+                Perimeter = (2x + 3) + (2x + 3) + (x - 5) + (x - 5)
+                Perimeter = 2x + 2x + x + x + 3 + 3 - 5 - 5
+                Simplified Expression: 6x - 4`,
+                `The perimeter of the rectangular vegetable garden is 6x - 4.`,
+                `The problem indicates that the phrase "twice a number increased by 3" matches the length expression 2x + 3.
+                The problem indicates that the phrase "a number decreased by 5" matches the width expression x - 5.
+                Adding all sides together (length + length + width + width) or calculating 2(2x + 3) + 2(x - 5) results in the expression 6x - 4.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Weight of the chicken = g pounds
+                Cooking time per pound of the chicken = 15 minutes
+                Extra time = 5 minutes
+                Asked:
+                What is the total cooking time?`,
+                `g = pounds of chicken`,
+                `Multiply the weight (g) by the cooking time per pound (15).
+                Add the extra 5 minutes.
+                15×g+5
+                15g+5`,
+                `The total cooking time is 15g + 5 minutes.`,
+                `The problem indicates that "15 minutes per pound" represents multiplication: 15×g=15g.
+                The problem indicates that "plus an extra 5 minutes" represents addition: +5.
+                Adding the cooking time per pound (15g) and the extra time (5) results in the expression 15g+5.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Maria's starting money = b pesos
+                cost of snack = 50 pesos
+                cost of cellular load = d pesos
+                Asked:
+                How much money is left?`,
+                `b = initial amount of pesos
+                d = cost of cellular load`,
+                `Total expenses = cost of snack + cost of cellular load
+                Total expenses = 50 + d
+                Money left = Maria's starting money - total expenses
+                Money left = b - (50 + d) or b - 50 - d`,
+                `The money left is b - 50 - d pesos.`,
+                `The problem indicates that "spends" requires subtraction from the starting money b.
+                The total expenses are determined by adding the cost of snacks (50) and the cost of cellular load (d), which is 50 + d.
+                Subtracting the total expenses from the starting money (b) results in the expression b - (50 + d) or b - 50 - d.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Bong's chocolates = v
+                Bong's drinks = w
+                Brian's chocolates = three fewer than Bong's
+                Brian's drinks = twice as many as Bong's
+                Asked:
+                Write the equation for Brian’s snack`,
+                `v = number of Bong's chocolates
+                w = number of Bong's drinks
+                v - 3 = number of Brian's chocolates
+                2w = number of Brian's drinks`,
+                `Brian's snack is the sum of his chocolates and his drinks.
+                Total Snack = Brian's chocolates + Brian's drinks
+                Expression: (v - 3) + 2w or v - 3 + 2w`,
+                `The equation for Brian's snack is v - 3 + 2w.`,
+                `The problem indicates that "three fewer chocolates" represents subtraction from Bong's chocolates (v): v - 3.
+                The problem indicates that "twice as many drinks" represents multiplication of Bong's drinks (w): 2w.
+                Combining Brian's chocolates (v - 3) and Brian's drinks (2w) results in the expression v - 3 + 2w.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                squash in the bowl = r
+                eggplant in the bowl = s
+                squash in the paper bag = 6
+                eggplant in the paper bag = 10
+                Asked:
+                Write the total number of vegetables as an expression`,
+                `r = number of squash in the bowl
+                s = number of eggplant in the bowl
+                r + 6 = total number of squash
+                s + 10 = total number of eggplant`,
+                `The total number of vegetables is the sum of all squash and all eggplants from both containers.
+                Total vegetables = total squash + total eggplant
+                Expression: (r + 6) + (s + 10) or r + s + 16`,
+                `The total number of vegetables is r + s + 16.`,
+                `The problem indicates that the total number of squash is the sum of those in the bowl (r) and the paper bag (6): r + 6.
+                The problem indicates that the total number of eggplants is the sum of those in the bowl (s) and the paper bag (10): s + 10.
+                Combining all vegetables together results in the expression r + s + 16.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Jaymark's current age = h
+                Time passed = 22 years
+                Asked:
+                How old will he be in 22 years?`,
+                `h = Jaymark's current age`,
+                `To find the future age, add the number of years passed to the current age.
+                Expression: h + 22`,
+                `Jaymark will be h + 22 years old.`,
+                `The problem indicates that the phrase "in 22 years" represents adding 22 to the current age h.
+                Adding the current age (h) and the years passed (22) results in the expression h + 22.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                distance traveled by the tricycle in 1 hour = m kilometers
+                total time traveled = 4 hours
+                Asked:
+                Express the distance traveled by the tricycle after 4 hours`,
+                `m = distance in kilometers per hour`,
+                `To find the total distance, multiply the distance traveled in one hour by the total number of hours.
+                Expression: 4m`,
+                `The distance traveled by the tricycle is 4m kilometers.`,
+                `The problem indicates that traveling a certain distance (m) consistently for 4 hours represents multiplication.
+                Multiplying the distance per hour (m) by the number of hours (4) results in the expression 4m.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                width of the rectangular lot = y meters
+                length of the lot = 3 meters longer than the width
+                Asked:
+                What is the perimeter of the rectangular lot if its width is y meters?`,
+                `y = width of the lot
+                y + 3 = length of the lot`,
+                `The perimeter of a rectangle is the sum of all its sides (two lengths and two widths).
+                Perimeter = length + length + width + width
+                Expression: (y + 3) + (y + 3) + y + y or 2(y + 3) + 2y or 4y + 6`,
+                `The perimeter of the rectangular lot is 4y + 6 meters.`,
+                `The problem indicates that the phrase "3 meters longer than its width" matches the length expression y + 3.
+                The problem indicates that the width is y.
+                Adding all sides together (length + length + width + width) results in the expression 4y + 6.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Michael's typing time = u hours and v minutes
+                Shane's typing time = twice as long as Michael's time
+                Asked:
+                Write the algebraic expression for Shane’s typing speed`,
+                `u = number of hours Michael takes
+                v = number of minutes Michael takes
+                60u + v = Michael's total time in minutes`,
+                `Shane takes twice as long as Michael to finish the typing job.
+                Shane's time = 2 × Michael's total time in minutes
+                Shane's time = 2 × (60u+v)
+                Expression: 120u+2v`,
+                `The algebraic expression for Shane's typing time is 120u + 2v minutes.`,
+                `The problem indicates that "twice as long" represents multiplying Michael's time by 2.
+                Michael's total time in minutes is found by converting hours to minutes (60u) and adding the remaining minutes (v), which is 60u + v.
+                Multiplying Michael's total minutes (60u + v) by 2 results in the expression 120u + 2v.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                fixed charge = 150 pesos
+                charge per card = 5 pesos
+                number of cards = d
+                Asked:
+                What is the cost of printing d cards?`,
+                `d = number of cards printed
+                5d = total charge for printing the cards`,
+                `The total cost is the sum of the fixed charge and the total charge for the number of cards printed.
+                Total Cost = fixed charge + (charge per card times number of cards)
+                Expression: 150 + 5d or 5d + 150`,
+                `The cost of printing d cards is 5d + 150 pesos.`,
+                `The problem indicates that "Php 5 for each card" represents multiplication: 5×d=5d.
+                The problem indicates that there is a "fixed charge of Php 150," which represents addition: +150.
+                Adding the charge for the cards (5d) and the fixed charge (150) results in the expression 5d+150.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Amount of food each chicken eats per day = 95 grams
+                Number of chickens in the farm= z
+                Asked:
+                What is the algebraic expression that  represents the daily food budget for the chickens in the farm?`,
+                `z = number of chickens in the farm`,
+                `To find the total amount of food for the entire flock, the amount eaten by a single chicken must be multiplied by the total number of chickens.
+                Daily Food Budget = (grams of mash per chicken) times (total number of chickens)
+                Expression: 95z`,
+                `The algebraic expression for the daily food budget is 95z grams.`,
+                `The problem indicates that "95 grams" for "each chicken" represents a rate that requires multiplication.
+                Multiplying the constant amount (95) by the variable representing the number of chickens (z) results in the expression 95z.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Initial number of rare caladiums of Rose = 4
+                Number of additional rare caladiums bought by Rose = h
+                Asked:
+                Express her total rare caladiums in algebraic expression`,
+                `h = number of additional rare caladiums bought during weekends`,
+                `To find the total number of plants, the initial amount in the garden must be added to the amount purchased.
+                Total caladiums = Initial amount + additional amount
+                Expression: 4 + h or h + 4`,
+                `The total number of rare caladiums is h + 4.`,
+                `The problem indicates that "four rare caladiums" is the starting amount.
+                The problem indicates that "additional" caladiums were bought, which represents addition.
+                Adding the initial count (4) and the new count (h) results in the expression h + 4.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Distance traveled by the bicycle in 45 minutes = f meters
+                Initial time = 45 minutes
+                Total time = 180 minutes
+                Asked:
+                Express the speed of the bicycle after 180 minutes`,
+                `f = distance traveled by the bicycle in 45 minutes`,
+                `First, determine how many 45-minute intervals are in 180 minutes by dividing 180 by 45, which equals 4.
+                Since the bicycle travels f meters every 45 minutes, the total distance after 180 minutes is 4 times the initial distance.
+                Total distance = 4 times f
+                Expression: 4f`,
+                `The distance traveled by the bicycle after 180 minutes is 4f meters.`,
+                `The problem indicates that the bicycle covers f meters in 45 minutes.
+                In 180 minutes (which is 45 + 45 + 45 + 45), the bicycle covers the distance f four times.
+                Multiplying the distance (f) by the number of intervals (4) results in the expression 4f.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                width of the rectangular garden = c meters
+                length of the garden = 5 meters longer than its width
+                Asked:
+                What is the perimeter of the garden?`,
+                `c = width of the garden
+                c + 5 = length of the garden`,
+                `The perimeter of a rectangle is the sum of all its four sides, which consists of two lengths and two widths.
+                Perimeter = (2 × length) + (2 × width)
+                Perimeter = 2(c + 5) + 2(c)
+                Expression: 4c + 10`,
+                `The perimeter of Karen's garden is 4c + 10 meters.`,
+                `The problem indicates that "5m longer than its width" translates to c + 5.
+                Calculating the sum of all sides (c + 5 + c + 5 + c + c) results in 4c + 10.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Time Johan takes to complete the planting job = w hours and x minutes
+                Kenneth's planting time = twice as long as Johan's time
+                Asked:
+                Write an algebraic expression for Kenneth’s planting job`,
+                `w = number of hours Johan takes
+                x = number of minutes Johan takes
+                60w + x = Johan's total time in minutes`,
+                `Kenneth takes twice as long as Johan to finish the planting job.
+                Kenneth's time = 2 × Johan's total time in minutes
+                Kenneth's time = 2×(60w+x)
+                Expression: 120w + 2x`,
+                `The algebraic expression for Kenneth’s planting job time is 120w + 2x minutes.`,
+                `The problem indicates that "twice as long" represents multiplying Johan's time by 2.
+                Johan's total time in minutes is found by converting hours to minutes (60w) and adding the remaining minutes (x), which is 60w + x.
+                Multiplying Johan's total minutes (60w + x) by 2 results in the expression 120w + 2x.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Number of shirts Flora bought for the orphans = w
+                Cost of each shirt = Php 95
+                Asked:
+                How much will she pay if each shirt costs Php 95?`,
+                `w = number of shirts bought`,
+                `Flora must calculate the total cost by multiplying the number of shirts by the price of each individual shirt.
+                Total payment = Price per shirt × number of shirts
+                Total payment = 95 × w
+                Expression: 95w`,
+                `The algebraic expression for the total amount Flora will pay is 95w pesos.`,
+                `The problem indicates that "each shirt costs Php 95," which represents a unit rate requiring multiplication.
+                Multiplying the constant cost (95) by the variable representing the number of shirts (w) results in the expression 95w.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Number of cokes Rejie has = s
+                Number of breads Rejie has = t
+                Christian's snacks = six fewer cokes and thrice as many breads as Rejie
+                Asked:
+                Write the expression for Christian’s snack`,
+                `s = number of cokes Rejie has
+                t = number of breads Rejie has
+                s - 6 = number of cokes Christian has
+                3t = number of breads Christian has`,
+                `Christian has six fewer cokes than Rejie, which means we subtract 6 from Rejie's cokes (s).
+                Christian has thrice as many breads as Rejie, which means we multiply Rejie's breads (t) by 3.
+                Christian's snack = (cokes part) and (breads part)
+                Expression: (s - 6) + 3t (or simply s - 6 cokes and 3t breads)`,
+                `The problem indicates that "six fewer" indicates subtraction from the original amount of cokes.
+                The phrase "thrice as many" indicates multiplication of the original amount of breads by 3.
+                Combining the modified amounts for cokes (s - 6) and breads (3t) correctly represents Christian's total snack.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Initial amount of water in the tank = 155 liters
+                Amount of water used = c liters
+                Asked:
+                What is the amount of water if c liters have been used?`,
+                `c = number of liters used from the tank`,
+                `To find the remaining amount of water, the amount that has been used must be subtracted from the starting total.
+                Remaining water = Total water - used water
+                Remaining water = 155 - c
+                Expression: 155 - c`,
+                `The algebraic expression for the amount of water remaining is 155 - c liters.`,
+                `The problem indicates that water has been "used," which represents the operation of subtraction from the initial supply.
+                Subtracting the used amount (c) from the original volume (155) results in the expression 155 - c.
+                The expression correctly reflects the remaining water in the tank.`
+            ]},
+            { steps: [
+                `Given:
+                Distance traveled by the motorcycle in 1 hour = n miles
+                Initial time = 1 hour (h)
+                Total time = 15 hours
+                Asked:
+                Express the distance traveled by the motorcycle after 15 hours`,
+                `n = distance traveled by the motorcycle in 1 hour`,
+                `Since the motorcycle travels n miles every hour, the total distance after 15 hours is found by multiplying the distance per hour by the total number of hours.
+                Total distance = distance per hour times total time
+                Total distance = n × 15
+                Expression: 15n`,
+                `The distance traveled by the motorcycle after 15 hours is 15n miles.`,
+                `The problem indicates that the motorcycle covers n miles in 1 hour.
+                In 15 hours, the motorcycle will cover that same distance n, fifteen times over.
+                Multiplying the distance (n) by the number of hours (15) results in the expression 15n.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Width of the rectangular garden = p meters
+                Length of the garden = 10 meters longer than its width
+                Asked:
+                What is the perimeter of the garden?`,
+                `p = width of the garden
+                p + 10 = length of the garden`,
+                `The perimeter of a rectangle is the sum of all its sides (two lengths and two widths).
+                Perimeter = 2 × (length + width)
+                Perimeter = 2 × (p + 10 + p)
+                Expression: 4p + 20`,
+                `The algebraic expression for the perimeter of Harry's garden is 4p + 20 meters.`,
+                `The phrase "10m longer than its width" represents multiplying the width by adding 10 to p.
+                Adding all four sides (p + p + 10 + p + p + 10) results in 4p + 20.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Ace's water fetching time = x hours and y minutes
+                James's water fetching time = four times longer than Ace's time
+                Asked:
+                Write an algebraic expression for the time James takes to fetch water`,
+                `x = number of hours Ace takes
+                y = number of minutes Ace takes
+                60x + y = Ace's total time in minutes`,
+                `James takes four times longer than Ace to finish fetching water.
+                James's time = 4 × Ace's total time in minutes
+                James's time = 4 × (60x + y)
+                Expression: 240x + 4y`,
+                `The algebraic expression for James's fetching time is 240x + 4y minutes.`,
+                `The problem indicates that "four times longer" represents multiplying Ace's time by 4.
+                Ace's total time in minutes is found by converting hours to minutes (60x) and adding the remaining minutes (y), which is 60x + y.
+                Multiplying Ace's total minutes (60x + y) by 4 results in the expression 240x + 4y.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Number of shoes Kein bought for elders in the community= n
+                Cost of each pair of shoes = Php 300
+                Asked:
+                How much will he pay if each pair of shoes costs Php 300?`,
+                `n = number of pairs of shoes bought`,
+                `Kein must calculate the total cost by multiplying the quantity of shoes by the price of a single pair.
+                Total payment = Price per pair × number of shoes
+                Total payment = 300 × n
+                Expression: 300n`,
+                `The algebraic expression for the total amount Kein will pay is 300n pesos.`,
+                `The problem indicates that "each pair of shoes costs Php 300," which identifies 300 as the unit rate.
+                Multiplying the constant cost (300) by the variable representing the number of items (n) results in the expression 300n.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Amount of grass each cow eats per day = 56 grams
+                Number of cows in the farm = q
+                Asked:
+                What is the algebraic expression that represents the daily food budget for the cows in the farm?`,
+                `q = number of cows in the farm`,
+                `To find the total daily food budget for all cows, multiply the amount of grass one cow eats by the total number of cows.
+                Daily food budget = grass per cow × number of cows
+                Daily food budget = 56× q
+                Expression: 56q`,
+                `The algebraic expression that represents the daily food budget for the cows is 56q grams of grass.`,
+                `The problem states that "each day, a cow q eats 56 grams," which establishes 56 as the constant rate per unit.
+                Multiplying the constant (56) by the variable representing the number of cows (q) results in the expression 56q.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Distance traveled by the train in 1 hour = d miles
+                Initial time = 1 hour (h)
+                Total time = 4 hours
+                Asked:
+                Express the distance traveled by the train after 4 hours`,
+                `d = distance traveled by the train in 1 hour`,
+                `Since the train travels d miles every hour, the total distance after 4 hours is calculated by multiplying the distance covered in one hour by the total number of hours.
+                Total distance = distance per hour × total time
+                Total distance = d × 4
+                Expression: 4d`,
+                `The distance traveled by the train after 4 hours is 4d miles.`,
+                `The problem indicates that the train covers d miles in 1 hour.
+                In 4 hours, the train will cover that same distance d, four times over.
+                Multiplying the distance (d) by the number of hours (4) results in the expression 4d.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Length of the rectangular basketball court = thrice a number increased by 5
+                Width of the rectangular basketball court = a number decreased by 7
+                Asked:
+                Write an algebraic expression to represent the perimeter of the rectangle`,
+                `n = the unknown number
+                3n + 5 = the length of the court
+                n - 7 = the width of the court`,
+                `The perimeter of a rectangle is found using the formula 2(l + w).
+                Substitute the expressions for length (3n + 5) and width (n - 7):
+                Perimeter = 2[(3n + 5) + (n - 7)]
+                Combine like terms inside the brackets: 2(4n - 2)
+                Distribute the 2: 8n - 4
+                Expression: 8n - 4`,
+                `The algebraic expression for the perimeter of the rectangle is 8n - 4.`,
+                `The perimeter is the sum of all four sides: (3n + 5) + (3n + 5) + (n - 7) + (n - 7).
+                Adding the terms together (3n + 3n + n + n) gives 8n, and (5 + 5 - 7 - 7) gives -4.
+                Combining these results in the expression 8n - 4.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Weight of the beef = m kilograms
+                Cooking time per kilogram = 30 minutes
+                Extra cooking time = 10 minutes
+                Asked:
+                What is the total cooking time?`,
+                `m = weight of the beef in kilograms`,
+                `To find the total time, multiply the time required per kilogram by the total number of kilograms, then add the extra fixed time.
+                Total time = (time per kg × weight) + extra time
+                Total time = (30 × m) + 10
+                Expression: 30m + 10`,
+                `The algebraic expression for the total cooking time is 30m + 10 minutes.`,
+                `The phrase "30 minutes per kilogram" indicates a rate that must be multiplied by the mass (m).
+                The phrase "plus an extra 10 minutes" indicates a constant value that is added to the total.
+                Combining these operations results in the expression 30m + 10.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Initial amount in Abby's wallet = Php 1,500
+                Number of lipsticks bought = 5
+                Cost of each lipstick = m pesos
+                Asked:
+                How much money is left in her wallet?`,
+                `m = price of one lipstick`,
+                `To find the remaining balance, subtract the total cost of the lipsticks from the initial amount of money.
+                Money left = Initial amount - (number of lipsticks × cost per lipstick)
+                Money left = 1,500 - (5 × m)
+                Expression: 1,500 - 5m`,
+                `The algebraic expression for the money left in Abby's wallet is 1,500 - 5m pesos.`,
+                `The total cost is calculated by multiplying the quantity (5) by the price per item (m), resulting in 5m.
+                "Money left" indicates that this total cost must be deducted from the starting balance of 1,500.
+                Subtracting 5m from 1,500 results in the expression 1,500 - 5m.
+                The expression correctly reflects the given problem.`
+            ]},
+            { steps: [
+                `Given:
+                Number of white shirts Ezekiel has = p
+                Number of black shirts Ezekiel has = q
+                Zein's white shirts = half as many as Ezekiel’s white shirts
+                Zein's black shirts = 10 less than Ezekiel’s black shirts
+                Asked:
+                Write an expression for Zein’s total shirts.`,
+                `p = Ezekiel's white shirts
+                q = Ezekiel's black shirts
+                p/2 = Zein's white shirts
+                q−10 = Zein's black shirts`,
+                `To find the total, add the expression for Zein's white shirts to the expression for her black shirts.
+                Total shirts = (white shirts) + (black shirts)
+                Total shirts = (p/2)+ (q - 10)
+                Expression: (p/2) + q - 10`,
+                `The algebraic expression for Zein's total shirts is (p/2) + q - 10.`,
+                `The phrase "half as many" indicates dividing the number of white shirts (p) by 2.
+                The phrase "10 less" indicates subtracting 10 from the number of black shirts (q).
+                Combining the two parts by addition results in the expression (p/2) + q - 10.
+                The expression correctly reflects the given problem.`
+            ]}
+        ];
+
+        // Complete expected answers for all 30 questions
+        const expectedAnswers = [
+            {   // Q1: Agnes age problem
+                keywords: ["add", "plus", "x", "+", "12", "older", "years"],
+                concept: "addition of current age and years passed",
+                acceptablePhrases: ["x + 12", "x plus 12", "add 12 to x", "12 years older than x", "x+12", "Agnes will be x + 12 years old", "Agnes will be x+12 years old", "she will be x + 12 years old", "she will be x+12"],
+                hints: ["Current age is x", "Add 12 years", "Expression: x + 12"]
+            },
+            {   // Q2: Bus travel
+                keywords: ["multiply", "times", "3", "n", "distance", "rate", "speed", "per hour"],
+                concept: "rate multiplied by time",
+                acceptablePhrases: ["3n", "3 times n", "n multiplied by 3", "3 × n", "n*3", "3•n", "the distance traveled by the bus is 3n miles", "distance is 3n", "3n miles"],
+                hints: ["Distance = speed × time", "Speed is n miles per hour", "Time is 3 hours", "Expression: 3n"]
+            },
+            {   // Q3: Garden perimeter
+                keywords: ["perimeter", "2l+2w", "2(length+width)", "6x-4", "length", "width", "twice"],
+                concept: "perimeter formula with algebraic expressions",
+                acceptablePhrases: ["6x-4", "6x - 4", "2(2x+3)+2(x-5)", "4x+6+2x-10", "6x minus 4", "the perimeter of the rectangular vegetable garden is 6x - 4", "perimeter is 6x - 4", "perimeter is 6x-4"],
+                hints: ["Length = 2x + 3", "Width = x - 5", "Perimeter = 2L + 2W", "Simplify to 6x - 4"]
+            },
+            {   // Q4: Chicken cooking time
+                keywords: ["multiply", "15", "g", "pounds", "plus", "add", "5", "extra", "minutes"],
+                concept: "multiplication then addition",
+                acceptablePhrases: ["15g+5", "15g + 5", "15 times g plus 5", "15 per pound plus 5", "15g plus 5", "the total cooking time is 15g + 5 minutes", "cooking time is 15g + 5", "total time is 15g+5"],
+                hints: ["15 minutes per pound = 15g", "Plus extra 5 minutes", "Expression: 15g + 5"]
+            },
+            {   // Q5: Maria's money
+                keywords: ["subtract", "minus", "b", "50", "d", "remaining", "left", "spend"],
+                concept: "subtraction of total expenses from initial amount",
+                acceptablePhrases: ["b-50-d", "b - 50 - d", "b minus 50 minus d", "b - (50+d)", "b less 50 less d", "the money left is b - 50 - d pesos", "money left is b - 50 - d", "b - 50 - d pesos"],
+                hints: ["Start with b pesos", "Subtract snack (50)", "Subtract load (d)", "Expression: b - 50 - d"]
+            },
+            {   // Q6: Bong and Brian
+                keywords: ["fewer", "subtract", "3", "v", "twice", "multiply", "2", "w", "add"],
+                concept: "subtraction and multiplication combined",
+                acceptablePhrases: ["v-3+2w", "v - 3 + 2w", "(v-3) + 2w", "v minus 3 plus 2w", "the equation for brian's snack is v - 3 + 2w", "brian's snack is v - 3 + 2w", "v - 3 + 2w snack"],
+                hints: ["Bong has v chocolates", "Brian has v - 3 chocolates", "Brian has 2w drinks", "Add them: (v-3) + 2w"]
+            },
+            {   // Q7: Vegetables
+                keywords: ["add", "plus", "r", "s", "6", "10", "total", "combine", "sum"],
+                concept: "addition of all quantities",
+                acceptablePhrases: ["r+s+16", "r + s + 16", "(r+6)+(s+10)", "r plus s plus 16", "the total number of vegetables is r + s + 16", "total is r + s + 16", "r + s + 16 vegetables"],
+                hints: ["Squash: r + 6", "Eggplant: s + 10", "Total: (r+6) + (s+10) = r + s + 16"]
+            },
+            {   // Q8: Jaymark's age
+                keywords: ["add", "plus", "h", "22", "older", "years", "future"],
+                concept: "addition to current age",
+                acceptablePhrases: ["h+22", "h + 22", "h plus 22", "22 years older than h", "jaymark will be h + 22 years old", "he will be h + 22 years old", "h + 22 years old"],
+                hints: ["Current age = h", "Add 22 years", "Expression: h + 22"]
+            },
+            {   // Q9: Tricycle distance
+                keywords: ["multiply", "times", "m", "4", "distance", "rate", "per hour"],
+                concept: "rate multiplied by time",
+                acceptablePhrases: ["4m", "4 times m", "m multiplied by 4", "4 × m", "m*4", "the distance traveled by the tricycle is 4m kilometers", "distance is 4m", "4m kilometers"],
+                hints: ["Rate = m km per hour", "Time = 4 hours", "Distance = 4m"]
+            },
+            {   // Q10: Robert's fence
+                keywords: ["perimeter", "y", "width", "length", "y+3", "2l+2w", "4y+6"],
+                concept: "perimeter of rectangle with variable width",
+                acceptablePhrases: ["4y+6", "4y + 6", "2(y+3)+2y", "4y plus 6", "the perimeter of the rectangular lot is 4y + 6 meters", "perimeter is 4y + 6", "4y + 6 meters"],
+                hints: ["Width = y", "Length = y + 3", "Perimeter = 2(y+3) + 2y = 4y + 6"]
+            },
+            {   // Q11: Michael typing
+                keywords: ["twice", "multiply", "2", "hours", "minutes", "convert", "60u+v", "120u+2v"],
+                concept: "time conversion then multiplication",
+                acceptablePhrases: ["120u+2v", "120u + 2v", "2(60u+v)", "120u plus 2v", "the algebraic expression for shane's typing time is 120u + 2v minutes", "shane's time is 120u + 2v", "120u + 2v minutes"],
+                hints: ["Convert to minutes: 60u + v", "Twice as long: 2(60u+v) = 120u + 2v"]
+            },
+            {   // Q12: Greeting cards
+                keywords: ["fixed", "150", "plus", "5", "per card", "d", "variable"],
+                concept: "fixed cost plus variable cost",
+                acceptablePhrases: ["150+5d", "150 + 5d", "5d+150", "150 plus 5d", "the cost of printing d cards is 5d + 150 pesos", "cost is 5d + 150", "5d + 150 pesos"],
+                hints: ["Fixed charge: 150", "Per card: 5d", "Total: 150 + 5d"]
+            },
+            {   // Q13: Chicken feed
+                keywords: ["multiply", "95", "z", "each", "per day", "grams"],
+                concept: "rate multiplied by quantity",
+                acceptablePhrases: ["95z", "95 times z", "95 × z", "95•z", "95z grams", "the algebraic expression for the daily food budget is 95z grams", "daily food budget is 95z", "95z grams of mash"],
+                hints: ["Each chicken eats 95g", "z chickens", "Total: 95z"]
+            },
+            {   // Q14: Caladiums
+                keywords: ["add", "plus", "4", "h", "initial", "additional", "total"],
+                concept: "addition of initial and additional items",
+                acceptablePhrases: ["4+h", "4 + h", "h+4", "h plus 4", "4 plus h", "the total number of rare caladiums is h + 4", "total caladiums is h + 4", "h + 4 caladiums"],
+                hints: ["Start with 4", "Add h more", "Expression: 4 + h"]
+            },
+            {   // Q15: Bicycle speed
+                keywords: ["multiply", "4", "f", "times", "45 minutes", "180 minutes"],
+                concept: "multiplication of repeated intervals",
+                acceptablePhrases: ["4f", "4 times f", "f multiplied by 4", "4 × f", "the distance traveled by the bicycle after 180 minutes is 4f meters", "distance is 4f meters", "4f meters"],
+                hints: ["180 ÷ 45 = 4 intervals", "Multiply f by 4", "Expression: 4f"]
+            },
+            {   // Q16: Karen's garden
+                keywords: ["perimeter", "c", "width", "c+5", "length", "4c+10"],
+                concept: "perimeter formula with variable",
+                acceptablePhrases: ["4c+10", "4c + 10", "2(c+5)+2c", "4c plus 10", "the perimeter of karen's garden is 4c + 10 meters", "perimeter is 4c + 10", "4c + 10 meters"],
+                hints: ["Width = c", "Length = c+5", "Perimeter = 2(c+5) + 2c = 4c + 10"]
+            },
+            {   // Q17: Johan planting
+                keywords: ["twice", "multiply", "2", "hours", "minutes", "convert", "120w+2x"],
+                concept: "time conversion then multiplication",
+                acceptablePhrases: ["120w+2x", "120w + 2x", "2(60w+x)", "120w plus 2x", "the algebraic expression for kenneth's planting job time is 120w + 2x minutes", "kenneth's time is 120w + 2x", "120w + 2x minutes"],
+                hints: ["Convert: 60w + x minutes", "Twice: 2(60w+x) = 120w + 2x"]
+            },
+            {   // Q18: Flora shirts
+                keywords: ["multiply", "95", "w", "each", "cost", "price"],
+                concept: "price multiplied by quantity",
+                acceptablePhrases: ["95w", "95 times w", "95 × w", "95•w", "95w pesos", "the algebraic expression for the total amount flora will pay is 95w pesos", "flora will pay 95w pesos", "total is 95w pesos"],
+                hints: ["Each shirt: 95", "Number of shirts: w", "Total: 95w"]
+            },
+            {   // Q19: Rejie cokes and breads
+                keywords: ["fewer", "subtract", "6", "s", "thrice", "multiply", "3", "t", "add"],
+                concept: "subtraction and multiplication",
+                acceptablePhrases: ["s-6+3t", "s - 6 + 3t", "(s-6)+3t", "s minus 6 plus 3t", "christian has s - 6 cokes and 3t breads", "christian's snack is s - 6 + 3t", "(s-6) + 3t"],
+                hints: ["Cokes: s - 6", "Breads: 3t", "Total: (s-6) + 3t"]
+            },
+            {   // Q20: Water tank
+                keywords: ["subtract", "minus", "155", "c", "used", "remaining", "left"],
+                concept: "subtraction of used amount from total",
+                acceptablePhrases: ["155-c", "155 - c", "155 minus c", "155 less c", "the algebraic expression for the amount of water remaining is 155 - c liters", "remaining water is 155 - c", "155 - c liters"],
+                hints: ["Start with 155 liters", "Subtract c liters used", "Expression: 155 - c"]
+            },
+            {   // Q21: Motorcycle distance
+                keywords: ["multiply", "15", "n", "rate", "time", "distance", "per hour"],
+                concept: "rate multiplied by time",
+                acceptablePhrases: ["15n", "15 times n", "n multiplied by 15", "15 × n", "the distance traveled by the motorcycle after 15 hours is 15n miles", "distance is 15n miles", "15n miles"],
+                hints: ["Rate = n mph", "Time = 15 hours", "Distance = 15n"]
+            },
+            {   // Q22: Harry's garden
+                keywords: ["perimeter", "p", "width", "p+10", "length", "4p+20"],
+                concept: "perimeter with variable",
+                acceptablePhrases: ["4p+20", "4p + 20", "2(p+10)+2p", "4p plus 20", "the algebraic expression for the perimeter of harry's garden is 4p + 20 meters", "perimeter is 4p + 20", "4p + 20 meters"],
+                hints: ["Width = p", "Length = p+10", "Perimeter = 2(p+10)+2p = 4p+20"]
+            },
+            {   // Q23: Ace fetching water
+                keywords: ["four times", "multiply", "4", "hours", "minutes", "convert", "240x+4y"],
+                concept: "time conversion then multiplication by 4",
+                acceptablePhrases: ["240x+4y", "240x + 4y", "4(60x+y)", "240x plus 4y", "the algebraic expression for james's fetching time is 240x + 4y minutes", "james's time is 240x + 4y", "240x + 4y minutes"],
+                hints: ["Convert: 60x + y minutes", "Four times: 4(60x+y) = 240x + 4y"]
+            },
+            {   // Q24: Kein shoes
+                keywords: ["multiply", "300", "n", "each", "cost", "price", "pair"],
+                concept: "price multiplied by quantity",
+                acceptablePhrases: ["300n", "300 times n", "300 × n", "300•n", "300n pesos", "the algebraic expression for the total amount kein will pay is 300n pesos", "kein will pay 300n pesos", "total is 300n pesos"],
+                hints: ["Each pair: 300", "Number of pairs: n", "Total: 300n"]
+            },
+            {   // Q25: Cow grass
+                keywords: ["multiply", "56", "q", "each", "daily", "grams"],
+                concept: "rate multiplied by quantity",
+                acceptablePhrases: ["56q", "56 times q", "56 × q", "56•q", "56q grams", "the algebraic expression that represents the daily food budget for the cows is 56q grams of grass", "daily food budget is 56q", "56q grams of grass"],
+                hints: ["Each cow eats 56g", "q cows", "Total: 56q"]
+            },
+            {   // Q26: Train distance
+                keywords: ["multiply", "4", "d", "rate", "time", "distance", "per hour"],
+                concept: "rate multiplied by time",
+                acceptablePhrases: ["4d", "4 times d", "d multiplied by 4", "4 × d", "the distance traveled by the train after 4 hours is 4d miles", "distance is 4d miles", "4d miles"],
+                hints: ["Rate = d mph", "Time = 4 hours", "Distance = 4d"]
+            },
+            {   // Q27: Basketball court
+                keywords: ["perimeter", "thrice", "3n+5", "n-7", "8n-4", "length", "width"],
+                concept: "perimeter with algebraic expressions",
+                acceptablePhrases: ["8n-4", "8n - 4", "2(3n+5)+2(n-7)", "6n+10+2n-14", "8n minus 4", "the algebraic expression for the perimeter of the rectangle is 8n - 4", "perimeter is 8n - 4", "8n - 4 perimeter"],
+                hints: ["Length = 3n+5", "Width = n-7", "Perimeter = 2(3n+5)+2(n-7) = 8n-4"]
+            },
+            {   // Q28: Beef cooking
+                keywords: ["multiply", "30", "m", "plus", "10", "extra", "minutes", "per kg"],
+                concept: "multiplication then addition",
+                acceptablePhrases: ["30m+10", "30m + 10", "30 times m plus 10", "30m plus 10", "the algebraic expression for the total cooking time is 30m + 10 minutes", "cooking time is 30m + 10", "total time is 30m + 10"],
+                hints: ["30 min per kg = 30m", "Plus extra 10 minutes", "Expression: 30m+10"]
+            },
+            {   // Q29: Abby lipsticks
+                keywords: ["subtract", "minus", "1500", "5m", "spent", "left", "remaining"],
+                concept: "subtraction of total cost from initial amount",
+                acceptablePhrases: ["1500-5m", "1500 - 5m", "1500 minus 5m", "1500 less 5m", "the algebraic expression for the money left in abby's wallet is 1500 - 5m pesos", "money left is 1500 - 5m", "1500 - 5m pesos"],
+                hints: ["Start with 1500", "5 lipsticks at m each = 5m", "Remaining: 1500 - 5m"]
+            },
+            {   // Q30: Ezekiel shirts
+                keywords: ["half", "divide", "p/2", "10 less", "subtract", "q-10", "add"],
+                concept: "division and subtraction combined",
+                acceptablePhrases: ["p/2+q-10", "p/2 + q - 10", "(p/2)+(q-10)", "p divided by 2 plus q minus 10", "the algebraic expression for zein's total shirts is (p/2) + q - 10", "zein's total shirts is p/2 + q - 10", "p/2 + q - 10 shirts"],
+                hints: ["White shirts: p/2", "Black shirts: q-10", "Total: p/2 + q - 10"]
+            }
+        ];
+
+        // Helper: Get expected operation for each question
+        function getExpectedOperation(stepIndex) {
+            const operations = [
+                "addition", "multiplication", "addition", "multiplication", "subtraction",
+                "addition", "addition", "addition", "multiplication", "addition",
+                "multiplication", "addition", "multiplication", "addition", "multiplication",
+                "addition", "multiplication", "multiplication", "addition", "subtraction",
+                "multiplication", "addition", "multiplication", "multiplication", "multiplication",
+                "multiplication", "addition", "multiplication", "subtraction", "addition"
+            ];
+            return operations[stepIndex];
+        }
+
+        // ============================================================
+        // CORE VALIDATION — checks only the expression (Step 3 / Step 4)
+        // against the expected answer for that question.
+        // ============================================================
+        function normalizeExpr(str) {
+            return (str || '').toLowerCase()
+                // strip commas in numbers: 1,500 → 1500
+                .replace(/,/g, '')
+                // strip unit words that students often append
+                .replace(/\b(grams|pesos|miles|meters|minutes|hours|kg|pounds|years|old|liters|pairs?|shirts?|cards?|cows?|chickens?)\b/g, '')
+                // word operators → symbols
+                .replace(/\bdivided\s*by\b/g, '/')
+                .replace(/\btimes\b/g, '*')
+                .replace(/\bmultiplied\s*by\b/g, '*')
+                .replace(/\bplus\b/g, '+')
+                .replace(/\bminus\b/g, '-')
+                // symbol aliases
+                .replace(/×/g, '*').replace(/÷/g, '/').replace(/•/g, '*')
+                // remove all spaces
+                .replace(/\s+/g, '');
+        }
+
+        // Extract just the algebraic expression tokens from a longer sentence.
+        // e.g. "Agnes will be x+12 years old" → "x+12"
+        function extractExpr(str) {
+            // First try the full normalised string
+            const full = normalizeExpr(str);
+            // Then also try to find an embedded expression: digits/letters/operators only
+            const match = full.match(/[a-z0-9][a-z0-9+\-*/().]*[a-z0-9)]/);
+            return match ? match[0] : full;
+        }
+
+        function validateExpression(userInput, questionIndex) {
+            const expected = expectedAnswers[questionIndex];
+            if (!expected) return { correct: false, feedback: 'Question data not found.', hint: '' };
+
+            const raw = (userInput || '').trim();
+            if (!raw) return { correct: false, feedback: 'Please write your expression here.', hint: expected.hints[0] || '' };
+
+            const normFull  = normalizeExpr(raw);
+            const normShort = extractExpr(raw);
+
+            // Build normalised versions of all acceptable phrases once
+            const normPhrases = expected.acceptablePhrases.map(p => normalizeExpr(p));
+
+            // 1. Exact match (full normalised string)
+            for (let i = 0; i < normPhrases.length; i++) {
+                if (normFull === normPhrases[i]) {
+                    return { correct: true, feedback: '✅ Perfect! That is exactly the right expression.', hint: '' };
+                }
+            }
+
+            // 2. Exact match on extracted short expression
+            for (let i = 0; i < normPhrases.length; i++) {
+                if (normShort === normPhrases[i]) {
+                    return { correct: true, feedback: '✅ Correct! Your expression matches the expected answer.', hint: '' };
+                }
+            }
+
+            // 3. The normalised input CONTAINS a full acceptable phrase as a whole token
+            //    (e.g. student writes "The expression is x+12" → normFull contains "x+12")
+            //    Use word-boundary-style check: phrase must not be part of a longer token.
+            for (let i = 0; i < normPhrases.length; i++) {
+                const p = normPhrases[i];
+                const idx = normFull.indexOf(p);
+                if (idx !== -1) {
+                    const before = normFull[idx - 1];
+                    const after  = normFull[idx + p.length];
+                    const notExtended = (!before || /[^a-z0-9]/.test(before)) &&
+                                       (!after  || /[^a-z0-9]/.test(after));
+                    if (notExtended) {
+                        return { correct: true, feedback: '✅ Correct! Your expression matches the expected answer.', hint: '' };
+                    }
+                }
+            }
+
+            // 4. Pure number — no variables
+            if (/^\d+(\.\d+)?$/.test(normFull)) {
+                return {
+                    correct: false,
+                    feedback: '❌ This needs an algebraic expression with variables — not just a number.',
+                    hint: expected.hints[0]
+                };
+            }
+
+            // 5. Single variable, no operation
+            if (/^[a-z]$/.test(normFull)) {
+                return {
+                    correct: false,
+                    feedback: `❌ You wrote only the variable "${raw}". Combine it with a number or operation.`,
+                    hint: expected.hints[1] || expected.hints[0]
+                };
+            }
+
+            // 6. Keyword proximity hints
+            const matched = expected.keywords.filter(k => normFull.includes(normalizeExpr(k)));
+            const missing = expected.keywords.filter(k => !normFull.includes(normalizeExpr(k)));
+            const ratio   = matched.length / expected.keywords.length;
+
+            if (ratio >= 0.5) {
+                return {
+                    correct: false,
+                    feedback: `🔄 You are close! Double-check: ${missing.slice(0, 3).join(', ')}.`,
+                    hint: expected.hints[expected.hints.length - 1]
+                };
+            }
+
+            // 7. Wrong operation detection
+            const opMap = {
+                addition:       ['+', 'plus', 'add', 'sum', 'more', 'total'],
+                subtraction:    ['-', 'minus', 'subtract', 'less', 'fewer', 'left'],
+                multiplication: ['*', 'times', 'multiply', 'product', 'per', 'each'],
+                division:       ['/', 'divide', 'quotient', 'half', 'ratio']
+            };
+            const expectedOp = getExpectedOperation(questionIndex);
+            let detectedOp = null;
+            for (let [op, tokens] of Object.entries(opMap)) {
+                if (tokens.some(t => normFull.includes(normalizeExpr(t)))) { detectedOp = op; break; }
+            }
+            if (detectedOp && detectedOp !== expectedOp) {
+                return {
+                    correct: false,
+                    feedback: `⚠️ Your answer uses ${detectedOp}, but this problem calls for ${expectedOp}. Concept: ${expected.concept}.`,
+                    hint: expected.hints[0]
+                };
+            }
+
+            // 8. Generic fallback
+            return {
+                correct: false,
+                feedback: `❌ Not quite. The concept is: ${expected.concept}.`,
+                hint: `Hint: ${expected.hints[expected.hints.length - 1]}`
+            };
+        }
+
+        // ============================================================
+        // PER-STEP VALIDATION
+        // Steps 1, 2, 5 → checked against feedback keywords/content
+        // Steps 3, 4    → checked against expectedAnswers expressions
+        // ============================================================
+        function validateStepInput(userInput, questionIndex, stepIndex) {
+            const raw = (userInput || '').trim();
+            if (!raw || raw.length < 3) {
+                return { correct: false, feedback: '✗ Please fill in this step.', partial: false };
+            }
+
+            // Steps 3 & 4: use expression validator
+            if (stepIndex === 2 || stepIndex === 3) {
+                const result = validateExpression(raw, questionIndex);
+                return { correct: result.correct, feedback: result.feedback + (result.hint ? ` — ${result.hint}` : ''), partial: false };
+            }
+
+            // Steps 1, 2, 5: keyword-based check against feedbacks
+            const fb = feedbacks[questionIndex];
+            if (!fb || !fb.steps[stepIndex]) {
+                // No feedback data — accept if filled
+                return { correct: true, feedback: '✓ Filled in', partial: false };
+            }
+
+            const norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+            const normInput = norm(raw);
+
+            // Extract meaningful keywords from the feedback reference text
+            const refText = fb.steps[stepIndex];
+
+            // Pull out all "word" tokens ≥ 3 chars from the reference answer
+            const refTokens = refText.toLowerCase()
+                .replace(/[^a-z0-9\s]/g, ' ')
+                .split(/\s+/)
+                .filter(w => w.length >= 3 && !['the','and','for','are','was','has','that','this','with','will','from','have','each','then','more','when','what','than','also','its','after','been','they','their','your','into','over','such','per'].includes(w));
+
+            // Unique tokens
+            const uniqueRef = [...new Set(refTokens)];
+
+            // Count how many reference tokens appear in the student's input
+            const matchCount = uniqueRef.filter(t => normInput.includes(norm(t))).length;
+            const ratio = uniqueRef.length > 0 ? matchCount / uniqueRef.length : 0;
+
+            // Also extract key algebraic variables/numbers from reference
+            const refExprs = refText.match(/[a-z]\s*[+\-*/=]\s*[\d]+|[\d]+\s*[+\-*/=]\s*[a-z]|\b[a-z]\b|\b\d+\b/gi) || [];
+            const exprMatchCount = refExprs.filter(e => normInput.includes(norm(e))).length;
+            const exprRatio = refExprs.length > 0 ? exprMatchCount / refExprs.length : 1;
+
+            // Step 1: "Read & Understand" — just needs relevant problem keywords
+            if (stepIndex === 0) {
+                // For step 1, a decent-length answer referencing the question context is fine
+                const qTokens = questions[questionIndex].toLowerCase().replace(/[^a-z0-9\s]/g,'').split(/\s+/).filter(w=>w.length>=3);
+                const qMatch = qTokens.filter(t => normInput.includes(norm(t))).length;
+                const qRatio = qTokens.length > 0 ? qMatch / qTokens.length : 0;
+                if (raw.length >= 15 && (ratio >= 0.15 || qRatio >= 0.2)) {
+                    return { correct: true, feedback: '✓ Good understanding of the problem.', partial: false };
+                }
+                if (raw.length >= 8) {
+                    return { correct: false, feedback: '🔄 Try to mention the given values and what is being asked.', partial: true };
+                }
+                return { correct: false, feedback: '✗ Please describe what the problem is asking in more detail.', partial: false };
+            }
+
+            // Step 2: "Represent the unknown" — should contain a variable assignment
+            if (stepIndex === 1) {
+                const hasVariable = /\b[a-z]\b/.test(raw) || /\b[a-z]\s*=/.test(raw.toLowerCase());
+                const hasEquals   = /=/.test(raw);
+                if (hasVariable && (hasEquals || ratio >= 0.2 || exprRatio >= 0.3)) {
+                    return { correct: true, feedback: '✓ Variable correctly represented.', partial: false };
+                }
+                if (hasVariable) {
+                    return { correct: false, feedback: '🔄 Good start — also state what the variable represents (e.g. x = ...).', partial: true };
+                }
+                return { correct: false, feedback: '✗ Use a letter (like x, n, h) to represent the unknown.', partial: false };
+            }
+
+            // Step 5: "Review" — should reference the solution/expression
+            if (stepIndex === 4) {
+                const expected = expectedAnswers[questionIndex];
+                const normPhrases = (expected?.acceptablePhrases || []).map(p => normalizeExpr(p));
+                const normRaw = normalizeExpr(raw);
+                // Check if the review contains the correct expression
+                const mentionsExpr = normPhrases.some(p => normRaw.includes(p));
+                if (mentionsExpr || (ratio >= 0.2 && raw.length >= 20)) {
+                    return { correct: true, feedback: '✓ Good review — solution verified.', partial: false };
+                }
+                if (raw.length >= 15) {
+                    return { correct: false, feedback: '🔄 Try to include the final expression in your review.', partial: true };
+                }
+                return { correct: false, feedback: '✗ Please write a review that verifies the final expression.', partial: false };
+            }
+
+            return { correct: true, feedback: '✓ Filled in', partial: false };
+        }
+
+        // Legacy wrapper kept so existing call-sites (renderFeedbackHTML) still work
+        function validateWordAnswer(userAnswer, stepIndex) {
+            // Extract only the Step 3 (solve) line if the input is the old combined blob
+            let expr = userAnswer || '';
+            const step3Match = expr.match(/Step 3:\s*(.+)/i);
+            const step4Match = expr.match(/Step 4:\s*(.+)/i);
+            // Prefer Step 4 (final answer), then Step 3 (solve expression)
+            const toCheck = (step4Match ? step4Match[1] : step3Match ? step3Match[1] : expr).trim();
+            const result = validateExpression(toCheck, stepIndex);
+            const expected = expectedAnswers[stepIndex];
+            return {
+                correct: result.correct,
+                confidence: result.correct ? 1.0 : 0.0,
+                feedback: result.feedback + (result.hint ? ` — ${result.hint}` : ''),
+                expectedConcept: expected?.concept || ''
+            };
+        }
+
+        function renderFeedbackHTML(step, userAnswer) {
+            const fb = feedbacks[step];
+            if (!fb) return '<div class="text-white/40">Feedback not available</div>';
+
+            // Extract all steps from the saved combined answer
+            const step1Text = (userAnswer?.match(/Step 1:\s*(.+?)(?=\nStep [2-5]:|$)/is) || [])[1]?.trim() || '';
+            const step2Text = (userAnswer?.match(/Step 2:\s*(.+?)(?=\nStep [3-5]:|$)/is) || [])[1]?.trim() || '';
+            const step3Text = (userAnswer?.match(/Step 3:\s*(.+?)(?=\nStep [4-5]:|$)/is) || [])[1]?.trim() || '';
+            const step4Text = (userAnswer?.match(/Step 4:\s*(.+?)(?=\nStep 5:|$)/is)     || [])[1]?.trim() || '';
+            const step5Text = (userAnswer?.match(/Step 5:\s*([\s\S]+)$/i)                || [])[1]?.trim() || '';
+
+            const step3Val  = validateExpression(step3Text, step);
+            const step4Val  = validateExpression(step4Text, step);
+            const isCorrect = step3Val.correct || step4Val.correct;
+            const expected  = expectedAnswers[step];
+
+            const statusBg     = isCorrect ? 'bg-green-500/20' : 'bg-red-500/10';
+            const borderColor  = isCorrect ? 'border-green-400' : 'border-red-400';
+            const statusColor  = isCorrect ? 'text-green-400'   : 'text-red-400';
+            const statusIcon   = isCorrect ? '✅' : '❌';
+
+            // ── Verdict banner ───────────────────────────────────────────
+            let html = `
+                <div class="mb-3 p-3 rounded-lg ${statusBg} border-l-4 ${borderColor}">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="${statusColor} font-bold text-base">${statusIcon}</span>
+                        <span class="${statusColor} font-semibold text-sm">${isCorrect ? 'Correct Expression!' : 'Expression Needs Revision'}</span>
+                    </div>
+                    <div class="text-xs space-y-1 mt-1">
+                        <div><span class="text-white/50">Step 3 (Solve):</span>
+                             <span style="color:${step3Val.correct ? '#6ee7b7' : '#fca5a5'}">${step3Val.feedback}</span></div>
+                        <div><span class="text-white/50">Step 4 (Answer):</span>
+                             <span style="color:${step4Val.correct ? '#6ee7b7' : '#fca5a5'}">${step4Val.feedback}</span></div>
+                        ${!isCorrect ? `<div class="mt-1 text-yellow-300">Expected: <strong>${expected?.acceptablePhrases?.[0] || '—'}</strong></div>` : ''}
+                    </div>
+                </div>`;
+
+            // ── Step 5 review block (student's own written review) ───────
+            if (step5Text) {
+                html += `
+                <div class="mb-3 p-3 rounded-lg bg-white/5 border border-white/10">
+                    <div class="text-xs font-semibold text-purple-300 mb-1 flex items-center gap-1">
+                        <i class="fas fa-eye"></i> Step 5 — Student Review
+                    </div>
+                    <div class="text-white/80 text-xs whitespace-pre-wrap leading-relaxed">${step5Text}</div>
+                </div>`;
+            }
+
+            // ── Concise step summary (Steps 1–4) ────────────────────────
+            const stepLabels = ['Read & Understand', 'Represent Unknown', 'Solve (Expression)', 'Answer'];
+            const stepValues = [step1Text, step2Text, step3Text, step4Text];
+            html += `<div class="space-y-1 mb-3">`;
+            stepLabels.forEach((label, i) => {
+                if (!stepValues[i]) return;
+                const val = validateStepInput(stepValues[i], step, i);
+                const color = val.correct ? 'text-green-300' : (val.partial ? 'text-yellow-300' : 'text-red-300');
+                html += `
+                    <div class="feedback-step p-2 rounded-lg">
+                        <span class="text-blue-300 font-bold text-xs">Step ${i+1}: ${label}</span>
+                        <div class="${color} text-xs mt-1 whitespace-pre-wrap">${stepValues[i]}</div>
+                        <div class="text-xs mt-1" style="color:${val.correct ? '#6ee7b7' : val.partial ? '#fcd34d' : '#fca5a5'};font-style:italic;">${val.feedback}</div>
+                    </div>`;
+            });
+            html += `</div>`;
+
+            // ── Official step-by-step explanation ───────────────────────
+            html += `
+                <div class="space-y-1">
+                    <div class="text-white/80 text-xs mb-1 font-semibold flex items-center gap-1">
+                        <i class="fas fa-book-open"></i> Explanation:
+                    </div>
+                    ${fb.steps.map((s, idx) => `
+                        <div class="feedback-step p-2 rounded-lg">
+                            <strong class="text-blue-300 text-xs">Step ${idx+1}:</strong>
+                            <span class="text-white/70 text-xs"> ${s}</span>
+                        </div>`).join('')}
+                </div>`;
+
+            return html;
+        }
+
+        // State
+        let answers = new Array(30).fill('');
+        let stepImages = new Array(30).fill('');
+        let submittedAnswers = new Array(30).fill(false);
+        let questionScores = new Array(30).fill(0);
+        let currentUnlockedStep = 29;
+        let currentStep = 0;
+        let isGenerating = false;
+        // Saved step data per question for review
+        let savedStepInputs = new Array(30).fill(null);
+        let savedStepImages = new Array(30).fill(null);
+
+        // Modal state
+        let activeQuestionIndex = null;
+        let activeModalStep = 0;
+        let modalStepInputs = new Array(5).fill('');
+        let modalStepImages = new Array(5).fill('');
+
+        const modalSteps = [
+            { label: "STEP 1", title: "Read and understand the problem", hint: "Write what the problem is asking in your own words."},
+            { label: "STEP 2", title: "Represent the unknown with a variable", hint: "Choose a symbol like x, y, or n for the unknown."},
+            { label: "STEP 3", title: "Solve for the variable/s", hint: "Write the equation and simplify it."},
+            { label: "STEP 4", title: "Answer", hint: "Write your final answer to the problem."},
+            { label: "STEP 5", title: "Review", hint: "Review your complete solution and verify the final expression."}
+        ];
+
+        function getModalStepFeedback(step) {
+            const questionFb = feedbacks[activeQuestionIndex];
+            const text = questionFb?.steps?.[step];
+            return text ? text : 'Review your answer and the illustration to make sure they match the problem statement.';
+        }
+
+        const stepsContainer = document.getElementById('stepsContainer');
+        const navContainer = document.getElementById('navDotsContainer');
+        const finalResultsDiv = document.getElementById('finalResults');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
+        const currentStepDisplay = document.getElementById('currentStepDisplay');
+
+        function updateProgress() {
+            const completed = submittedAnswers.filter(Boolean).length;
+            const percent = Math.round((completed / 30) * 100);
+            progressFill.style.width = `${percent}%`;
+            progressPercent.textContent = `${percent}%`;
+        }
+
+        // Modal functions
+        const modalProblemText = document.getElementById('modalProblemText');
+        const modalStepsTrack = document.getElementById('modalStepsTrack');
+        const modalButtonsRow = document.getElementById('modalButtonsRow');
+        const modalFeedbackText = document.getElementById('modalFeedbackText');
+        const modalProgressFill = document.getElementById('modalProgressFill');
+        const modalBtnNext = document.getElementById('modalBtnNext');
+        const modalStudentsNote = document.getElementById('modalStudentsNote');
+        const modalKaRef = document.getElementById('modalKaRef');
+        const modalCelebration = document.getElementById('modalCelebration');
+
+        function openQuestionModal(step) {
+            if (submittedAnswers[step]) {
+                openReviewModal(step);
+                return;
+            }
+            activeQuestionIndex = step;
+            activeModalStep = 0;
+            modalStepInputs = new Array(5).fill('');
+            modalStepImages = new Array(5).fill('');
+            const modal = document.getElementById('questionModal');
+            const modalContent = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+            renderQuestionModal();
+        }
+
+        function openReviewModal(index) {
+            const inputs = savedStepInputs[index] || ['—','—','—','—','—'];
+            const imgs   = savedStepImages[index]  || [];
+            const score  = questionScores[index];
+            const isCorrect = score === 1;
+            const stepLabels = ['Read & Understand', 'Represent the Unknown', 'Solve (Expression)', 'Answer', 'Review'];
+            const expected = expectedAnswers[index]?.acceptablePhrases?.[0] || '—';
+
+            const stepsHtml = inputs.slice(0, 5).map((inp, si) => `
+                <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:1rem;padding:16px;margin-bottom:12px;">
+                    <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(196,181,253,0.8);margin-bottom:6px;">
+                        Step ${si+1}: ${stepLabels[si]}
+                    </div>
+                    <div style="color:#f1f5f9;font-size:0.85rem;white-space:pre-wrap;line-height:1.6;">${inp || '<span style="color:rgba(255,255,255,0.3)">—</span>'}</div>
+                    ${imgs[si] ? `<img src="${imgs[si]}" style="margin-top:12px;width:100%;max-height:200px;object-fit:cover;border-radius:0.75rem;box-shadow:0 8px 20px rgba(0,0,0,0.3);" alt="Step ${si+1} illustration">` : ''}
+                </div>
+            `).join('');
+
+            const overlay = document.createElement('div');
+            overlay.id = 'reviewModalOverlay';
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:60;background:rgba(0,0,0,0.85);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;';
+            overlay.innerHTML = `
+                <div style="width:100%;max-width:680px;background:linear-gradient(145deg,rgba(17,24,39,0.98),rgba(30,20,60,0.98));border:1px solid rgba(255,255,255,0.12);border-radius:2rem;padding:28px;box-shadow:0 40px 80px rgba(0,0,0,0.8);max-height:90vh;overflow-y:auto;">
+                    <!-- Header -->
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;">
+                        <div style="flex:1;">
+                            <div style="font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(196,181,253,0.7);margin-bottom:6px;">📋 Answer Review — Question ${index+1}</div>
+                            <div style="font-size:1rem;font-weight:700;color:#fff;line-height:1.4;">${questions[index]}</div>
+                        </div>
+                        <button onclick="closeReviewModal()" style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+                    </div>
+
+                    <!-- Score badge -->
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:12px 16px;border-radius:1rem;background:${isCorrect ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.12)'};border:1px solid ${isCorrect ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.25)'};">
+                        <span style="font-size:1.5rem;">${isCorrect ? '✅' : '❌'}</span>
+                        <div>
+                            <div style="font-weight:700;color:${isCorrect ? '#6ee7b7' : '#fca5a5'};font-size:0.9rem;">${isCorrect ? 'Correct Answer!' : 'Needs Revision'}</div>
+                            <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);">Expected: <strong style="color:#fcd34d;">${expected}</strong></div>
+                        </div>
+                        <div style="margin-left:auto;font-size:1.1rem;font-weight:800;color:${isCorrect ? '#6ee7b7' : '#fca5a5'};">${score}/1</div>
+                    </div>
+
+                    <!-- All 5 steps -->
+                    <div style="margin-bottom:8px;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Your Answers</div>
+                    ${stepsHtml}
+                </div>
+            `;
+            overlay.addEventListener('click', e => { if (e.target === overlay) closeReviewModal(); });
+            document.body.appendChild(overlay);
+        }
+
+        function closeReviewModal() {
+            const overlay = document.getElementById('reviewModalOverlay');
+            if (overlay) overlay.remove();
+        }
+
+        function closeQuestionModal() {
+            const modal = document.getElementById('questionModal');
+            const modalContent = document.getElementById('modalContent');
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            modalCelebration.classList.remove('show');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function setModalFeedback(message, type = '') {
+            modalFeedbackText.textContent = message;
+            modalFeedbackText.className = `feedback-text visible${type ? ' ' + type : ''}`;
+        }
+
+        function renderQuestionModal() {
+            const step = activeModalStep;
+            const index = activeQuestionIndex;
+            const title = questions[index];
+            modalProblemText.value = title;
+            const completedStepCount = modalStepImages.filter(Boolean).length + (activeModalStep === 4 ? 1 : 0);
+            const progress = Math.round((completedStepCount / 5) * 100);
+            modalProgressFill.style.width = `${progress}%`;
+            modalStudentsNote.style.display = step >= 2 ? 'block' : 'none';
+            modalKaRef.textContent = '';
+
+            // Update question badge
+            const badge = document.getElementById('modalQuestionBadge');
+            if (badge) badge.textContent = `Question ${index + 1} of 30`;
+
+            // Render stepper
+            const stepper = document.getElementById('modalStepper');
+            if (stepper) {
+                stepper.innerHTML = '';
+                modalSteps.forEach((item, idx) => {
+                    if (idx > 0) {
+                        const line = document.createElement('div');
+                        line.className = 'modal-stepper-line';
+                        const fill = document.createElement('div');
+                        fill.className = 'modal-stepper-line-fill';
+                        fill.style.width = (idx <= step || modalStepImages[idx-1]) ? '100%' : '0%';
+                        line.appendChild(fill);
+                        stepper.appendChild(line);
+                    }
+                    const dot = document.createElement('div');
+                    dot.className = 'modal-stepper-dot ' + (modalStepImages[idx] ? 'done' : idx === step ? 'active' : 'pending');
+                    dot.title = item.title;
+                    if (modalStepImages[idx]) {
+                        dot.innerHTML = '<i class="fas fa-check" style="font-size:0.6rem;"></i>';
+                    } else {
+                        dot.textContent = idx + 1;
+                    }
+                    stepper.appendChild(dot);
+                });
+            }
+
+            // Only reset feedback if not currently showing an important message
+            const currentFeedback = modalFeedbackText.textContent;
+            const isImportantFeedback = modalFeedbackText.classList.contains('error') || 
+                                        (modalFeedbackText.classList.contains('success') && currentFeedback !== 'Fill in each step before proceeding.');
+            if (!isImportantFeedback) {
+                setModalFeedback('Fill in each step before proceeding.');
+            }
+
+            modalStepsTrack.innerHTML = '';
+            modalButtonsRow.innerHTML = '';
+
+            modalSteps.forEach((item, idx) => {
+                if (idx > 0) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow-connector' + (modalStepImages[idx - 1] ? ' lit' : '');
+                    arrow.textContent = '→';
+                    modalStepsTrack.appendChild(arrow);
+                }
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'step-wrapper';
+                const card = document.createElement('div');
+                card.className = 'step-card' + (idx === step ? ' active' : '') + (modalStepImages[idx] ? ' completed' : '');
+                card.dataset.step = idx;
+
+                let innerHTML = `
+                    <div class="step-num">${item.label}</div>
+                    <div class="step-title">${item.title}</div>
+                    <div class="step-lines">
+                        <div class="step-line"></div>
+                        <div class="step-line"></div>
+                        <div class="step-line"></div>
+                    </div>
+                `;
+
+                if (idx === step) {
+                    if (idx < 4) {
+                        const readonlyAttr = modalStepImages[idx] ? 'readonly' : '';
+                        const readonlyClass = modalStepImages[idx] ? 'opacity-70 cursor-not-allowed' : '';
+                        innerHTML += `
+                            <textarea class="step-input ${readonlyClass}" rows="4" placeholder="${item.hint}" ${readonlyAttr}>${modalStepInputs[idx] || ''}</textarea>
+                        `;
+                        if (!modalStepImages[idx]) {
+                            innerHTML += `<div class="step-hint"><i class="fas fa-lightbulb" style="color:#fbbf24;font-size:0.6rem;"></i> ${item.hint}</div>`;
+                        }
+                        if (modalStepImages[idx]) {
+                            innerHTML += `
+                                <div class="mt-4 rounded-3xl border border-white/10 bg-slate-950 p-3">
+                                    <img src="${modalStepImages[idx]}" class="w-full rounded-2xl object-cover max-h-64 shadow-lg step-image-loaded" alt="Step ${idx + 1} illustration">
+                                </div>
+                                <div class="mt-3 rounded-2xl border border-white/10 bg-slate-900/70 p-3 text-sm text-slate-300 leading-relaxed">
+                                    ${getModalStepFeedback(idx)}
+                                </div>
+                            `;
+                        }
+                    } else {
+                        // Step 5 — Review + Image Generator
+                        const step3Val = validateExpression(modalStepInputs[2], index);
+                        const step4Val = validateExpression(modalStepInputs[3], index);
+                        const isCorrect = step3Val.correct || step4Val.correct;
+                        const expected = expectedAnswers[index];
+                        const stepLabels = ['Read & Understand', 'Represent the Unknown', 'Solve (Expression)', 'Answer'];
+
+                        const stepChecks = modalStepInputs.slice(0, 4).map((input, si) => {
+                            const filled = input && input.trim().length > 2;
+                            const val = validateStepInput(input, index, si);
+                            const correct = val.correct;
+                            const feedbackMsg = val.feedback;
+                            return { label: stepLabels[si], input: input || '[missing]', filled, correct, feedbackMsg };
+                        });
+
+                        innerHTML += `
+                            <div class="step5-review">
+                                <div class="step5-verdict ${isCorrect ? 'correct' : 'incorrect'}">
+                                    <span class="step5-verdict-icon">${isCorrect ? '✅' : '❌'}</span>
+                                    <div>
+                                        <div class="step5-verdict-title">${isCorrect ? 'Correct Expression!' : 'Expression Needs Revision'}</div>
+                                        <div class="step5-verdict-sub">${isCorrect ? (step4Val.correct ? step4Val.feedback : step3Val.feedback) : (step4Val.feedback)}</div>
+                                    </div>
+                                </div>
+                                ${stepChecks.map((sc, si) => `
+                                    <div class="step5-item ${sc.correct ? 'done' : 'missing'}">
+                                        <div class="step5-item-header">
+                                            <span class="step5-check">${sc.correct ? '✓' : '✗'}</span>
+                                            <span class="step5-label">Step ${si + 1}: ${sc.label}</span>
+                                        </div>
+                                        <div class="step5-answer">${sc.input}</div>
+                                        ${(si === 2 || si === 3) ? `<div style="font-size:0.65rem;padding-left:24px;margin-top:3px;color:${sc.correct ? '#6ee7b7' : '#fca5a5'};">${sc.feedbackMsg}</div>` : ''}
+                                    </div>
+                                `).join('')}
+                                <div class="step5-expected">
+                                    <i class="fas fa-lightbulb" style="color:#fbbf24;font-size:0.65rem;margin-right:4px;"></i>
+                                    <span>Expected expression: <strong>${expected?.acceptablePhrases?.[0] || '—'}</strong></span>
+                                </div>
+                                ${modalStepImages[4]
+                                    ? `<div class="mt-4 rounded-3xl border border-white/10 bg-slate-950 p-3">
+                                        <img src="${modalStepImages[4]}" class="w-full rounded-2xl object-cover max-h-64 shadow-lg step-image-loaded" alt="Step 5 illustration">
+                                       </div>`
+                                    : `<div id="step5ImgPlaceholder" class="mt-4 rounded-2xl border-2 border-dashed border-white/20 p-5 text-center text-white/40 text-sm">
+                                        ✨ Generate an AI illustration summarising your complete solution
+                                       </div>`
+                                }
+                                <button id="step5GenBtn" onclick="generateStep5Image()"
+                                    class="mt-3 w-full py-2 px-4 rounded-xl font-bold text-sm text-white transition
+                                           ${modalStepImages[4]
+                                               ? 'bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-500 hover:to-emerald-600'
+                                               : 'bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500'}">
+                                    <i class="fas ${modalStepImages[4] ? 'fa-sync-alt' : 'fa-image'} mr-2"></i>
+                                    ${modalStepImages[4] ? 'Regenerate Illustration' : '🎨 Generate Illustration for All Answers'}
+                                </button>
+                            </div>
+                        `;
+                    }
+                } else if (modalStepImages[idx]) {
+                    if (idx < 4) {
+                        innerHTML += `
+                            <textarea class="step-input opacity-70 cursor-not-allowed" rows="4" readonly>${modalStepInputs[idx] || ''}</textarea>
+                            <div class="mt-4 rounded-3xl border border-white/10 bg-slate-950 p-3">
+                                <img src="${modalStepImages[idx]}" class="w-full rounded-2xl object-cover max-h-64 shadow-lg" alt="Step ${idx + 1} illustration">
+                            </div>
+                            <div class="mt-3 rounded-2xl border border-white/10 bg-slate-900/70 p-3 text-sm text-slate-300 leading-relaxed">
+                                ${getModalStepFeedback(idx)}
+                            </div>
+                        `;
+                    } else {
+                        const step3Val2 = validateExpression(modalStepInputs[2], index);
+                        const step4Val2 = validateExpression(modalStepInputs[3], index);
+                        const isCorrect2 = step3Val2.correct || step4Val2.correct;
+                        const expected2 = expectedAnswers[index];
+                        const stepLabels2 = ['Read & Understand', 'Represent the Unknown', 'Solve (Expression)', 'Answer'];
+                        innerHTML += `
+                            <div class="step5-review">
+                                <div class="step5-verdict ${isCorrect2 ? 'correct' : 'incorrect'}">
+                                    <span class="step5-verdict-icon">${isCorrect2 ? '✅' : '❌'}</span>
+                                    <div>
+                                        <div class="step5-verdict-title">${isCorrect2 ? 'Correct Expression!' : 'Expression Needs Revision'}</div>
+                                        <div class="step5-verdict-sub">${isCorrect2 ? (step4Val2.correct ? step4Val2.feedback : step3Val2.feedback) : step4Val2.feedback}</div>
+                                    </div>
+                                </div>
+                                ${modalStepInputs.slice(0, 4).map((input, si) => {
+                                    const val2 = validateStepInput(input, index, si);
+                                    const correct = val2.correct;
+                                    const feedbackMsg = val2.feedback;
+                                    return `<div class="step5-item ${correct ? 'done' : 'missing'}">
+                                        <div class="step5-item-header">
+                                            <span class="step5-check">${correct ? '✓' : '✗'}</span>
+                                            <span class="step5-label">Step ${si + 1}: ${stepLabels2[si]}</span>
+                                        </div>
+                                        <div class="step5-answer">${input || '[missing]'}</div>
+                                        <div style="font-size:0.65rem;padding-left:24px;margin-top:3px;color:${correct ? '#6ee7b7' : '#fca5a5'};">${feedbackMsg}</div>
+                                    </div>`;
+                                }).join('')}
+                                <div class="step5-expected">
+                                    <i class="fas fa-lightbulb" style="color:#fbbf24;font-size:0.65rem;margin-right:4px;"></i>
+                                    <span>Expected expression: <strong>${expected2?.acceptablePhrases?.[0] || '—'}</strong></span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+
+                card.innerHTML = innerHTML;
+                wrapper.appendChild(card);
+                modalStepsTrack.appendChild(wrapper);
+
+                if (idx === step && idx < 4 && !modalStepImages[idx]) {
+                    const textarea = card.querySelector('textarea');
+                    textarea.addEventListener('input', (event) => {
+                        modalStepInputs[idx] = event.target.value;
+                        updateModalButtonState();
+                    });
+                }
+            });
+
+            if (step > 0) {
+                const backSlot = document.createElement('div');
+                backSlot.className = 'btn-slot';
+                const backBtn = document.createElement('button');
+                backBtn.className = 'btn back-up';
+                backBtn.textContent = 'Back Up';
+                backBtn.disabled = step === 0;
+                backBtn.onclick = goBackModal;
+                backSlot.appendChild(backBtn);
+                modalButtonsRow.appendChild(backSlot);
+                const gap = document.createElement('div');
+                gap.className = 'btn-gap';
+                modalButtonsRow.appendChild(gap);
+            }
+
+            const slot = document.createElement('div');
+            slot.className = 'btn-slot';
+            const proceedBtn = document.createElement('button');
+            proceedBtn.className = 'btn proceed';
+            proceedBtn.textContent = step < 4 ? (modalStepImages[step] ? 'Continue to Next Step →' : '🎨 Generate Illustration') : 'Check Answer';
+            proceedBtn.disabled = false;
+            proceedBtn.onclick = () => proceedModal(step);
+            slot.appendChild(proceedBtn);
+            modalButtonsRow.appendChild(slot);
+
+            modalBtnNext.disabled = !(modalStepImages.slice(0, 4).every(Boolean) && step === 4 && !!modalStepImages[4]);
+            modalBtnNext.textContent = modalBtnNext.disabled ? 'Next' : 'Finish';
+            modalBtnNext.onclick = () => {
+                if (!modalBtnNext.disabled) {
+                    finalizeModal();
+                }
+            };
+        }
+
+        function updateModalButtonState() {
+            const step = activeModalStep;
+            if (step < 4) {
+                const currentValue = modalStepInputs[step] || '';
+                setModalFeedback(currentValue.trim() ? 'Ready to generate the illustration.' : 'Fill in this step before you continue.', currentValue.trim() ? 'success' : '');
+            }
+        }
+
+        async function proceedModal(step) {
+            if (step !== activeModalStep) return;
+            if (step < 4) {
+                const input = modalStepInputs[step]?.trim();
+                if (!input) {
+                    setModalFeedback(`Please fill in ${modalSteps[step].label} before proceeding.`, 'error');
+                    return;
+                }
+                if (!modalStepImages[step]) {
+                    // Disable button to prevent double-click
+                    const proceedBtn = modalButtonsRow.querySelector('.btn.proceed');
+                    if (proceedBtn) {
+                        proceedBtn.disabled = true;
+                        proceedBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i> Generating...';
+                        proceedBtn.classList.add('generating-pulse');
+                    }
+                    setModalFeedback('🎨 Generating visual for this step...', 'success');
+                    try {
+                        await generateModalStepImage(step, input);
+                        setModalFeedback('✅ Visual ready! Click Continue to proceed.', 'success');
+                        renderQuestionModal();
+                    } catch (err) {
+                        setModalFeedback(`⚠️ Visual generation failed: ${err.message}. Try again.`, 'error');
+                        if (proceedBtn) {
+                            proceedBtn.disabled = false;
+                            proceedBtn.innerHTML = 'Generate & Proceed';
+                            proceedBtn.classList.remove('generating-pulse');
+                        }
+                    }
+                    return;
+                }
+                activeModalStep += 1;
+                renderQuestionModal();
+            } else {
+                if (!modalStepImages.slice(0, 4).every(Boolean)) {
+                    setModalFeedback('Complete all illustration steps before reviewing.', 'error');
+                    return;
+                }
+                finalizeModal();
+            }
+        }
+
+        function goBackModal() {
+            if (activeModalStep > 0) {
+                activeModalStep -= 1;
+                renderQuestionModal();
+            }
+        }
+
+        async function generateModalStepImage(step, text) {
+            const index = activeQuestionIndex;
+            const prompt = `Question ${index + 1} step ${step + 1}: ${modalSteps[step].title}. ${text}. Create a clean educational whiteboard-style algebra illustration.`;
+            const imageUrl = await generateImage(prompt);
+            modalStepImages[step] = imageUrl;
+            return imageUrl;
+        }
+
+        async function generateStep5Image() {
+            const index = activeQuestionIndex;
+            const btn = document.getElementById('step5GenBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Generating illustration...';
+            }
+            const summary = [
+                `Problem: ${questions[index]}`,
+                `Read & Understand: ${modalStepInputs[0] || '—'}`,
+                `Variable: ${modalStepInputs[1] || '—'}`,
+                `Solve: ${modalStepInputs[2] || '—'}`,
+                `Answer: ${modalStepInputs[3] || '—'}`
+            ].join(' | ');
+            const prompt = `Algebra storyboard full solution: ${summary}. Clean educational whiteboard illustration showing the complete problem-solving process.`;
+            try {
+                const imageUrl = await generateImage(prompt);
+                modalStepImages[4] = imageUrl;
+                renderQuestionModal();
+            } catch (err) {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i> Failed — Try Again';
+                }
+                setModalFeedback('⚠️ Image generation failed. Please try again.', 'error');
+            }
+        }
+
+        async function finalizeModal() {
+            const index = activeQuestionIndex;
+            const step3Val = validateExpression(modalStepInputs[2], index);
+            const step4Val = validateExpression(modalStepInputs[3], index);
+            const isCorrect = step3Val.correct || step4Val.correct;
+            const canonical = expectedAnswers[index]?.acceptablePhrases?.[0] || 'Correct answer not available';
+            const resultFeedback = isCorrect
+                ? (step4Val.correct ? step4Val.feedback : step3Val.feedback)
+                : `❌ Not quite. Expected: ${canonical}. ${step4Val.hint || step3Val.hint || ''}`;
+            setModalFeedback(resultFeedback, isCorrect ? 'success' : 'error');
+            const combinedAnswer = `Step 1: ${modalStepInputs[0]}\nStep 2: ${modalStepInputs[1]}\nStep 3: ${modalStepInputs[2]}\nStep 4: ${modalStepInputs[3]}\nStep 5: ${modalStepInputs[4] || ''}`;
+            answers[index] = combinedAnswer;
+            questionScores[index] = isCorrect ? 1 : 0;
+            submittedAnswers[index] = true;
+            stepImages[index] = modalStepImages[4] || modalStepImages.slice(0, 4).reverse().find(Boolean) || '';
+            savedStepInputs[index] = [...modalStepInputs];
+            savedStepImages[index] = [...modalStepImages];
+            currentUnlockedStep = Math.max(currentUnlockedStep, index + 1);
+            saveProgress();
+            await saveStoryboardToDB();
+            renderAll();
+            modalCelebration.classList.add('show');
+            setTimeout(closeQuestionModal, 1800);
+        }
+
+        function restartModal() {
+            activeModalStep = 0;
+            modalStepInputs = new Array(5).fill('');
+            modalStepImages = new Array(5).fill('');
+            modalCelebration.classList.remove('show');
+            setModalFeedback('Fill in each step before proceeding.');
+            renderQuestionModal();
+        }
+
+        function renderAll() {
+            // Render nav dots
+            navContainer.innerHTML = '';
+            for (let i = 0; i < 30; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i+1;
+                const isSubmitted = submittedAnswers[i];
+                btn.className = `nav-dot ${i <= currentUnlockedStep ? (i === currentStep ? 'active' : 'unlocked') : 'disabled'}`;
+                if (i <= currentUnlockedStep) {
+                    btn.onclick = () => scrollToStep(i);
+                } else {
+                    btn.disabled = true;
+                }
+                navContainer.appendChild(btn);
+            }
+
+            // Render step cards
+            stepsContainer.innerHTML = '';
+            for (let i = 0; i < 30; i++) {
+                const isUnlocked = i <= currentUnlockedStep;
+                const isSubmitted = submittedAnswers[i];
+                // Complete = submitted. Image is optional (API may fail).
+                const isComplete = isSubmitted;
+                const hasImage = !!stepImages[i];
+                const score = questionScores[i];
+                const scoreBadge = isSubmitted
+                    ? `<span class="score-badge ${score === 1 ? 'correct' : 'incorrect'}">
+                           ${score === 1 ? '✓ 1/1' : '✗ 0/1'}
+                       </span>`
+                    : `<span class="score-badge pending">—/1</span>`;
+                const card = document.createElement('div');
+                card.className = `glass-card step-card p-5 w-[380px] md:w-[420px] flex-shrink-0 transition-all ${isComplete ? 'complete' : ''}`;
+                card.setAttribute('data-step', i);
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-base font-bold text-white flex-1 mr-2">
+                            <span class="text-left w-full cursor-pointer hover:text-yellow-300 transition"
+                                  onclick="openQuestionModal(${i})">
+                                ${i+1}. ${questions[i].substring(0, 70)}${questions[i].length > 70 ? '...' : ''}
+                            </span>
+                        </h3>
+                        <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                            <span class="text-xs px-2 py-1 rounded-full ${isComplete ? 'bg-green-500/30 text-green-200' : 'bg-yellow-500/20 text-yellow-200'}">
+                                ${isComplete ? '✓ Done — Tap to Review' : 'Available'}
+                            </span>
+                            ${scoreBadge}
+                        </div>
+                    </div>
+                    <div id="imgContainer${i}" class="min-h-[180px] bg-white/5 rounded-xl flex items-center justify-center mb-3 overflow-hidden border border-white/10">
+                        ${hasImage
+                            ? `<img src="${stepImages[i]}" class="step-image max-h-[180px] w-auto mx-auto" alt="visual">`
+                            : `<div class="image-placeholder text-sm">${isSubmitted ? '⚠️ Image unavailable' : '✨ AI image will appear'}</div>`}
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                        <button onclick="openQuestionModal(${i})" class="next-btn flex-1 bg-gradient-to-r ${isComplete ? 'from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500' : 'from-blue-500 to-violet-600 hover:from-blue-400 hover:to-violet-500'} text-white py-2 rounded-xl font-bold transition text-sm flex items-center justify-center gap-2">
+                            ${isComplete ? '<i class="fas fa-eye"></i> Review Answers' : '<i class="fas fa-pencil-alt"></i> Solve This'}
+                        </button>
+                    </div>
+                    <div id="feedbackBox${i}" class="mt-3 text-xs bg-white/5 rounded-xl p-3 max-h-[200px] overflow-y-auto">
+                        ${answers[i] ? renderFeedbackHTML(i, answers[i]) : '<span class="text-white/40">✨ After completing, step-by-step feedback appears here</span>'}
+                    </div>
+                `;
+                stepsContainer.appendChild(card);
+            }
+
+            // Bind events
+            for (let i = 0; i < 30; i++) {
+                const nextBtn = document.getElementById(`nextBtn${i}`);
+                if (nextBtn) nextBtn.onclick = () => proceedToNext(i);
+            }
+            updateProgress();
+            currentStepDisplay.textContent = currentStep + 1;
+        }
+
+        function updateNextButton(step) {
+            const nextBtn = document.getElementById(`nextBtn${step}`);
+            if (nextBtn) {
+                if (answers[step]?.trim() && stepImages[step]) {
+                    nextBtn.disabled = false;
+                    nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    nextBtn.innerHTML = '<i class="fas fa-check-circle"></i> Next';
+                } else {
+                    nextBtn.disabled = true;
+                    nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    nextBtn.innerHTML = '<i class="fas fa-lock"></i> Locked';
+                }
+            }
+        }
+
+        async function generateForStep(step) {
+            if (submittedAnswers[step]) {
+                showTempFeedback(step, '✋ This answer is already submitted and cannot be changed.', 'error');
+                return;
+            }
+            if (isGenerating) {
+                showTempFeedback(step, '⏳ Please wait, generation in progress...', 'info');
+                return;
+            }
+            
+            const answerText = answers[step]?.trim();
+            if (!answerText) {
+                showTempFeedback(step, '⚠️ Please enter your answer first.', 'error');
+                return;
+            }
+            
+            // Generate image regardless of correctness
+            isGenerating = true;
+            const imgContainer = document.getElementById(`imgContainer${step}`);
+            
+            if (imgContainer) {
+                imgContainer.innerHTML = '<div class="text-center p-4"><i class="fas fa-brain fa-pulse text-3xl text-yellow-300"></i><p class="text-sm mt-2">AI creating visual representation...</p></div>';
+            }
+            
+            try {
+                const imageUrl = await generateImage(answerText);
+                stepImages[step] = imageUrl;
+                
+                if (imgContainer) {
+                    imgContainer.innerHTML = `<img src="${imageUrl}" class="step-image max-h-[180px] w-auto mx-auto rounded-lg shadow-lg" alt="visual representation">`;
+                }
+                
+                // Update feedback with success
+                const feedbackDiv = document.getElementById(`feedbackBox${step}`);
+                if (feedbackDiv) {
+                    feedbackDiv.innerHTML = renderFeedbackHTML(step, answerText);
+                }
+                
+                renderAll();
+                updateNextButton(step);
+                showTempFeedback(step, '🎉 Image generated successfully!', 'success');
+                updateProgress();
+                
+                // Auto-save progress locally
+                saveProgress();
+                
+            } catch (err) {
+                console.error("Generation error:", err);
+                if (imgContainer) {
+                    imgContainer.innerHTML = `<div class="text-red-300 p-2 text-center"><i class="fas fa-exclamation-triangle"></i> ❌ Generation failed: ${err.message.slice(0,60)}</div>`;
+                }
+                showTempFeedback(step, 'Failed to generate image. Please try again.', 'error');
+            } finally {
+                isGenerating = false;
+            }
+        }
+
+        function showTempFeedback(step, msg, type) {
+            const fbDiv = document.getElementById(`feedbackBox${step}`);
+            if (fbDiv) {
+                const original = fbDiv.innerHTML;
+                fbDiv.innerHTML = `<div class="p-2 rounded-lg ${type === 'success' ? 'bg-green-500/30 text-green-200' : 'bg-red-500/30 text-red-200'}">${msg}</div>`;
+                setTimeout(() => { if (stepImages[step]) fbDiv.innerHTML = renderFeedbackHTML(step, answers[step]); else fbDiv.innerHTML = original; }, 2000);
+            }
+        }
+
+        function proceedToNext(step) {
+            if (!submittedAnswers[step]) return;
+            currentUnlockedStep = Math.max(currentUnlockedStep, step + 1);
+            if (step === 29) {
+                showFinalResults();
+            } else {
+                scrollToStep(step + 1);
+            }
+            renderAll();
+        }
+
+        function scrollToStep(step) {
+            currentStep = step;
+            currentStepDisplay.textContent = step + 1;
+            const cards = document.querySelectorAll('.step-card');
+            if (cards[step]) cards[step].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            renderAll();
+        }
+
+        function showFinalResults() {
+            const resultsGrid = document.getElementById('resultsGrid');
+            let html = '';
+            for (let i = 0; i < 30; i++) {
+                html += `
+                    <div class="results-card p-4">
+                        <p class="font-bold text-sm mb-2">${i+1}. ${questions[i].substring(0, 80)}</p>
+                        <p class="text-yellow-200 text-sm"><strong>Expression:</strong> ${answers[i] || 'Not answered'}</p>
+                        ${stepImages[i] ? `<img src="${stepImages[i]}" class="mt-2 rounded-lg max-h-[140px] w-auto mx-auto" alt="story">` : '<div class="text-white/40 text-xs mt-2">No image generated</div>'}
+                    </div>
+                `;
+            }
+            resultsGrid.innerHTML = html;
+            finalResultsDiv.classList.remove('hidden');
+            finalResultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetAll() {
+            answers.fill('');
+            stepImages.fill('');
+            submittedAnswers.fill(false);
+            questionScores.fill(0);
+            currentUnlockedStep = 29;
+            currentStep = 0;
+            finalResultsDiv.classList.add('hidden');
+            renderAll();
+            scrollToStep(0);
+        }
+
+        // Save progress to localStorage (includes per-step inputs + images for review)
+        function saveProgress() {
+            const progress = {
+                answers:          answers,
+                stepImages:       stepImages,
+                submittedAnswers: submittedAnswers,
+                questionScores:   questionScores,
+                savedStepInputs:  savedStepInputs,
+                savedStepImages:  savedStepImages,
+                currentUnlockedStep: currentUnlockedStep,
+                currentStep:      currentStep,
+                timestamp:        new Date().toISOString()
+            };
+            localStorage.setItem(`studio_progress_${studentId}`, JSON.stringify(progress));
+        }
+
+        async function saveStoryboardToDB() {
+            if (!studentId || !studentSectionId) {
+                console.warn('Missing student session for backend save');
+                return;
+            }
+
+            const accomplishedItems = submittedAnswers.filter(Boolean).length;
+            const totalScore = questionScores.reduce((sum, pts) => sum + (Number(pts) || 0), 0);
+
+            try {
+                const res = await fetch('../api/students/storyboard.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        student_id:         parseInt(studentId, 10),
+                        section_id:         parseInt(studentSectionId, 10),
+                        accomplished_items: `${accomplishedItems}/30`,
+                        score:              `${totalScore}/30`,
+                        progress_data: {
+                            answers,
+                            stepImages,
+                            submittedAnswers,
+                            questionScores,
+                            savedStepInputs,
+                            savedStepImages,
+                            currentStep,
+                            currentUnlockedStep,
+                            timestamp: new Date().toISOString()
+                        }
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    console.warn('Storyboard save failed:', data.error || data);
+                }
+                return data;
+            } catch (err) {
+                console.error('Storyboard save error:', err);
+                return null;
+            }
+        }
+
+        // ---------- LOAD PROGRESS ----------
+        // Apply a progress snapshot (from localStorage or DB) into all state arrays
+        function applyProgress(progress) {
+            answers          = progress.answers          || answers;
+            stepImages       = progress.stepImages       || stepImages;
+            submittedAnswers = progress.submittedAnswers || submittedAnswers;
+            questionScores   = progress.questionScores   || questionScores;
+            // Restore per-step inputs + images so the review modal works after reload
+            savedStepInputs  = progress.savedStepInputs  || savedStepInputs;
+            savedStepImages  = progress.savedStepImages  || savedStepImages;
+            currentUnlockedStep = 29;
+            currentStep      = progress.currentStep      || 0;
+        }
+
+        async function loadProgress() {
+            // 1. Try localStorage first (instant, no network)
+            const localRaw = localStorage.getItem(`studio_progress_${studentId}`);
+            let localProgress = null;
+            if (localRaw) {
+                try { localProgress = JSON.parse(localRaw); } catch(e) {}
+            }
+
+            // 2. Try fetching from the database
+            let dbProgress = null;
+            if (studentId && studentSectionId) {
+                try {
+                    const res  = await fetch(`../api/students/storyboard.php?student_id=${studentId}&section_id=${studentSectionId}`);
+                    const data = await res.json();
+                    if (data?.success && data?.progress) {
+                        // DB columns → progress shape expected by applyProgress
+                        const p = data.progress;
+                        dbProgress = {
+                            answers:          p.answers          || [],
+                            stepImages:       p.step_images      || [],
+                            submittedAnswers: p.submitted        || [],
+                            questionScores:   p.scores           || [],
+                            // Bug 2 fix: DB returns snake_case, not camelCase
+                            savedStepInputs:  p.saved_step_inputs || [],
+                            savedStepImages:  p.saved_step_images || [],
+                            currentStep:      p.current_step     || 0,
+                            currentUnlockedStep: p.unlocked_step || 0
+                        };
+                    }
+                } catch(e) {
+                    console.warn('DB progress fetch failed:', e);
+                }
+            }
+
+            // 3. Pick the most recent snapshot (prefer DB if newer, else localStorage)
+            let chosen = null;
+            if (localProgress && dbProgress) {
+                const localTs = new Date(localProgress.timestamp || 0).getTime();
+                const dbTs    = new Date(dbProgress.timestamp    || 0).getTime();
+                chosen = (dbTs >= localTs) ? dbProgress : localProgress;
+            } else {
+                chosen = dbProgress || localProgress;
+            }
+
+            if (chosen) {
+                applyProgress(chosen);
+                renderAll();
+                showTempFeedback(currentStep, '📀 Progress restored!', 'success');
+            }
+        }
+
+        loadProgress();
+        renderAll();
+
+        // Mobile menu toggle
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNavMenu');
+        if (mobileBtn) mobileBtn.onclick = () => mobileNav.classList.toggle('hidden');
+        const logoImg = document.querySelector('nav img');
+        if (logoImg) logoImg.onerror = () => logoImg.src = 'https://placehold.co/40x40/667eea/white?text=NG';
+        
+        // ---------- USER LOGIN / LOGOUT (from localStorage) ----------
+        // references for display name and logout buttons (desktop + mobile)
+        const displayNameSpan = document.getElementById('displayName');
+        const displayNameMobile = document.getElementById('displayNameMobile');
+        const displayNameMobileMenu = document.getElementById('displayNameMobileMenu');
+        const userInfoDesktop = document.getElementById('userInfoDesktop');
+        const userInfoMobileNav = document.getElementById('userInfoMobileNav');
+        const logoutBtnDesktop = document.getElementById('logoutBtnDesktop');
+        const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+        
+        function updateUserUI() {
+            if (studentName) {
+                const welcomeText = `Welcome, ${studentName}`;
+                if (displayNameSpan) displayNameSpan.textContent = welcomeText;
+                if (displayNameMobile) displayNameMobile.textContent = welcomeText;
+                if (displayNameMobileMenu) displayNameMobileMenu.textContent = welcomeText;
+                if (userInfoDesktop) userInfoDesktop.classList.remove('hidden');
+                if (userInfoMobileNav) userInfoMobileNav.classList.remove('hidden');
+            } else {
+                if (userInfoDesktop) userInfoDesktop.classList.add('hidden');
+                if (userInfoMobileNav) userInfoMobileNav.classList.add('hidden');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('student_id');
+            localStorage.removeItem('student_name');
+            localStorage.removeItem('student_email');
+            localStorage.removeItem('student_section');
+            localStorage.removeItem('student_section_name');
+            localStorage.removeItem('student_grade');
+            window.location.reload();
+        }
+        
+        if (logoutBtnDesktop) logoutBtnDesktop.addEventListener('click', logout);
+        if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', logout);
+        updateUserUI();
+    </script>
+</body>
+</html>

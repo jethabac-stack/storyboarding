@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login - Storyboarding Portal</title>
+    <link rel="icon" href="../admin/image/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+        
+        * { font-family: 'Outfit', sans-serif; }
+        
+        /* Animated Background */
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(99, 102, 241, 0.15) 0%, transparent 40%);
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-20px, 20px) rotate(5deg); }
+        }
+        
+        /* Floating Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: pulse 8s ease-in-out infinite;
+        }
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: rgba(139, 92, 246, 0.4);
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        .orb-2 {
+            width: 200px;
+            height: 200px;
+            background: rgba(59, 130, 246, 0.3);
+            bottom: 20%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+        .orb-3 {
+            width: 150px;
+            height: 150px;
+            background: rgba(236, 72, 153, 0.25);
+            top: 50%;
+            left: 60%;
+            animation-delay: 4s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Input Styles */
+        .input-group {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            transition: color 0.3s;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 16px 16px 16px 48px;
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+        
+        .input-field:focus + .input-icon,
+        .input-field:focus ~ .input-icon {
+            color: #8b5cf6;
+        }
+        
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .input-field {
+            text-indent: 24px;
+        }
+        
+        /* Browser Built-in Password Toggle */
+        .input-field::-webkit-credentials-auto-fill-button {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .input-field::-webkit-password-toggle-button {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.3);
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .input-field::-webkit-password-toggle-button:hover {
+            background: rgba(139, 92, 246, 0.5);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 480px) {
+            .glass-card {
+                margin: 1rem;
+                max-width: calc(100% - 2rem);
+            }
+            
+            .glass-card .p-8 {
+                padding: 1.5rem;
+            }
+            
+            .input-field {
+                padding: 14px 14px 14px 44px;
+                font-size: 14px;
+                text-indent: 18px;
+            }
+            
+            .input-icon {
+                left: 14px;
+                font-size: 14px;
+            }
+            
+            h1.text-3xl {
+                font-size: 1.75rem;
+            }
+            
+            h2.text-2xl {
+                font-size: 1.5rem;
+            }
+            
+            .btn-primary {
+                padding: 14px;
+            }
+            
+            .decoration-ring {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .glass-card .p-8 {
+                padding: 1rem;
+            }
+            
+            .input-field {
+                padding: 12px 12px 12px 40px;
+                font-size: 13px;
+                text-indent: 14px;
+            }
+            
+            .input-icon {
+                left: 12px;
+                font-size: 12px;
+            }
+            
+        }
+        
+        /* Button */
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -5px rgba(139, 92, 246, 0.4);
+        }
+        
+        /* Links */
+        .link-gradient {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .link-gradient:hover {
+            background: linear-gradient(135deg, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Custom Modal */
+        .modal-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(8px);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content { 
+            background: linear-gradient(135deg, #1e1e2f, #2d2d44); 
+            border-radius: 1.5rem; 
+            padding: 2.5rem; 
+            max-width: 420px; 
+            width: 90%; 
+            text-align: center; 
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-icon { 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 0 auto 1.5rem;
+            animation: scaleIn 0.4s ease;
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+        
+        .modal-icon.error { 
+            background: linear-gradient(135deg, #ef4444, #dc2626); 
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+        }
+        
+        .modal-icon.success { 
+            background: linear-gradient(135deg, #10b981, #059669); 
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+        }
+        
+        .modal-btn {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            transition: all 0.3s;
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        /* Decorative Elements */
+        .decoration-ring {
+            position: absolute;
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 50%;
+        }
+        
+        .decoration-ring-1 {
+            width: 100px;
+            height: 100px;
+            top: -30px;
+            right: -30px;
+        }
+        
+        .decoration-ring-2 {
+            width: 60px;
+            height: 60px;
+            bottom: -20px;
+            left: -20px;
+            border-color: rgba(236, 72, 153, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg flex items-center justify-center p-4 relative">
+    <!-- Animated Background Elements -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    
+    <div class="glass-card rounded-3xl w-full max-w-md overflow-hidden relative z-10">
+        <!-- Decorative Rings -->
+        <div class="decoration-ring decoration-ring-1"></div>
+        <div class="decoration-ring decoration-ring-2"></div>
+        
+        <div class="p-8">
+            <!-- Logo & Header -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 mb-4 shadow-lg shadow-purple-500/30">
+                    <img src="../admin/image/logo.png" alt="Logo" class="w-12 h-12 object-contain">
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">Storyboarding</h1>
+                <p class="text-purple-300 text-sm">Student Portal</p>
+            </div>
+
+            <!-- Title -->
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-semibold text-white">Welcome Back</h2>
+                <p class="text-gray-400 text-sm mt-1">Sign in to continue your learning journey</p>
+            </div>
+
+            <form id="loginForm" class="space-y-5">
+                <!-- Email Input -->
+                <div class="input-group">
+                    <input type="email" id="email" required
+                        class="input-field w-full px-4 py-4 rounded-xl outline-none transition"
+                        placeholder="Email Address">
+                    <i class="fas fa-envelope input-icon"></i>
+                </div>
+
+                <!-- Password Input -->
+                <div class="input-group">
+                    <input type="password" id="password" required
+                        class="input-field w-full px-4 py-4 rounded-xl outline-none transition"
+                        placeholder="Password">
+                    <i class="fas fa-lock input-icon"></i>
+                </div>
+
+                <!-- Remember & Forgot -->
+                <div class="flex items-center justify-between text-sm">
+                    <label class="flex items-center text-gray-400 cursor-pointer">
+                        <input type="checkbox" class="w-4 h-4 rounded bg-white/10 border-white/20 text-purple-500 focus:ring-purple-500 mr-2">
+                        Remember me
+                    </label>
+                    <a href="#" class="link-gradient font-medium">Forgot Password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                    class="btn-primary w-full text-white py-4 rounded-xl font-semibold transition flex items-center justify-center gap-2">
+                    <span>Sign In</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="flex items-center gap-4 my-6">
+                <div class="flex-1 h-px bg-white/10"></div>
+                <span class="text-gray-400 text-sm">or</span>
+                <div class="flex-1 h-px bg-white/10"></div>
+            </div>
+
+            <!-- Register Link -->
+            <div class="text-center">
+                <p class="text-gray-400">Don't have an account? 
+                    <a href="register.html" class="link-gradient font-semibold">Create Account</a>
+                </p>
+            </div>
+
+            <!-- Back Link -->
+            <div class="mt-6 text-center">
+                <a href="../landing_page.html" class="text-gray-500 hover:text-white transition text-sm inline-flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+        
+        <!-- Bottom Accent -->
+        <div class="h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500"></div>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div id="modalIcon" class="modal-icon"><i id="modalIconClass" class="fas fa-times-circle text-4xl text-white"></i></div>
+            <h3 id="modalTitle" class="text-2xl font-bold text-white mb-3"></h3>
+            <p id="modalMessage" class="text-gray-400 mb-6"></p>
+            <button onclick="document.getElementById('customModal').classList.add('hidden')" class="modal-btn text-white px-8 py-3 rounded-xl font-semibold transition w-full">Got it</button>
+        </div>
+    </div>
+
+    <script>
+        // ---------- ALREADY LOGGED IN CHECK ----------
+        const studentId = localStorage.getItem('student_id');
+        const studentName = localStorage.getItem('student_name');
+        if (studentId && studentName) {
+            window.location.href = 'index.html';
+            throw new Error('Already logged in, redirecting...');
+        }
+
+        function showAlert(title, message, type) {
+            const modal = document.getElementById('customModal');
+            const icon = document.getElementById('modalIcon');
+            const iconClass = document.getElementById('modalIconClass');
+            const titleEl = document.getElementById('modalTitle');
+            const messageEl = document.getElementById('modalMessage');
+
+            if (type === 'error') {
+                icon.className = 'modal-icon error';
+                iconClass.className = 'fas fa-times-circle text-4xl text-white';
+            } else {
+                icon.className = 'modal-icon success';
+                iconClass.className = 'fas fa-check-circle text-4xl text-white';
+            }
+
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            modal.classList.remove('hidden');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('../api/students/login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('student_id', data.user.id);
+                    localStorage.setItem('student_name', data.user.name);
+                    localStorage.setItem('student_email', data.user.email);
+                    localStorage.setItem('student_section', data.user.section_id);
+                    localStorage.setItem('student_section_name', data.user.section_name);
+                    localStorage.setItem('student_grade', data.user.grade);
+                    window.location.href = 'index.html';
+                } else {
+                    showAlert('Login Failed', data.error || 'The email or password you entered is incorrect. Please try again.', 'error');
+                }
+            } catch (error) {
+                showAlert('Error', 'An unexpected error occurred. Please try again.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

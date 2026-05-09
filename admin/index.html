@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storyboarding Portal</title>
+    <link rel="icon" href="image/logo.png" type="image/png">
+    <meta name="description" content="Storyboarding Portal">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="templatemo-glass-admin-style.css">
+    <!--
+
+TemplateMo 607 Glass Admin
+
+https://templatemo.com/tm-607-glass-admin
+
+-->
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo"><img src="image/logo.png" alt="Storyboarding Portal logo"></div>
+                <span class="logo-text">Storyboarding Portal</span>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-section">
+                    <span class="nav-section-title">Main Menu</span>
+                    <ul>
+                        <li class="nav-item">
+                            <a href="index.html" class="nav-link active">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                </svg>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="storyboard.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                    <path d="M2 17l10 5 10-5"/>
+                                    <path d="M2 12l10 5 10-5"/>
+                                </svg>
+                                Storyboarding
+                                <span class="nav-badge">New</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="pre-test.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                    <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1"/>
+                                    <path d="M21 12v6c0 .552-.448 1-1 1H4c-.552 0-1-.448-1-1v-6"/>
+                                </svg>
+                                Pre-Test
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="post-test.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                    <path d="M16 13H8"/>
+                                    <path d="M16 17H8"/>
+                                    <path d="M10 9H8"/>
+                                </svg>
+                                Post-Test
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="collaboaration.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM7 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
+                                </svg>
+                                Collaboaration
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="students.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 10L12 5 2 10l10 5 10-5z"/>
+                                    <path d="M6 12.5v5c0 1.657 2.686 3 6 3s6-1.343 6-3v-5"/>
+                                    <path d="M22 10v5"/>
+                                </svg>
+                                Students
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="sections.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                Sections
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="users.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="settings.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                                </svg>
+                                Settings
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-section">
+                    <span class="nav-section-title">Account</span>
+                    <ul>
+                        <li class="nav-item">
+                            <a href="login.html" class="nav-link">
+                                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                    <polyline points="16 17 21 12 16 7"/>
+                                    <line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">TM</div>
+                    <div class="user-info">
+                        <div class="user-name">Anami</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Navbar -->
+            <nav class="navbar">
+                <h1 class="page-title">Dashboard Overview</h1>
+                <div class="navbar-right">
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="text" class="search-input" placeholder="Search anything...">
+                    </div>
+                    <button class="nav-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span class="notification-dot"></span>
+                    </button>
+                    <button class="nav-btn" id="theme-toggle" title="Toggle Light/Dark Mode">
+                        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="M12 2v2"/><path d="M12 20v2"/>
+                            <path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/>
+                            <path d="M2 12h2"/><path d="M20 12h2"/>
+                            <path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/>
+                        </svg>
+                        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Stats Cards -->
+            <section class="stats-grid">
+                <div class="glass-card stat-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="color: var(--text-secondary); font-size: 14px; font-weight: 500; margin-bottom: 8px;">Storyboarding</h3>
+                            <div id="stat-storyboarding" style="font-size: 32px; font-weight: 700; color: var(--text-primary);">0</div>
+                        </div>
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(34, 197, 94, 0.15); display: flex; align-items: center; justify-content: center;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                                <polyline points="2 17 12 22 22 17"/>
+                                <polyline points="2 12 12 17 22 12"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+ 
+                <div class="glass-card stat-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="color: var(--text-secondary); font-size: 14px; font-weight: 500; margin-bottom: 8px;">Students</h3>
+                            <div id="stat-students" style="font-size: 32px; font-weight: 700; color: var(--text-primary);">0</div>
+                        </div>
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(234, 179, 8, 0.15); display: flex; align-items: center; justify-content: center;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+ 
+                <div class="glass-card stat-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="color: var(--text-secondary); font-size: 14px; font-weight: 500; margin-bottom: 8px;">Sections</h3>
+                            <div id="stat-sections" style="font-size: 32px; font-weight: 700; color: var(--text-primary);">0</div>
+                        </div>
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(249, 115, 22, 0.15); display: flex; align-items: center; justify-content: center;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2">
+                                <rect x="3" y="3" width="8" height="8" rx="1"/>
+                                <rect x="13" y="3" width="8" height="8" rx="1"/>
+                                <rect x="3" y="13" width="8" height="8" rx="1"/>
+                                <rect x="13" y="13" width="8" height="8" rx="1"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+ 
+                <div class="glass-card stat-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="color: var(--text-secondary); font-size: 14px; font-weight: 500; margin-bottom: 8px;">Users</h3>
+                            <div id="stat-users" style="font-size: 32px; font-weight: 700; color: var(--text-primary);">0</div>
+                        </div>
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(6, 182, 212, 0.15); display: flex; align-items: center; justify-content: center;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Content Grid -->
+            <section class="content-grid">
+                <!-- Chart Card -->
+                <div class="glass-card chart-card" style="min-height: 520px;">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Growth Tracking</h2>
+                            <p class="card-subtitle">It calculates the difference between Pre-test and Post-test scores to prove the effectiveness of the storyboarding.</p>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper" style="padding: 1rem 0 0 0;">
+                        <div class="chart-container" style="min-height: 360px; overflow-x: auto;">
+                            <canvas id="scoresChart" width="1200" height="360" style="width: 100%; height: 100%; display: block;"></canvas>
+                        </div>
+                        <div class="score-note" style="margin-top: 1.5rem; display: flex; justify-content: flex-start; gap: 1.5rem; flex-wrap: wrap; color: #324054;">
+                            <span class="legend-badge"><span class="legend-color" style="background: #ff4d4f;"></span> Pre-test score (%)</span>
+                            <span class="legend-badge"><span class="legend-color" style="background: #22c55e;"></span> Post-test score (%)</span>
+                            <span class="legend-badge">📈 Improvement shown for every student</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Feed -->
+                <div class="glass-card activity-card" style="min-height: 560px;">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Recent Activity</h2>
+                            <p class="card-subtitle">Students</p>
+                        </div>
+                    </div>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-avatar" style="background: linear-gradient(135deg, var(--emerald-light), var(--emerald));">JD</div>
+                            <div class="activity-content">
+                                <p class="activity-text"><strong>John Doe</strong> submitted the Week 4 quiz with a score of 92%</p>
+                                <span class="activity-time">2 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-avatar" style="background: linear-gradient(135deg, var(--gold), var(--amber));">AS</div>
+                            <div class="activity-content">
+                                <p class="activity-text"><strong>Anna Smith</strong> enrolled in Introduction to Data Science</p>
+                                <span class="activity-time">15 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-avatar" style="background: linear-gradient(135deg, var(--coral), var(--gold));">MJ</div>
+                            <div class="activity-content">
+                                <p class="activity-text"><strong>Mike Johnson</strong> is working on the Module 3 assignment</p>
+                                <span class="activity-time">1 hour ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-avatar" style="background: linear-gradient(135deg, var(--success), var(--emerald));">EW</div>
+                            <div class="activity-content">
+                                <p class="activity-text"><strong>Emily White</strong> joined the live Q&amp;A session for Advanced Math</p>
+                                <span class="activity-time">2 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-avatar" style="background: linear-gradient(135deg, var(--warning), var(--gold));">RB</div>
+                            <div class="activity-content">
+                                <p class="activity-text"><strong>Robert Brown</strong> completed all pending tasks for this week</p>
+                                <span class="activity-time">3 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+    </button>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>Copyright © 2026 BSED-MATH. Designed by <a href="" target="_blank" rel="nofollow">Jetty</a></p>
+    </footer>
+
+    <script src="../assets/js/chart.min.js"></script>
+    <script>
+      // Check admin session
+      const adminId = localStorage.getItem('admin_id');
+      const adminName = localStorage.getItem('admin_name');
+      const adminEmail = localStorage.getItem('admin_email');
+      
+      if (!adminId) {
+        window.location.href = 'login.html';
+      } else {
+        // Update sidebar profile
+        const initials = adminName.split(' ').map(n => n.charAt(0)).join('');
+        document.querySelector('.user-avatar').textContent = initials;
+        document.querySelector('.user-name').textContent = adminName;
+        
+        // Load recent activity from database
+        loadRecentActivity();
+        
+        // Load growth tracking data from database
+        loadGrowthTrackingData();
+      }
+
+      // Load recent activity + DB stats (Storyboarding/Students STATIC at 0, Sections/Users from DB)
+      async function loadRecentActivity() {
+        console.log('Loading stats and activity...');
+        
+        // STATIC: Disconnect Storyboarding/Students from DB (always 0)
+        document.getElementById('stat-storyboarding').textContent = '0';
+        document.getElementById('stat-students').textContent = '0';
+        
+        // Loading state for DB-connected cards
+        const dbStatIds = ['stat-sections', 'stat-users'];
+        dbStatIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = '...';
+        });
+        
+        try {
+          const response = await fetch('../api/admin/dashboard.php?action=stats');
+          const data = await response.json();
+          
+          if (data.success && data.stats) {
+            // Update ONLY DB-connected stats
+            const sectionsEl = document.getElementById('stat-sections');
+            if (sectionsEl) sectionsEl.textContent = data.stats.sections || '0';
+                        const studentsEl = document.getElementById('stat-students');
+            if (studentsEl) studentsEl.textContent = data.stats.students || '0';
+                        const usersEl = document.getElementById('stat-users');
+            if (usersEl) usersEl.textContent = data.stats.users || '0';
+            
+            // Update recent activity
+            if (data.recent_activity) {
+              displayRecentActivity(data.recent_activity);
+            }
+          } else {
+            // API error fallback
+            document.getElementById('stat-sections').textContent = '0';
+            document.getElementById('stat-users').textContent = '0';
+          }
+        } catch (error) {
+          console.error('Error loading DB stats/activity:', error);
+          // Network error fallback
+          document.getElementById('stat-sections').textContent = '0';
+          document.getElementById('stat-users').textContent = '0';
+        }
+      }
+
+      // Load growth tracking data from database
+      async function loadGrowthTrackingData() {
+        try {
+          const response = await fetch('../api/admin/dashboard.php?action=growth_tracking');
+          const data = await response.json();
+          
+          if (data.success && data.growth_data) {
+            initializeGrowthChart(data.growth_data);
+          } else {
+            console.error('Failed to load growth tracking data');
+            // Fallback to static data
+            initializeGrowthChart([]);
+          }
+        } catch (error) {
+          console.error('Error loading growth tracking data:', error);
+          // Fallback to static data
+          initializeGrowthChart([]);
+        }
+      }
+
+      // Initialize growth tracking chart
+      function initializeGrowthChart(growthData) {
+        let students = [];
+        let preTestScores = [];
+        let postTestScores = [];
+        
+        if (growthData && growthData.length > 0) {
+          // Use data from database
+          students = growthData.map(item => item.student_name);
+          preTestScores = growthData.map(item => parseScore(item.pre_test_score));
+          postTestScores = growthData.map(item => parseScore(item.post_test_score));
+        } else {
+          // Fallback to static data
+          students = ["Anna", "Michael", "Ryan", "Erin", "Cletus"];
+          preTestScores = [92, 87, 78, 90, 81];
+          postTestScores = [98, 93, 88, 97, 82];
+        }
+
+        const ctx = document.getElementById('scoresChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: students,
+            datasets: [
+              {
+                label: 'Pre-test score (%)',
+                data: preTestScores,
+                backgroundColor: '#ff4d4f',
+                borderColor: '#d43f3f',
+                borderWidth: 1,
+                borderRadius: 8,
+                barPercentage: 0.8,
+                categoryPercentage: 0.9,
+                hoverBackgroundColor: '#e11d48',
+                borderSkipped: false
+              },
+              {
+                label: 'Post-test score (%)',
+                data: postTestScores,
+                backgroundColor: '#22c55e',
+                borderColor: '#15803d',
+                borderWidth: 1,
+                borderRadius: 8,
+                barPercentage: 0.8,
+                categoryPercentage: 0.9,
+                hoverBackgroundColor: '#16a34a',
+                borderSkipped: false
+              }
+            ]
+          },
+          options: {
+            indexAxis: 'x', // Ensure vertical bars
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              tooltip: {
+                backgroundColor: '#0f172a',
+                titleColor: '#f8fafc',
+                bodyColor: '#e2e8f0',
+                callbacks: {
+                  label: function(context) {
+                    return `${context.dataset.label}: ${context.raw}%`;
+                  }
+                },
+                padding: 10,
+                cornerRadius: 8
+              },
+              legend: {
+                position: 'top',
+                align: 'center',
+                labels: {
+                  color: '#1f2937',
+                  boxWidth: 16,
+                  boxHeight: 16,
+                  padding: 16,
+                  font: {
+                    size: 13,
+                    weight: '500'
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                title: {
+                  display: true,
+                  text: 'Score (%)',
+                  color: '#334155',
+                  font: {
+                    weight: '600',
+                    size: 13
+                  }
+                },
+                grid: {
+                  color: '#e2e8f0',
+                  drawBorder: true,
+                  lineWidth: 0.8
+                },
+                ticks: {
+                  stepSize: 10,
+                  callback: function(value) {
+                    return value + '%';
+                  },
+                  color: '#475569'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Student',
+                  color: '#334155',
+                  font: {
+                    weight: '600',
+                    size: 13
+                  }
+                },
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  autoSkip: true,
+                  maxRotation: 45,
+                  minRotation: 30,
+                  color: '#1f2937',
+                  font: {
+                    weight: '500',
+                    size: 12
+                  }
+                }
+              }
+            },
+            animation: {
+              duration: 800,
+              easing: 'easeOutQuart'
+            }
+          }
+        });
+      }
+
+      // Parse score from various formats (fraction, percentage, or number)
+      function parseScore(score) {
+        if (!score || score === null || score === '') {
+          return 0;
+        }
+        
+        // Convert to string to handle different input types
+        score = String(score).trim();
+        
+        // Check if it's a fraction (e.g., "7/10")
+        if (score.includes('/')) {
+          const parts = score.split('/');
+          if (parts.length === 2) {
+            const numerator = parseFloat(parts[0]);
+            const denominator = parseFloat(parts[1]);
+            if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+              return Math.round((numerator / denominator) * 100);
+            }
+          }
+        }
+        
+        // Check if it's already a percentage (ends with %)
+        if (score.endsWith('%')) {
+          const num = parseFloat(score.replace('%', ''));
+          return isNaN(num) ? 0 : num;
+        }
+        
+        // Try to parse as a direct number
+        const num = parseFloat(score);
+        if (!isNaN(num)) {
+          // If the number is greater than 1, assume it's already a percentage
+          // If it's between 0 and 1, treat it as a decimal (e.g., 0.7 = 70%)
+          if (num > 1) {
+            return Math.round(num);
+          } else if (num > 0) {
+            return Math.round(num * 100);
+          } else {
+            return 0;
+          }
+        }
+        
+        return 0;
+      }
+
+      // Display recent activity from players
+      function displayRecentActivity(activities) {
+        const activityList = document.querySelector('.activity-list');
+        if (!activityList) return;
+        
+        if (activities.length === 0) {
+          activityList.innerHTML = '<p style="padding: 20px; text-align: center; color: #64748b;">No recent activity</p>';
+          return;
+        }
+        
+        const colors = [
+          'linear-gradient(135deg, #22c55e, #16a34a)',
+          'linear-gradient(135deg, #eab308, #ca8a04)',
+          'linear-gradient(135deg, #f97316, #ea580c)',
+          'linear-gradient(135deg, #06b6d4, #0891b2)',
+          'linear-gradient(135deg, #8b5cf6, #7c3aed)'
+        ];
+        
+        activityList.innerHTML = activities.map((activity, index) => {
+          const initials = activity.players ? activity.players.charAt(0).toUpperCase() : 'G';
+          const timeAgo = formatTimeAgo(activity.started_at);
+          const accomplishedItems = activity.current_question + '/' + activity.total_questions;
+          
+          return `
+            <div class="activity-item">
+              <div class="activity-avatar" style="background: ${colors[index % colors.length]};">${initials}</div>
+              <div class="activity-content">
+                <p class="activity-text"><strong>${activity.players || 'Player'}</strong> played <strong>${activity.quiz_title || 'Quiz'}</strong></p>
+                <p class="activity-text" style="font-size: 0.85em; color: #64748b;">PIN: ${activity.game_pin} • Accomplished Items: ${accomplishedItems}</p>
+                <span class="activity-time">${timeAgo}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Format time ago
+      function formatTimeAgo(timestamp) {
+        if (!timestamp) return 'Unknown';
+        
+        const now = new Date();
+        const time = new Date(timestamp);
+        const seconds = Math.floor((now - time) / 1000);
+        
+        if (seconds < 60) return 'Just now';
+        if (seconds < 3600) return Math.floor(seconds / 60) + ' min ago';
+        if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+        return Math.floor(seconds / 86400) + ' days ago';
+      }
+
+      // Logout
+      document.querySelector('a[href="login.html"].nav-link').addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.clear();
+        window.location.href = 'login.html';
+      });
+    </script>
+    <script src="templatemo-glass-admin-script.js"></script>
+    <!-- TemplateMo 607 Glass Admin -->
+</body>
+</html>

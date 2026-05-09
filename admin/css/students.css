@@ -1,0 +1,486 @@
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: modalFadeIn 0.2s ease;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        @keyframes modalSlideUp {
+            from { transform: translateY(24px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .modal-glass {
+            background: var(--glass-bg, rgba(255,255,255,0.08));
+            border: 1px solid var(--glass-border, rgba(255,255,255,0.15));
+            box-shadow: 0 0 0 1px rgba(22,147,210,0.2), 0 0 36px rgba(22,147,210,0.18), 0 24px 64px rgba(0,0,0,0.35);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 580px;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 28px;
+            animation: modalSlideUp 0.25s ease;
+            scrollbar-width: thin;
+            scrollbar-color: var(--glass-border) transparent;
+        }
+        .modal-answer-img {
+            width: 100%;
+            height: 148px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: block;
+            border: 1px solid var(--glass-border);
+        }
+        .modal-answer-img-skeleton {
+            width: 100%;
+            height: 148px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, rgba(128,128,128,0.1) 25%, rgba(128,128,128,0.2) 50%, rgba(128,128,128,0.1) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+        }
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .modal-student-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .modal-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .modal-student-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 2px;
+        }
+        .modal-student-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+        .modal-close {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .modal-close:hover { background: var(--glass-hover); }
+        .modal-stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .modal-stat {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .modal-stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+        .modal-stat-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .modal-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+        .modal-answers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .modal-answer-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 16px;
+        }
+        .modal-answer-q {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        .modal-answer-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        .modal-answer-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-answer-controls label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .modal-score-input {
+            width: 64px;
+            background: var(--glass-hover);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 13px;
+            color: var(--text-primary);
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .modal-score-input:focus { border-color: var(--emerald); }
+        .modal-remark-input {
+            flex: 1;
+            background: var(--glass-hover);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 13px;
+            color: var(--text-primary);
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        /* Edit Student Button & Form */
+        .edit-student-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: linear-gradient(135deg, var(--warning), var(--gold));
+            border: 1px solid var(--warning);
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(251, 146, 60, 0.25);
+        }
+        .edit-student-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(251, 146, 60, 0.35);
+            background: linear-gradient(135deg, var(--gold), var(--warning));
+        }
+        .edit-student-btn:active {
+            transform: translateY(0);
+        }
+        .edit-student-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: white;
+        }
+        
+        /* Add Student Button */
+        .btn-add-student {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, var(--emerald), var(--success));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        }
+        .btn-add-student:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+        }
+        .btn-add-student svg {
+            width: 16px;
+            height: 16px;
+            stroke: white;
+        }
+        
+        /* Add Student Modal */
+        #addStudentModal {
+            display: none;
+        }
+        
+        /* Edit Modal Form */
+        #editStudentModal {
+            display: none;
+        }
+        .edit-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .form-group input,
+        .form-group select {
+            background: var(--glass-hover);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--emerald);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .form-actions button {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .btn-save {
+            background: linear-gradient(135deg, var(--emerald), var(--success));
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        }
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+        }
+        .btn-cancel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+        }
+        .btn-cancel:hover {
+            background: var(--glass-hover);
+        }
+        .modal-remark-input:focus { border-color: var(--emerald); }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 4px;
+        }
+        .modal-btn {
+            padding: 9px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+            font-family: inherit;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .modal-btn:active { transform: scale(0.97); }
+        .modal-btn-secondary {
+            background: var(--glass-bg);
+            color: var(--text-secondary);
+        }
+        .modal-btn-secondary:hover { background: var(--glass-hover); }
+        .modal-btn-primary {
+            background: var(--emerald);
+            color: #fff;
+            border-color: var(--emerald);
+        }
+        .modal-btn-primary:hover { opacity: 0.88; }
+        .modal-success-msg {
+            text-align: center;
+            padding: 20px 0 8px;
+            color: var(--success);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+.view-dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+.view-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 100;
+    min-width: 160px;
+    padding: 4px 0;
+}
+
+.dropdown-option {
+    display: block;
+    padding: 8px 16px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.dropdown-option:hover {
+    background: var(--glass-hover);
+}
+
+.test-score-section {
+    padding: 20px 0;
+}
+
+.score-display {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.score-display h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.score-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--emerald);
+    margin-bottom: 15px;
+}
+
+.score-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--glass-hover);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.score-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--emerald), var(--gold));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.evaluation-section h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+}
+
+.evaluation-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.evaluation-controls label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.modal-remark-textarea {
+    width: 100%;
+    min-height: 80px;
+    background: var(--glass-hover);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.2s;
+}
+
+.modal-remark-textarea:focus {
+    border-color: var(--emerald);
+}
+

@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Overview | Storyboarding Portal</title>
+    <link rel="icon" href="admin/image/logo.png" type="image/png">
+    <!-- Tailwind CSS + Font Awesome + Google Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        * { font-family: 'Poppins', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-card { background: rgba(255,255,255,0.12); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.2); border-radius: 2rem; }
+        .step-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); border-radius: 1.25rem; transition: all 0.2s; }
+        .step-card:hover { background: rgba(255,255,255,0.15); transform: translateX(4px); }
+        .problem-tile { background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.2); transition: all 0.3s ease; cursor: pointer; }
+        .problem-tile:hover { transform: translateY(-6px); background: rgba(255,255,255,0.18); border-color: #ffd966; box-shadow: 0 20px 30px -12px rgba(0,0,0,0.3); }
+        .drop-zone {
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 2px dashed rgba(255,215,0,0.6); border-radius: 12px;
+            padding: 4px 12px; margin: 0 4px; min-width: 100px;
+            background: rgba(255,255,255,0.15); transition: all 0.2s;
+            font-weight: 500; color: white; text-align: center;
+        }
+        .drop-zone.occupied { border: 2px solid #4ade80; background: rgba(74,222,128,0.2); }
+        .drop-zone.drag-over { border-color: #fbbf24; background: rgba(251,191,36,0.2); transform: scale(1.02); }
+        .draggable-word {
+            display: inline-block; background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            padding: 6px 14px; margin: 4px; border-radius: 40px; cursor: grab;
+            font-weight: 600; font-size: 0.8rem; color: white; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            transition: all 0.15s; user-select: none;
+        }
+        .draggable-word:active { cursor: grabbing; opacity: 0.7; }
+        .glow-green { animation: pulseGreen 0.6s ease; }
+        .glow-red { animation: pulseRed 0.6s ease; }
+        @keyframes pulseGreen { 0%,100% { box-shadow: 0 0 0 0 #4ade80; } 50% { box-shadow: 0 0 0 8px rgba(74,222,128,0.4); } }
+        @keyframes pulseRed { 0%,100% { box-shadow: 0 0 0 0 #f87171; } 50% { box-shadow: 0 0 0 8px rgba(248,113,113,0.4); } }
+        .slide { transition: opacity 0.4s ease, visibility 0.4s; }
+        .process-content { transition: all 0.3s; }
+        .nav-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.4); transition: all 0.2s; cursor: pointer; }
+        .nav-dot.active { background: white; transform: scale(1.3); box-shadow: 0 0 8px white; }
+        .detail-card { background: rgba(255,255,255,0.1); border-radius: 1.5rem; padding: 1.5rem; }
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #fbbf24; border-radius: 10px; }
+    </style>
+</head>
+<body class="gradient-bg text-white min-h-screen">
+
+    <!-- Navigation (landing page style) -->
+    <nav class="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <img src="../admin/image/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://placehold.co/40x40/667eea/white?text=NL'">
+                    <span class="text-white text-2xl font-bold tracking-tight">Storyboarding Portal</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="index.html" class="text-white/80 hover:text-white transition">Home</a>
+                    <a href="overview.html" class="text-white font-semibold border-b-2 border-yellow-400 pb-0.5">Overview</a>
+                    <a href="studio.html" class="text-white/80 hover:text-white transition">Studio</a>
+                    <a href="student.html" class="text-white/80 hover:text-white transition">Student</a>
+                </div>
+                <!-- Right side: User info + Mobile menu button -->
+                <div class="flex items-center gap-4">
+                    <!-- User info / login status (desktop) -->
+                    <div id="userInfoDesktop" class="hidden md:flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
+                        <i class="fas fa-user-circle text-white text-xl"></i>
+                        <span id="displayName" class="text-sm font-medium text-white"></span>
+                        <button id="logoutBtnDesktop" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition">Logout</button>
+                    </div>
+                    
+                    <!-- Mobile: User info visible + centered menu button -->
+                    <div class="flex md:hidden items-center gap-2">
+                        <button id="mobileMenuBtn" class="text-white text-2xl ml-2"><i class="fas fa-bars"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div id="mobileNavMenu" class="md:hidden hidden py-4 border-t border-white/20 space-y-3">
+                <a href="index.html" class="block text-white/90 px-2 py-1">Home</a>
+                <a href="overview.html" class="block text-white font-semibold px-2 py-1">Overview</a>
+                <a href="studio.html" class="block text-white/80 px-2 py-1">Studio</a>
+                <a href="student.html" class="block text-white/80 px-2 py-1">Student</a>
+                <div class="pt-2 flex items-center justify-between border-t border-white/20 mt-2">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-user-circle text-white text-xl"></i>
+                        <span id="displayNameMobileMenu" class="text-sm font-medium text-white"></span>
+                    </div>
+                    <button id="logoutBtnMobile" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Slides Container -->
+    <div class="relative min-h-[calc(100vh-4rem)] overflow-hidden">
+        <!-- Slide 0: Title/Hero -->
+        <div id="slide0" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible flex items-center justify-center px-6">
+            <div class="text-center max-w-3xl fade-in">
+                <br>
+                <div class="inline-flex items-center gap-2 bg-yellow-400/20 rounded-full px-4 py-1.5 text-sm mb-6 border border-yellow-400/30">
+                    <i class="fas fa-graduation-cap"></i> Learning Module
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent mb-6">
+                    Solves Problems Involving Algebraic Expressions
+                </h1>
+                <button onclick="nextSlide()" class="bg-yellow-400 text-purple-900 px-8 py-4 rounded-xl text-lg font-bold hover:bg-yellow-300 transition shadow-xl inline-flex items-center gap-2 mt-4">
+                    Start Learning <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 1: Introduction -->
+        <div id="slide1" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-5xl mx-auto glass-card p-6 md:p-10 my-6">
+                <div class="flex items-center gap-3 mb-6"><i class="fas fa-book-open text-3xl text-yellow-300"></i><h2 class="text-3xl font-bold">INTRODUCTION</h2></div>
+                <p class="text-white/90 text-lg leading-relaxed">Solving problems involving algebraic expressions bridges the gap between basic arithmetic and advanced logical reasoning, providing a vital tool for applying mathematical logic to real-life situations. Since many real-world challenges are presented as verbal scenarios, developing the ability to analyze and translate these phrases into mathematical symbols is essential for navigating complex problems. To master this, we will utilize a structured approach to solve seven specific types of word problems found in instructional materials.</p>
+                <div class="flex justify-between gap-4 mt-10">
+                    <button onclick="prevSlide()" class="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-full"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button onclick="nextSlide()" class="bg-yellow-400 text-purple-900 px-6 py-2 rounded-full font-bold">Steps →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: 5 Steps (Step-by-step reveal) -->
+        <div id="slide2" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-4xl mx-auto glass-card p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-center mb-1">🧩 5 Steps for Solving Word Problems</h2>
+                <p class="text-center text-white/70 text-sm mb-5">Click <strong>Proceed</strong> to reveal each step.</p>
+
+                <!-- Step progress dots -->
+                <div class="flex items-center justify-center gap-2 mb-7" id="stepDots2">
+                    <div class="step-dot2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-yellow-400 bg-yellow-400 text-purple-900" data-step="1">1</div>
+                    <div class="h-0.5 w-8 bg-white/20"></div>
+                    <div class="step-dot2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-step="2">2</div>
+                    <div class="h-0.5 w-8 bg-white/20"></div>
+                    <div class="step-dot2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-step="3">3</div>
+                    <div class="h-0.5 w-8 bg-white/20"></div>
+                    <div class="step-dot2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-step="4">4</div>
+                    <div class="h-0.5 w-8 bg-white/20"></div>
+                    <div class="step-dot2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-step="5">5</div>
+                </div>
+
+                <!-- Steps revealed one by one -->
+                <div class="space-y-4" id="stepPanels2">
+
+                    <!-- STEP 1 -->
+                    <div id="spanel1" class="bg-white/8 border border-white/15 rounded-2xl p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-8 h-8 rounded-full bg-yellow-400 text-purple-900 font-extrabold text-sm flex items-center justify-center flex-shrink-0">1</span>
+                            <p class="text-yellow-300 font-bold text-lg">STEP 1 — Read</p>
+                        </div>
+                        <div class="pl-11 text-white/90 text-sm leading-relaxed">
+                            Read and <strong>understand</strong> the problem.
+                        </div>
+                    </div>
+
+                    <!-- STEP 2 (hidden) -->
+                    <div id="spanel2" class="hidden bg-white/8 border border-white/15 rounded-2xl p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-8 h-8 rounded-full bg-yellow-400 text-purple-900 font-extrabold text-sm flex items-center justify-center flex-shrink-0">2</span>
+                            <p class="text-yellow-300 font-bold text-lg">STEP 2 — Represent</p>
+                        </div>
+                        <div class="pl-11 text-white/90 text-sm leading-relaxed">
+                            Represent the <strong>unknown with a variable</strong>. Write the expressions/equations needed.
+                        </div>
+                    </div>
+
+                    <!-- STEP 3 (hidden) -->
+                    <div id="spanel3" class="hidden bg-white/8 border border-white/15 rounded-2xl p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-8 h-8 rounded-full bg-yellow-400 text-purple-900 font-extrabold text-sm flex items-center justify-center flex-shrink-0">3</span>
+                            <p class="text-yellow-300 font-bold text-lg">STEP 3 — Solve</p>
+                        </div>
+                        <div class="pl-11 text-white/90 text-sm leading-relaxed">
+                            Solve for the <strong>value of the variable/s</strong>.
+                        </div>
+                    </div>
+
+                    <!-- STEP 4 (hidden) -->
+                    <div id="spanel4" class="hidden bg-white/8 border border-white/15 rounded-2xl p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-8 h-8 rounded-full bg-yellow-400 text-purple-900 font-extrabold text-sm flex items-center justify-center flex-shrink-0">4</span>
+                            <p class="text-yellow-300 font-bold text-lg">STEP 4 — Answer</p>
+                        </div>
+                        <div class="pl-11 text-white/90 text-sm leading-relaxed">
+                            <strong>Answer.</strong> Does the solution answer the question asked? Does it make sense?
+                        </div>
+                    </div>
+
+                    <!-- STEP 5 (hidden) -->
+                    <div id="spanel5" class="hidden bg-white/8 border border-white/15 rounded-2xl p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-8 h-8 rounded-full bg-yellow-400 text-purple-900 font-extrabold text-sm flex items-center justify-center flex-shrink-0">5</span>
+                            <p class="text-yellow-300 font-bold text-lg">STEP 5 — Check</p>
+                        </div>
+                        <div class="pl-11 text-white/90 text-sm leading-relaxed">
+                            <strong>Check</strong> the answer in the original word problem.
+                        </div>
+                    </div>
+
+                    <!-- Completion banner (hidden) -->
+                    <div id="completionCard2" class="hidden bg-yellow-400/20 border border-yellow-400/50 rounded-2xl p-5 text-center">
+                        <p class="text-3xl mb-1">🎉</p>
+                        <p class="font-bold text-yellow-300 text-lg">All steps revealed!</p>
+                        <p class="text-white/70 text-sm mt-1">You now know all 5 steps for solving word problems.</p>
+                        <button onclick="showSlide(3)" class="mt-4 bg-yellow-400 text-purple-900 px-6 py-2 rounded-full font-bold hover:bg-yellow-300 transition">7 Problem Types →</button>
+                    </div>
+
+                </div><!-- end stepPanels2 -->
+
+                <!-- Action buttons -->
+                <div class="flex justify-between items-center mt-8">
+                    <button onclick="prevSlide()" class="bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full text-sm">← Back</button>
+                    <div class="flex gap-3">
+                        <button onclick="resetSteps2()" class="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-full text-sm border border-white/20"><i class="fas fa-undo-alt mr-1"></i> Reset</button>
+                        <button id="proceedBtn2" onclick="proceedStep2()" class="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold px-7 py-2 rounded-full text-sm transition">Proceed →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: 7 Problem Types Grid -->
+        <div id="slide3" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-6xl mx-auto glass-card p-6 md:p-10">
+                <h2 class="text-3xl font-bold text-center mb-8">📚 Practice These 7 Problem Types</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div class="problem-tile rounded-2xl p-5 text-center" onclick="showProblem('garden')"><div class="text-4xl mb-2">🌿</div><h3 class="text-xl font-bold">1. Geometry Problem</h3><p class="text-white/70 text-sm">Rectangle perimeter with variable expressions</p></div>
+                    <div class="problem-tile rounded-2xl p-5 text-center" onclick="showProblem('age')"><div class="text-4xl mb-2">👴👧</div><h3 class="text-xl font-bold">2. Age Problem</h3><p class="text-white/70 text-sm">Age differences expressed algebraically</p></div>
+                    <div class="problem-tile rounded-2xl p-5 text-center" onclick="showProblem('number')"><div class="text-4xl mb-2">🔢</div><h3 class="text-xl font-bold">3. Total Quantity Problem</h3><p class="text-white/70 text-sm">Consecutive numbers & sums</p></div>
+                    <div class="problem-tile rounded-2xl p-5 text-center" onclick="showProblem('rate')"><div class="text-4xl mb-2">🚗</div><h3 class="text-xl font-bold">4. Motion Problem</h3><p class="text-white/70 text-sm">Distance = rate × time</p></div>
+                    <div class="problem-tile rounded-2xl p-5 text-center" onclick="showProblem('mixture')"><div class="text-4xl mb-2">🧪</div><h3 class="text-xl font-bold">5. Work Problem</h3><p class="text-white/70 text-sm">Mixture concentrations with variables</p></div>
+                    <div class="problem-tile rounded-2xl p-5 text-center" onclick="showProblem('work')"><div class="text-4xl mb-2">⚙️</div><h3 class="text-xl font-bold">6. Finance/Money Problem</h3><p class="text-white/70 text-sm">Combined work rates as expressions</p></div>
+                    <div class="problem-tile rounded-2xl p-5 text-center" onclick="showProblem('money')"><div class="text-4xl mb-2">💰</div><h3 class="text-xl font-bold">7. Multi-Step Problem</h3><p class="text-white/70 text-sm">Interest & investment expressions</p></div>
+                </div>
+                <div class="flex justify-between mt-10"><button onclick="prevSlide()" class="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-full">Back</button><button onclick="showSlide(4)" class="bg-yellow-400 text-purple-900 px-6 py-2 rounded-full font-bold">What I've Learned →</button></div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Drag & Drop Challenge (What I've Learned) -->
+        <div id="slide4" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-4xl mx-auto glass-card p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-center mb-2">🧠 What I've Learned</h2>
+                <p class="text-center text-white/80 mb-6">Drag the correct words into the blanks</p>
+                
+                <!-- Word Bank -->
+                <div class="bg-white/10 rounded-2xl p-4 mb-8 flex flex-wrap justify-center gap-2 border border-white/20">
+                    <span class="draggable-word" data-value="verbal statements into mathematical phrase">verbal statements into mathematical phrase</span>
+                    <span class="draggable-word" data-value="the unknown with a variable">the unknown with a variable</span>
+                    <span class="draggable-word" data-value="expression and equation">expression & equation</span>
+                    <span class="draggable-word" data-value="understand">understand</span>
+                    <span class="draggable-word" data-value="for the value of the variable">for the value of the variable</span>
+                    <span class="draggable-word" data-value="write">write</span>
+                    <span class="draggable-word" data-value="answer in the original word problem">answer in the original word problem</span>
+                </div>
+
+                <div class="space-y-5 text-white/90 text-base">
+                    <p><strong>A.</strong> I know that in solving word problems, I have to translate <span class="drop-zone" data-expected="verbal statements into mathematical phrase">________</span>.</p>
+                    <p><strong>B.</strong> In translating verbal phrase, I have to represent <span class="drop-zone" data-expected="the unknown with a variable">________</span>.</p>
+                    <p><strong>Steps:</strong></p>
+                    <p>1. Read and <span class="drop-zone" data-expected="understand">________</span> the problem.</p>
+                    <p>2. Represent unknown and write the <span class="drop-zone" data-expected="expression and equation">________</span> needed.</p>
+                    <p>3. Solve <span class="drop-zone" data-expected="for the value of the variable">________</span>.</p>
+                    <p>4. <span class="drop-zone" data-expected="write">________</span> the answer.</p>
+                    <p>5. Check the <span class="drop-zone" data-expected="answer in the original word problem">________</span>.</p>
+                </div>
+
+                <div id="dragFeedback" class="mt-6 text-center text-sm font-medium p-3 rounded-xl hidden"></div>
+                <div class="flex justify-center gap-4 mt-6">
+                    <button onclick="resetDragDrop()" class="bg-orange-500 hover:bg-orange-600 px-5 py-2 rounded-full text-sm font-semibold"><i class="fas fa-undo-alt"></i> Reset Game</button>
+                </div>
+                <div class="flex justify-between mt-8"><button onclick="prevSlide()" class="bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full">Back</button><button onclick="showSlide(5)" class="bg-yellow-400 text-purple-900 px-5 py-2 rounded-full font-bold">What I Can Do →</button></div>
+            </div>
+        </div>
+
+        <!-- Slide 5: WHAT I CAN DO (Step-by-step display) -->
+        <div id="slide5" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-4xl mx-auto glass-card p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-center mb-1">✍️ WHAT I CAN DO</h2>
+                <p class="text-center text-white/70 text-sm mb-5">Click <strong>Proceed</strong> to reveal each step of the solution.</p>
+
+                <!-- Problem -->
+                <div class="bg-white/5 border border-white/15 rounded-2xl p-5 mb-6">
+                    <p class="text-base font-bold text-yellow-300 mb-1">📐 Problem:</p>
+                    <p class="text-white/90 leading-relaxed">If the length of a rectangular vegetable garden is <strong>twice a number increased by 3</strong> and its width is <strong>a number decreased by 5</strong>. Find the perimeter of the rectangle.</p>
+                </div>
+
+                <!-- Step progress dots -->
+                <div class="flex items-center justify-center gap-2 mb-7" id="stepDots">
+                    <div class="step-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-yellow-400 bg-yellow-400 text-purple-900" data-step="1">1</div>
+                    <div class="h-0.5 w-8 bg-white/20"></div>
+                    <div class="step-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-step="2">2</div>
+                    <div class="h-0.5 w-8 bg-white/20"></div>
+                    <div class="step-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-step="3">3</div>
+                    <div class="h-0.5 w-8 bg-white/20"></div>
+                    <div class="step-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-step="4">4</div>
+                    <div class="h-0.5 w-8 bg-white/20"></div>
+                    <div class="step-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-step="5">5</div>
+                </div>
+
+                <!-- Steps stacked — revealed one by one -->
+                <div class="space-y-4" id="stepPanels">
+
+                    <!-- STEP 1 -->
+                    <div id="panel1" class="bg-white/8 border border-white/15 rounded-2xl p-5 step-reveal">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="w-8 h-8 rounded-full bg-yellow-400 text-purple-900 font-extrabold text-sm flex items-center justify-center flex-shrink-0">1</span>
+                            <p class="text-yellow-300 font-bold text-lg">STEP 1 — Given & Asked</p>
+                        </div>
+                        <div class="pl-11 space-y-3 text-white/90 text-sm leading-relaxed">
+                            <div>
+                                <p class="font-semibold text-white mb-1">Given:</p>
+                                <ul class="list-disc list-inside space-y-1 text-white/85">
+                                    <li>Length of the garden = <strong>twice a number increased by 3</strong></li>
+                                    <li>Width of the garden = <strong>a number decreased by 5</strong></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-white mb-1">Asked:</p>
+                                <ul class="list-disc list-inside text-white/85">
+                                    <li>Find the <strong>perimeter of the rectangle</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2 (hidden) -->
+                    <div id="panel2" class="hidden bg-white/8 border border-white/15 rounded-2xl p-5 step-reveal">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="w-8 h-8 rounded-full bg-yellow-400 text-purple-900 font-extrabold text-sm flex items-center justify-center flex-shrink-0">2</span>
+                            <p class="text-yellow-300 font-bold text-lg">STEP 2 — Represent the Unknown</p>
+                        </div>
+                        <div class="pl-11 text-white/90 text-sm leading-relaxed">
+                            <ul class="list-disc list-inside space-y-1 text-white/85">
+                                <li>Let the unknown number be <strong>x</strong>.</li>
+                                <li>Length (L) = <strong>2x + 3</strong></li>
+                                <li>Width (W) = <strong>x − 5</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3 (hidden) -->
+                    <div id="panel3" class="hidden bg-white/8 border border-white/15 rounded-2xl p-5 step-reveal">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="w-8 h-8 rounded-full bg-yellow-400 text-purple-900 font-extrabold text-sm flex items-center justify-center flex-shrink-0">3</span>
+                            <p class="text-yellow-300 font-bold text-lg">STEP 3 — Solve</p>
+                        </div>
+                        <div class="pl-11 text-white/90 text-sm leading-relaxed">
+                            <ul class="list-disc list-inside space-y-1 text-white/85">
+                                <li>The perimeter of a rectangle is found using the formula <strong>2(L + W)</strong>.</li>
+                                <li>Substitute the given expressions into the formula:</li>
+                                <li class="ml-4 list-none">Perimeter = <strong>2[(2x + 3) + (x − 5)]</strong></li>
+                                <li>Combine like terms inside the brackets: <strong>2(3x − 2)</strong></li>
+                                <li>Distribute the 2 across the terms: <strong class="text-yellow-300 text-base">6x − 4</strong></li>
+                                <li>Expression: <strong class="text-yellow-300 text-base">6x − 4</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4 (hidden) -->
+                    <div id="panel4" class="hidden bg-white/8 border border-white/15 rounded-2xl p-5 step-reveal">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="w-8 h-8 rounded-full bg-yellow-400 text-purple-900 font-extrabold text-sm flex items-center justify-center flex-shrink-0">4</span>
+                            <p class="text-yellow-300 font-bold text-lg">STEP 4 — Answer</p>
+                        </div>
+                        <div class="pl-11 text-white/90 text-sm leading-relaxed">
+                            <ul class="list-disc list-inside text-white/85">
+                                <li>The algebraic expression for the perimeter of the rectangle is <strong class="text-yellow-300 text-base">6x − 4</strong>.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- STEP 5 (hidden) -->
+                    <div id="panel5" class="hidden bg-white/8 border border-white/15 rounded-2xl p-5 step-reveal">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="w-8 h-8 rounded-full bg-yellow-400 text-purple-900 font-extrabold text-sm flex items-center justify-center flex-shrink-0">5</span>
+                            <p class="text-yellow-300 font-bold text-lg">STEP 5 — Check</p>
+                        </div>
+                        <div class="pl-11 text-white/90 text-sm leading-relaxed">
+                            <ul class="list-disc list-inside space-y-1 text-white/85">
+                                <li>Adding all four sides manually: <strong>(2x+3) + (2x+3) + (x−5) + (x−5)</strong></li>
+                                <li>Combining the x terms (2x+2x+x+x) gives <strong>6x</strong>.</li>
+                                <li>Combining the constants (3+3−5−5) gives <strong>−4</strong>.</li>
+                                <li>The resulting expression <strong class="text-yellow-300">6x − 4</strong> matches the calculated perimeter.</li>
+                                <li>The expression correctly reflects the given problem. ✅</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Completion banner (hidden) -->
+                    <div id="completionCard" class="hidden bg-yellow-400/20 border border-yellow-400/50 rounded-2xl p-5 text-center">
+                        <p class="text-3xl mb-1">🎉</p>
+                        <p class="font-bold text-yellow-300 text-lg">All steps completed!</p>
+                        <p class="text-white/70 text-sm mt-1">You've successfully gone through the full solution.</p>
+                    </div>
+
+                </div><!-- end stepPanels -->
+
+                <!-- Action buttons -->
+                <div class="flex justify-between items-center mt-8">
+                    <button onclick="prevSlide()" class="bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full text-sm">← Back</button>
+                    <div class="flex gap-3">
+                        <button onclick="resetSteps()" class="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-full text-sm border border-white/20"><i class="fas fa-undo-alt mr-1"></i> Reset</button>
+                        <button id="proceedBtn" onclick="proceedStep()" class="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold px-7 py-2 rounded-full text-sm transition">Proceed →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Slides 6-12 (Problem Examples) -->
+        <!-- Slide 6: Geometry Problem Carousel -->
+        <div id="slide6" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-4xl mx-auto glass-card p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-1"><span class="text-3xl">🌿</span><h2 class="text-3xl font-bold">Geometry Problem</h2></div>
+                <p class="text-center text-white/70 text-sm mb-5">Click <strong>Proceed</strong> to go through each step.</p>
+                <div class="flex flex-col items-center gap-3 mb-6">
+                    <div id="geoProblemBadge" class="px-5 py-1.5 rounded-full text-sm font-bold border" style="background:rgba(250,204,21,0.15);border-color:rgba(250,204,21,0.5);color:#fde68a;">📘 Problem 1 of 2</div>
+                    <div class="flex items-center gap-2" id="geoDots">
+                        <div class="geo-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-yellow-400 bg-yellow-400 text-purple-900" data-panel="0">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="geo-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="1">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="geo-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="2">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="geo-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="3">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="geo-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="4">5</div>
+                        <div class="h-0.5 w-8 bg-white/10 mx-1 border-t border-dashed border-white/30"></div>
+                        <div class="geo-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="5">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="geo-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="6">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="geo-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="7">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="geo-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="8">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="geo-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="9">5</div>
+                    </div>
+                    <div class="flex gap-2 text-xs text-white/40 w-full justify-center"><span style="flex:0 0 auto;margin-right:8px;">◀ Problem 1</span><span style="flex:0 0 auto;margin-left:8px;">Problem 2 ▶</span></div>
+                </div>
+                <div style="overflow:hidden;border-radius:1.25rem;" id="geoCarouselViewport">
+                    <div id="geoTrack" style="display:flex;transition:transform 0.45s cubic-bezier(.77,0,.18,1);will-change:transform;">
+                        <!-- P1 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-yellow-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"The length of a rectangle is x + 4 and the width is x. Write the expression of the perimeter."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>Length of the rectangle = <strong>x + 4</strong></li><li>Width of the rectangle = <strong>x</strong></li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of the perimeter.</p>
+                        </div></div>
+                        <!-- P1 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-yellow-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 space-y-2 text-center">
+                                <p class="text-white/90"><strong class="text-yellow-300 text-2xl">x + 4</strong> = length of the rectangle</p>
+                                <p class="text-white/90"><strong class="text-yellow-300 text-2xl">x</strong> = width of the rectangle</p>
+                                <p class="text-white/80 text-sm mt-2">2(Length) + 2(Width) = perimeter of the rectangle</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-yellow-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">The perimeter of a rectangle is the sum of all its sides, or <strong>2(L + W)</strong>. Substitute the expressions:</p>
+                                <p class="text-white/80 text-sm">Perimeter = 2[(x + 4) + x]</p>
+                                <p class="text-white/80 text-sm">Combine like terms inside: 2(2x + 4)</p>
+                                <p class="text-white/80 text-sm">Distribute the 2: <strong>4x + 8</strong></p>
+                                <p class="text-center mt-3">Expression: <strong class="text-yellow-300 text-2xl">4x + 8</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-yellow-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>perimeter of the rectangle</strong> is:</p>
+                                <p class="text-yellow-300 text-5xl font-extrabold">4x + 8</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-yellow-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>Adding all four sides: <strong>(x+4) + (x+4) + x + x</strong></li>
+                                    <li>Combining x terms (x+x+x+x) gives <strong>4x</strong>.</li>
+                                    <li>Combining constants (4+4) gives <strong>8</strong>.</li>
+                                    <li>The expression <strong class="text-yellow-300">4x + 8</strong> matches. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-red-500/20 border border-red-400/40 rounded-xl p-4 text-center"><p class="text-red-200 font-semibold text-sm">🎉 Problem 1 complete! Click <strong>Proceed</strong> to start Problem 2.</p></div>
+                        </div></div>
+                        <!-- P2 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5" style="border-color:rgba(192,132,252,0.3);">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-red-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"A square has a side length of y. Write the expression of its area."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>Side length of the square = <strong>y</strong></li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of its area.</p>
+                        </div></div>
+                        <!-- P2 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-red-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center space-y-2">
+                                <p class="text-white/90 text-xl"><strong class="text-red-300 text-3xl">y</strong> = the length of one side</p>
+                                <p class="text-white/80 text-sm">y² = the area of the square</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-red-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">The area of a square is calculated by multiplying the side length by itself (Side × Side).</p>
+                                <p class="text-white/80 text-sm">Area = y × y</p>
+                                <p class="text-white/80 text-sm">Area = y²</p>
+                                <p class="text-center mt-3">Expression: <strong class="text-red-300 text-2xl">y²</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-red-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>area of the square</strong> is:</p>
+                                <p class="text-red-300 text-5xl font-extrabold">y²</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-red-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>All sides of a square are equal, so the area is the side length raised to the second power.</li>
+                                    <li>Squaring the side length (y) results in the expression <strong>y²</strong>.</li>
+                                    <li>The expression correctly reflects the given problem. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-yellow-400/20 border border-yellow-400/50 rounded-2xl p-4 text-center"><p class="text-3xl mb-1">🎉</p><p class="font-bold text-yellow-300 text-lg">All steps completed!</p><p class="text-white/70 text-sm mt-1">You've successfully solved both Geometry Problems.</p></div>
+                        </div></div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-7">
+                    <button onclick="showSlide(3)" class="bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full text-sm transition">&#8592; Back</button>
+                    <div class="flex gap-3">
+                        <button onclick="resetGeo()" class="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-full text-sm border border-white/20"><i class="fas fa-undo-alt mr-1"></i> Reset</button>
+                        <button id="geoProceedBtn" onclick="proceedGeo()" class="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold px-7 py-2 rounded-full text-sm transition">Proceed &#8594;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="slide7" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-4xl mx-auto glass-card p-6 md:p-8">
+
+                <!-- Header -->
+                <div class="flex items-center gap-3 mb-1">
+                    <span class="text-3xl">👴👧</span>
+                    <h2 class="text-3xl font-bold">Age Problem</h2>
+                </div>
+                <p class="text-center text-white/70 text-sm mb-5">Click <strong>Proceed</strong> to go through each step.</p>
+
+                <!-- Problem badge + step dots row -->
+                <div class="flex flex-col items-center gap-3 mb-6">
+                    <!-- Active problem badge -->
+                    <div id="ageProblemBadge" class="px-5 py-1.5 rounded-full text-sm font-bold border" style="background:rgba(250,204,21,0.15); border-color:rgba(250,204,21,0.5); color:#fde68a;">
+                        📘 Problem 1 of 2
+                    </div>
+                    <!-- Step dots -->
+                    <div class="flex items-center gap-2" id="ageDots">
+                        <div class="age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-yellow-400 bg-yellow-400 text-purple-900" data-panel="0">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div>
+                        <div class="age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="1">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div>
+                        <div class="age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="2">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div>
+                        <div class="age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="3">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div>
+                        <div class="age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="4">5</div>
+                        <!-- divider between problems -->
+                        <div class="h-0.5 w-8 bg-white/10 mx-1 border-t border-dashed border-white/30"></div>
+                        <div class="age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="5">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div>
+                        <div class="age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="6">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div>
+                        <div class="age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="7">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div>
+                        <div class="age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="8">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div>
+                        <div class="age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="9">5</div>
+                    </div>
+                    <!-- P1 / P2 label under dots -->
+                    <div class="flex gap-2 text-xs text-white/40 w-full justify-center" style="letter-spacing:.04em;">
+                        <span style="flex:0 0 auto; margin-right: 8px;">◀ Problem 1</span>
+                        <span style="flex:0 0 auto; margin-left: 8px;">Problem 2 ▶</span>
+                    </div>
+                </div>
+
+                <!-- Carousel viewport -->
+                <div style="overflow:hidden; border-radius:1.25rem;" id="ageCarouselViewport">
+                    <div id="ageTrack" style="display:flex; transition: transform 0.45s cubic-bezier(.77,0,.18,1); will-change:transform;">
+
+                        <!-- ══ PROBLEM 1 — STEP 1 ══ -->
+                        <div style="min-width:100%; box-sizing:border-box; padding:0 2px;">
+                            <div class="step-card p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">1</span>
+                                    <p class="text-yellow-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p>
+                                </div>
+                                <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-3">
+                                    <p class="text-white/80 text-sm italic mb-2">"Mark is 7 years older than his sister. If the sister's age is x, write the expression of Mark's age."</p>
+                                </div>
+                                <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                                <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3">
+                                    <li>Mark's sister's age = <strong>x</strong></li>
+                                    <li>Mark's age = 7 years older than his sister</li>
+                                </ul>
+                                <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p>
+                                <p class="text-white/80 text-sm ml-3">Write the expression of Mark's age.</p>
+                            </div>
+                        </div>
+
+                        <!-- ══ PROBLEM 1 — STEP 2 ══ -->
+                        <div style="min-width:100%; box-sizing:border-box; padding:0 2px;">
+                            <div class="step-card p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">2</span>
+                                    <p class="text-yellow-300 font-bold text-lg">STEP 2 — Represent the Unknown</p>
+                                </div>
+                                <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 flex items-center justify-center">
+                                    <p class="text-white/90 text-xl"><strong class="text-yellow-300 text-3xl">x</strong> &nbsp;= sister's age</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ PROBLEM 1 — STEP 3 ══ -->
+                        <div style="min-width:100%; box-sizing:border-box; padding:0 2px;">
+                            <div class="step-card p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">3</span>
+                                    <p class="text-yellow-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p>
+                                </div>
+                                <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 space-y-2">
+                                    <p class="text-white/85 text-sm leading-relaxed">To find Mark's age, take the sister's age <strong>(x)</strong> and <strong>add 7</strong> because "older than" indicates addition.</p>
+                                    <p class="text-white/80 text-sm">Mark's age = sister's age + 7</p>
+                                    <p class="text-white/80 text-sm">Mark's age = x + 7</p>
+                                    <p class="text-center mt-3">Expression: <strong class="text-yellow-300 text-2xl">x + 7</strong></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ PROBLEM 1 — STEP 4 ══ -->
+                        <div style="min-width:100%; box-sizing:border-box; padding:0 2px;">
+                            <div class="step-card p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">4</span>
+                                    <p class="text-yellow-300 font-bold text-lg">STEP 4 — Answer</p>
+                                </div>
+                                <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                    <p class="text-white/80 text-sm">The algebraic expression for <strong>Mark's age</strong> is:</p>
+                                    <p class="text-yellow-300 text-5xl font-extrabold">x + 7</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ PROBLEM 1 — STEP 5 ══ -->
+                        <div style="min-width:100%; box-sizing:border-box; padding:0 2px;">
+                            <div class="step-card p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">5</span>
+                                    <p class="text-yellow-300 font-bold text-lg">STEP 5 — Check</p>
+                                </div>
+                                <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-4">
+                                    <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                        <li>The phrase <em>"7 years older"</em> indicates the <strong>addition of 7</strong> to the sister's age (x).</li>
+                                        <li>This translates directly to the mathematical operation of addition.</li>
+                                        <li>The expression correctly reflects the given problem. ✅</li>
+                                    </ul>
+                                </div>
+                                <!-- Bridge to Problem 2 -->
+                                <div class="bg-red-500/20 border border-red-400/40 rounded-xl p-4 text-center">
+                                    <p class="text-red-200 font-semibold text-sm">🎉 Problem 1 complete! Click <strong>Proceed</strong> to start Problem 2.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ PROBLEM 2 — STEP 1 ══ -->
+                        <div style="min-width:100%; box-sizing:border-box; padding:0 2px;">
+                            <div class="step-card p-5" style="border-color:rgba(192,132,252,0.3);">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">1</span>
+                                    <p class="text-red-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p>
+                                </div>
+                                <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-3">
+                                    <p class="text-white/80 text-sm italic mb-2">"A father is 3 times as old as his son. If the son's age is y, write the expression of the father's age."</p>
+                                </div>
+                                <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                                <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3">
+                                    <li>Son's age = <strong>y</strong></li>
+                                    <li>Father's age = 3 times as old as his son</li>
+                                </ul>
+                                <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p>
+                                <p class="text-white/80 text-sm ml-3">Write the expression of the father's age.</p>
+                            </div>
+                        </div>
+
+                        <!-- ══ PROBLEM 2 — STEP 2 ══ -->
+                        <div style="min-width:100%; box-sizing:border-box; padding:0 2px;">
+                            <div class="step-card p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">2</span>
+                                    <p class="text-red-300 font-bold text-lg">STEP 2 — Represent the Unknown</p>
+                                </div>
+                                <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 flex items-center justify-center">
+                                    <p class="text-white/90 text-xl"><strong class="text-red-300 text-3xl">y</strong> &nbsp;= son's age</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ PROBLEM 2 — STEP 3 ══ -->
+                        <div style="min-width:100%; box-sizing:border-box; padding:0 2px;">
+                            <div class="step-card p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">3</span>
+                                    <p class="text-red-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p>
+                                </div>
+                                <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 space-y-2">
+                                    <p class="text-white/85 text-sm leading-relaxed">To find the father's age, take the son's age <strong>(y)</strong> and <strong>multiply by 3</strong> because "times as old as" indicates multiplication.</p>
+                                    <p class="text-white/80 text-sm">Father's age = 3 × son's age</p>
+                                    <p class="text-white/80 text-sm">Father's age = 3 × y</p>
+                                    <p class="text-center mt-3">Expression: <strong class="text-red-300 text-2xl">3y</strong></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ PROBLEM 2 — STEP 4 ══ -->
+                        <div style="min-width:100%; box-sizing:border-box; padding:0 2px;">
+                            <div class="step-card p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">4</span>
+                                    <p class="text-red-300 font-bold text-lg">STEP 4 — Answer</p>
+                                </div>
+                                <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                    <p class="text-white/80 text-sm">The algebraic expression for the <strong>father's age</strong> is:</p>
+                                    <p class="text-red-300 text-5xl font-extrabold">3y</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ PROBLEM 2 — STEP 5 ══ -->
+                        <div style="min-width:100%; box-sizing:border-box; padding:0 2px;">
+                            <div class="step-card p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">5</span>
+                                    <p class="text-red-300 font-bold text-lg">STEP 5 — Check</p>
+                                </div>
+                                <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-4">
+                                    <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                        <li>The phrase <em>"3 times as old"</em> indicates the <strong>multiplication of the son's age (y) by 3</strong>.</li>
+                                        <li>This translates directly to the mathematical operation of multiplication.</li>
+                                        <li>The expression correctly reflects the given problem. ✅</li>
+                                    </ul>
+                                </div>
+                                <!-- Completion -->
+                                <div class="bg-yellow-400/20 border border-yellow-400/50 rounded-2xl p-4 text-center">
+                                    <p class="text-3xl mb-1">🎉</p>
+                                    <p class="font-bold text-yellow-300 text-lg">All steps completed!</p>
+                                    <p class="text-white/70 text-sm mt-1">You've successfully solved both Age Problems.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- end ageTrack -->
+                </div><!-- end viewport -->
+
+                <!-- Action buttons -->
+                <div class="flex justify-between items-center mt-7">
+                    <button onclick="showSlide(3)" class="bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full text-sm transition">&#8592; Back</button>
+                    <div class="flex gap-3">
+                        <button onclick="resetAge()" class="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-full text-sm border border-white/20"><i class="fas fa-undo-alt mr-1"></i> Reset</button>
+                        <button id="ageProceedBtn" onclick="proceedAge()" class="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold px-7 py-2 rounded-full text-sm transition">Proceed &#8594;</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- Slide 8: Total Quantity Problem Carousel -->
+        <div id="slide8" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-4xl mx-auto glass-card p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-1"><span class="text-3xl">🍎</span><h2 class="text-3xl font-bold">Total Quantity Problem</h2></div>
+                <p class="text-center text-white/70 text-sm mb-5">Click <strong>Proceed</strong> to go through each step.</p>
+                <div class="flex flex-col items-center gap-3 mb-6">
+                    <div id="tqProblemBadge" class="px-5 py-1.5 rounded-full text-sm font-bold border" style="background:rgba(250,204,21,0.15);border-color:rgba(250,204,21,0.5);color:#fde68a;">📘 Problem 1 of 2</div>
+                    <div class="flex items-center gap-2">
+                        <div class="tq-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-yellow-400 bg-yellow-400 text-purple-900" data-panel="0">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="tq-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="1">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="tq-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="2">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="tq-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="3">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="tq-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="4">5</div>
+                        <div class="h-0.5 w-8 bg-white/10 mx-1 border-t border-dashed border-white/30"></div>
+                        <div class="tq-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="5">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="tq-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="6">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="tq-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="7">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="tq-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="8">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="tq-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="9">5</div>
+                    </div>
+                    <div class="flex gap-2 text-xs text-white/40 w-full justify-center"><span style="flex:0 0 auto;margin-right:8px;">◀ Problem 1</span><span style="flex:0 0 auto;margin-left:8px;">Problem 2 ▶</span></div>
+                </div>
+                <div style="overflow:hidden;border-radius:1.25rem;">
+                    <div id="tqTrack" style="display:flex;transition:transform 0.45s cubic-bezier(.77,0,.18,1);will-change:transform;">
+                        <!-- P1 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-yellow-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"There are x apples and y oranges. Write the expression of the total number of fruits."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>Number of apples = <strong>x</strong></li><li>Number of oranges = <strong>y</strong></li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of the total number of fruits.</p>
+                        </div></div>
+                        <!-- P1 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-yellow-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center space-y-2">
+                                <p class="text-white/90"><strong class="text-yellow-300 text-2xl">x</strong> = the count of apples</p>
+                                <p class="text-white/90"><strong class="text-yellow-300 text-2xl">y</strong> = the count of oranges</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-yellow-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">To find the total, combine the different groups together using addition.</p>
+                                <p class="text-white/80 text-sm">Total fruits = apples + oranges</p>
+                                <p class="text-white/80 text-sm">Total fruits = x + y</p>
+                                <p class="text-center mt-3">Expression: <strong class="text-yellow-300 text-2xl">x + y</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-yellow-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>total number of fruits</strong> is:</p>
+                                <p class="text-yellow-300 text-5xl font-extrabold">x + y</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-yellow-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>x and y represent two different types of items.</li>
+                                    <li>We are looking for the sum of all items, so the addition operator is correct.</li>
+                                    <li>The expression <strong class="text-yellow-300">x + y</strong> correctly reflects the given problem. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-red-500/20 border border-red-400/40 rounded-xl p-4 text-center"><p class="text-red-200 font-semibold text-sm">🎉 Problem 1 complete! Click <strong>Proceed</strong> to start Problem 2.</p></div>
+                        </div></div>
+                        <!-- P2 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5" style="border-color:rgba(192,132,252,0.3);">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-red-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"A class has x boys and x + 6 girls. Write the expression of the total number of students."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>Number of boys = <strong>x</strong></li><li>Number of girls = <strong>x + 6</strong></li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of the total number of students.</p>
+                        </div></div>
+                        <!-- P2 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-red-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center space-y-2">
+                                <p class="text-white/90"><strong class="text-red-300 text-2xl">x</strong> = the count of boys</p>
+                                <p class="text-white/90"><strong class="text-red-300 text-2xl">x + 6</strong> = the count of girls (6 more than the number of boys)</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-red-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">Add the number of boys and girls together.</p>
+                                <p class="text-white/80 text-sm">Total = x + (x + 6)</p>
+                                <p class="text-white/80 text-sm">Combine like terms (x + x): <strong>2x + 6</strong></p>
+                                <p class="text-center mt-3">Expression: <strong class="text-red-300 text-2xl">2x + 6</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-red-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>total number of students</strong> is:</p>
+                                <p class="text-red-300 text-5xl font-extrabold">2x + 6</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-red-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>Counting all boys (x) and all girls (x + 6 extra) gives two groups of x plus 6.</li>
+                                    <li>This simplifies to <strong>2x + 6</strong>.</li>
+                                    <li>The expression correctly reflects the given problem. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-yellow-400/20 border border-yellow-400/50 rounded-2xl p-4 text-center"><p class="text-3xl mb-1">🎉</p><p class="font-bold text-yellow-300 text-lg">All steps completed!</p><p class="text-white/70 text-sm mt-1">You've successfully solved both Total Quantity Problems.</p></div>
+                        </div></div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-7">
+                    <button onclick="showSlide(3)" class="bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full text-sm transition">&#8592; Back</button>
+                    <div class="flex gap-3">
+                        <button onclick="resetTQ()" class="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-full text-sm border border-white/20"><i class="fas fa-undo-alt mr-1"></i> Reset</button>
+                        <button id="tqProceedBtn" onclick="proceedTQ()" class="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold px-7 py-2 rounded-full text-sm transition">Proceed &#8594;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 9: Motion Problem Carousel -->
+        <div id="slide9" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-4xl mx-auto glass-card p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-1"><span class="text-3xl">🚗</span><h2 class="text-3xl font-bold">Motion Problem</h2></div>
+                <p class="text-center text-white/70 text-sm mb-5">Click <strong>Proceed</strong> to go through each step.</p>
+                <div class="flex flex-col items-center gap-3 mb-6">
+                    <div id="motProblemBadge" class="px-5 py-1.5 rounded-full text-sm font-bold border" style="background:rgba(250,204,21,0.15);border-color:rgba(250,204,21,0.5);color:#fde68a;">📘 Problem 1 of 2</div>
+                    <div class="flex items-center gap-2">
+                        <div class="mot-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-yellow-400 bg-yellow-400 text-purple-900" data-panel="0">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="mot-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="1">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="mot-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="2">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="mot-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="3">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="mot-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="4">5</div>
+                        <div class="h-0.5 w-8 bg-white/10 mx-1 border-t border-dashed border-white/30"></div>
+                        <div class="mot-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="5">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="mot-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="6">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="mot-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="7">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="mot-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="8">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="mot-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="9">5</div>
+                    </div>
+                    <div class="flex gap-2 text-xs text-white/40 w-full justify-center"><span style="flex:0 0 auto;margin-right:8px;">◀ Problem 1</span><span style="flex:0 0 auto;margin-left:8px;">Problem 2 ▶</span></div>
+                </div>
+                <div style="overflow:hidden;border-radius:1.25rem;">
+                    <div id="motTrack" style="display:flex;transition:transform 0.45s cubic-bezier(.77,0,.18,1);will-change:transform;">
+                        <!-- P1 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-yellow-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"A motorcycle travels x km per hour. Write the expression of the distance after 5 hours."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>Speed of the motorcycle = <strong>x km per hour</strong></li><li>Time traveled = <strong>5 hours</strong></li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of the distance after 5 hours.</p>
+                        </div></div>
+                        <!-- P1 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-yellow-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center">
+                                <p class="text-white/90 text-xl"><strong class="text-yellow-300 text-3xl">x</strong> = distance traveled in 1 hour (speed)</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-yellow-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">To find the total distance, multiply the speed by the total number of hours.</p>
+                                <p class="text-white/80 text-sm">Total distance = speed × time</p>
+                                <p class="text-white/80 text-sm">Total distance = x × 5</p>
+                                <p class="text-center mt-3">Expression: <strong class="text-yellow-300 text-2xl">5x</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-yellow-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>distance traveled after 5 hours</strong> is:</p>
+                                <p class="text-yellow-300 text-5xl font-extrabold">5x km</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-yellow-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>The motorcycle covers x kilometers every hour.</li>
+                                    <li>In 5 hours, it covers that distance x, five times over.</li>
+                                    <li>Multiplying rate (x) by time (5) results in <strong class="text-yellow-300">5x</strong>. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-red-500/20 border border-red-400/40 rounded-xl p-4 text-center"><p class="text-red-200 font-semibold text-sm">🎉 Problem 1 complete! Click <strong>Proceed</strong> to start Problem 2.</p></div>
+                        </div></div>
+                        <!-- P2 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5" style="border-color:rgba(192,132,252,0.3);">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-red-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"A runner moves at 6 km/h for y hours. Write the expression of the total distance."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>Speed of the runner = <strong>6 km/h</strong></li><li>Time spent running = <strong>y hours</strong></li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of the total distance.</p>
+                        </div></div>
+                        <!-- P2 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-red-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center">
+                                <p class="text-white/90 text-xl"><strong class="text-red-300 text-3xl">y</strong> = number of hours spent running</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-red-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">Multiply the speed by the total number of hours.</p>
+                                <p class="text-white/80 text-sm">Total distance = speed × time</p>
+                                <p class="text-white/80 text-sm">Total distance = 6 × y</p>
+                                <p class="text-center mt-3">Expression: <strong class="text-red-300 text-2xl">6y</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-red-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>total distance</strong> is:</p>
+                                <p class="text-red-300 text-5xl font-extrabold">6y km</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-red-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>The runner covers 6 kilometers every single hour.</li>
+                                    <li>For y hours, we repeat that 6 km distance y times.</li>
+                                    <li>Multiplying constant rate (6) by variable time (y) gives <strong class="text-red-300">6y</strong>. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-yellow-400/20 border border-yellow-400/50 rounded-2xl p-4 text-center"><p class="text-3xl mb-1">🎉</p><p class="font-bold text-yellow-300 text-lg">All steps completed!</p><p class="text-white/70 text-sm mt-1">You've successfully solved both Motion Problems.</p></div>
+                        </div></div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-7">
+                    <button onclick="showSlide(3)" class="bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full text-sm transition">&#8592; Back</button>
+                    <div class="flex gap-3">
+                        <button onclick="resetMot()" class="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-full text-sm border border-white/20"><i class="fas fa-undo-alt mr-1"></i> Reset</button>
+                        <button id="motProceedBtn" onclick="proceedMot()" class="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold px-7 py-2 rounded-full text-sm transition">Proceed &#8594;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 10: Work Problem Carousel -->
+        <div id="slide10" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-4xl mx-auto glass-card p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-1"><span class="text-3xl">🧪</span><h2 class="text-3xl font-bold">Work Problem</h2></div>
+                <p class="text-center text-white/70 text-sm mb-5">Click <strong>Proceed</strong> to go through each step.</p>
+                <div class="flex flex-col items-center gap-3 mb-6">
+                    <div id="wrkProblemBadge" class="px-5 py-1.5 rounded-full text-sm font-bold border" style="background:rgba(250,204,21,0.15);border-color:rgba(250,204,21,0.5);color:#fde68a;">📘 Problem 1 of 2</div>
+                    <div class="flex items-center gap-2">
+                        <div class="wrk-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-yellow-400 bg-yellow-400 text-purple-900" data-panel="0">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="wrk-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="1">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="wrk-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="2">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="wrk-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="3">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="wrk-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="4">5</div>
+                        <div class="h-0.5 w-8 bg-white/10 mx-1 border-t border-dashed border-white/30"></div>
+                        <div class="wrk-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="5">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="wrk-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="6">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="wrk-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="7">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="wrk-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="8">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="wrk-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="9">5</div>
+                    </div>
+                    <div class="flex gap-2 text-xs text-white/40 w-full justify-center"><span style="flex:0 0 auto;margin-right:8px;">◀ Problem 1</span><span style="flex:0 0 auto;margin-left:8px;">Problem 2 ▶</span></div>
+                </div>
+                <div style="overflow:hidden;border-radius:1.25rem;">
+                    <div id="wrkTrack" style="display:flex;transition:transform 0.45s cubic-bezier(.77,0,.18,1);will-change:transform;">
+                        <!-- P1 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-yellow-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"A worker can complete a task in x hours. Write the expression of the work done in 1 hour."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>Time to complete the entire task = <strong>x hours</strong></li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of the work done in 1 hour.</p>
+                        </div></div>
+                        <!-- P1 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-yellow-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center">
+                                <p class="text-white/90 text-xl"><strong class="text-yellow-300 text-3xl">x</strong> = total hours needed for the whole job</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-yellow-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">If a task takes x hours to finish, the work done in a single hour is the reciprocal of the total time.</p>
+                                <p class="text-white/80 text-sm">Work per hour = Total Task / Total Time</p>
+                                <p class="text-white/80 text-sm">Work per hour = 1 / x</p>
+                                <p class="text-center mt-3">Expression: <strong class="text-yellow-300 text-2xl">1/x</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-yellow-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>work done in 1 hour</strong> is:</p>
+                                <p class="text-yellow-300 text-5xl font-extrabold">1/x</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-yellow-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>If you multiply work per hour (1/x) by total hours (x), you get 1 (the whole task).</li>
+                                    <li>This confirms the rate of work is correctly expressed as a fraction.</li>
+                                    <li>The expression <strong class="text-yellow-300">1/x</strong> correctly reflects the given problem. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-red-500/20 border border-red-400/40 rounded-xl p-4 text-center"><p class="text-red-200 font-semibold text-sm">🎉 Problem 1 complete! Click <strong>Proceed</strong> to start Problem 2.</p></div>
+                        </div></div>
+                        <!-- P2 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5" style="border-color:rgba(192,132,252,0.3);">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-red-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"A machine completes a job in y hours. Write the expression of the work done in 3 hours."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>Time to complete the whole job = <strong>y hours</strong></li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of the work done in 3 hours.</p>
+                        </div></div>
+                        <!-- P2 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-red-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center space-y-2">
+                                <p class="text-white/90"><strong class="text-red-300 text-3xl">y</strong> = total hours needed for the complete job</p>
+                                <p class="text-white/80 text-sm mt-2"><strong>1/y</strong> = work done in 1 hour (the rate)</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-red-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">Multiply the rate of work by the number of hours.</p>
+                                <p class="text-white/80 text-sm">Work done = (Work done in 1 hour) × (Number of hours)</p>
+                                <p class="text-white/80 text-sm">Work done = (1/y) × 3</p>
+                                <p class="text-center mt-3">Expression: <strong class="text-red-300 text-2xl">3/y</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-red-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>work done in 3 hours</strong> is:</p>
+                                <p class="text-red-300 text-5xl font-extrabold">3/y</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-red-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>One hour of work represents 1/y of the total task.</li>
+                                    <li>Three hours of work = 1/y + 1/y + 1/y = <strong>3/y</strong>.</li>
+                                    <li>The expression correctly reflects the given problem. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-yellow-400/20 border border-yellow-400/50 rounded-2xl p-4 text-center"><p class="text-3xl mb-1">🎉</p><p class="font-bold text-yellow-300 text-lg">All steps completed!</p><p class="text-white/70 text-sm mt-1">You've successfully solved both Work Problems.</p></div>
+                        </div></div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-7">
+                    <button onclick="showSlide(3)" class="bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full text-sm transition">&#8592; Back</button>
+                    <div class="flex gap-3">
+                        <button onclick="resetWrk()" class="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-full text-sm border border-white/20"><i class="fas fa-undo-alt mr-1"></i> Reset</button>
+                        <button id="wrkProceedBtn" onclick="proceedWrk()" class="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold px-7 py-2 rounded-full text-sm transition">Proceed &#8594;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 11: Finance/Money Problem Carousel -->
+        <div id="slide11" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-4xl mx-auto glass-card p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-1"><span class="text-3xl">⚙️</span><h2 class="text-3xl font-bold">Finance / Money Problem</h2></div>
+                <p class="text-center text-white/70 text-sm mb-5">Click <strong>Proceed</strong> to go through each step.</p>
+                <div class="flex flex-col items-center gap-3 mb-6">
+                    <div id="finProblemBadge" class="px-5 py-1.5 rounded-full text-sm font-bold border" style="background:rgba(250,204,21,0.15);border-color:rgba(250,204,21,0.5);color:#fde68a;">📘 Problem 1 of 2</div>
+                    <div class="flex items-center gap-2">
+                        <div class="fin-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-yellow-400 bg-yellow-400 text-purple-900" data-panel="0">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="fin-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="1">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="fin-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="2">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="fin-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="3">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="fin-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="4">5</div>
+                        <div class="h-0.5 w-8 bg-white/10 mx-1 border-t border-dashed border-white/30"></div>
+                        <div class="fin-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="5">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="fin-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="6">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="fin-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="7">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="fin-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="8">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="fin-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="9">5</div>
+                    </div>
+                    <div class="flex gap-2 text-xs text-white/40 w-full justify-center"><span style="flex:0 0 auto;margin-right:8px;">◀ Problem 1</span><span style="flex:0 0 auto;margin-left:8px;">Problem 2 ▶</span></div>
+                </div>
+                <div style="overflow:hidden;border-radius:1.25rem;">
+                    <div id="finTrack" style="display:flex;transition:transform 0.45s cubic-bezier(.77,0,.18,1);will-change:transform;">
+                        <!-- P1 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-yellow-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"A book costs ₱x. You buy 4 books. Write the expression of the total cost."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>Cost of one book = <strong>x pesos</strong></li><li>Number of books bought = <strong>4</strong></li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of the total cost.</p>
+                        </div></div>
+                        <!-- P1 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-yellow-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center">
+                                <p class="text-white/90 text-xl"><strong class="text-yellow-300 text-3xl">x</strong> = the price of one book</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-yellow-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">Multiply the price of a single book by the total number of books purchased.</p>
+                                <p class="text-white/80 text-sm">Total cost = price per book × quantity</p>
+                                <p class="text-white/80 text-sm">Total cost = x × 4</p>
+                                <p class="text-center mt-3">Expression: <strong class="text-yellow-300 text-2xl">4x</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-yellow-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>total cost</strong> is:</p>
+                                <p class="text-yellow-300 text-5xl font-extrabold">₱4x</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-yellow-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>Buying 4 books at price x = x + x + x + x = 4 × x.</li>
+                                    <li>Repeated addition is represented as multiplication: <strong>4x</strong>.</li>
+                                    <li>The expression correctly reflects the given problem. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-red-500/20 border border-red-400/40 rounded-xl p-4 text-center"><p class="text-red-200 font-semibold text-sm">🎉 Problem 1 complete! Click <strong>Proceed</strong> to start Problem 2.</p></div>
+                        </div></div>
+                        <!-- P2 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5" style="border-color:rgba(192,132,252,0.3);">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-red-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"You have ₱500 and spend ₱x. Write the expression of the remaining money."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>Initial amount of money = <strong>₱500</strong></li><li>Amount spent = <strong>₱x</strong></li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of the remaining money.</p>
+                        </div></div>
+                        <!-- P2 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-red-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center">
+                                <p class="text-white/90 text-xl"><strong class="text-red-300 text-3xl">x</strong> = the amount taken away or spent</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-red-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">Subtract the amount spent from the total amount you started with.</p>
+                                <p class="text-white/80 text-sm">Remaining money = Initial amount − Amount spent</p>
+                                <p class="text-white/80 text-sm">Remaining money = 500 − x</p>
+                                <p class="text-center mt-3">Expression: <strong class="text-red-300 text-2xl">500 − x</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-red-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>remaining money</strong> is:</p>
+                                <p class="text-red-300 text-5xl font-extrabold">₱500 − x</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-red-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>The word "spend" implies a reduction or subtraction from the original total.</li>
+                                    <li>Starting with 500 and removing x results in the expression <strong>500 − x</strong>.</li>
+                                    <li>The expression correctly reflects the given problem. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-yellow-400/20 border border-yellow-400/50 rounded-2xl p-4 text-center"><p class="text-3xl mb-1">🎉</p><p class="font-bold text-yellow-300 text-lg">All steps completed!</p><p class="text-white/70 text-sm mt-1">You've successfully solved both Finance/Money Problems.</p></div>
+                        </div></div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-7">
+                    <button onclick="showSlide(3)" class="bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full text-sm transition">&#8592; Back</button>
+                    <div class="flex gap-3">
+                        <button onclick="resetFin()" class="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-full text-sm border border-white/20"><i class="fas fa-undo-alt mr-1"></i> Reset</button>
+                        <button id="finProceedBtn" onclick="proceedFin()" class="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold px-7 py-2 rounded-full text-sm transition">Proceed &#8594;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 12: Multi-Step Problem Carousel -->
+        <div id="slide12" class="slide absolute inset-0 transition-all duration-500 opacity-0 invisible overflow-y-auto px-4 py-8 custom-scroll">
+            <div class="max-w-4xl mx-auto glass-card p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-1"><span class="text-3xl">💰</span><h2 class="text-3xl font-bold">Multi-Step Problem</h2></div>
+                <p class="text-center text-white/70 text-sm mb-5">Click <strong>Proceed</strong> to go through each step.</p>
+                <div class="flex flex-col items-center gap-3 mb-6">
+                    <div id="msProblemBadge" class="px-5 py-1.5 rounded-full text-sm font-bold border" style="background:rgba(250,204,21,0.15);border-color:rgba(250,204,21,0.5);color:#fde68a;">📘 Problem 1 of 2</div>
+                    <div class="flex items-center gap-2">
+                        <div class="ms-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-yellow-400 bg-yellow-400 text-purple-900" data-panel="0">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="ms-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="1">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="ms-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="2">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="ms-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="3">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="ms-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="4">5</div>
+                        <div class="h-0.5 w-8 bg-white/10 mx-1 border-t border-dashed border-white/30"></div>
+                        <div class="ms-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="5">1</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="ms-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="6">2</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="ms-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="7">3</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="ms-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="8">4</div>
+                        <div class="h-0.5 w-6 bg-white/20"></div><div class="ms-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50" data-panel="9">5</div>
+                    </div>
+                    <div class="flex gap-2 text-xs text-white/40 w-full justify-center"><span style="flex:0 0 auto;margin-right:8px;">◀ Problem 1</span><span style="flex:0 0 auto;margin-left:8px;">Problem 2 ▶</span></div>
+                </div>
+                <div style="overflow:hidden;border-radius:1.25rem;">
+                    <div id="msTrack" style="display:flex;transition:transform 0.45s cubic-bezier(.77,0,.18,1);will-change:transform;">
+                        <!-- P1 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-yellow-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"A number x is multiplied by 3 and then increased by 8. Write the expression of the result."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>The starting number = <strong>x</strong></li><li>First operation = multiplied by 3</li><li>Second operation = increased by 8</li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of the result.</p>
+                        </div></div>
+                        <!-- P1 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-yellow-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center">
+                                <p class="text-white/90 text-xl"><strong class="text-yellow-300 text-3xl">x</strong> = the original number</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-yellow-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">Follow the order of operations as described in the problem.</p>
+                                <p class="text-white/80 text-sm">First, multiply x by 3 to get <strong>3x</strong>.</p>
+                                <p class="text-white/80 text-sm">Next, increase that result by 8 (addition): <strong>3x + 8</strong>.</p>
+                                <p class="text-center mt-3">Expression: <strong class="text-yellow-300 text-2xl">3x + 8</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-yellow-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>result</strong> is:</p>
+                                <p class="text-yellow-300 text-5xl font-extrabold">3x + 8</p>
+                            </div>
+                        </div></div>
+                        <!-- P1 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-yellow-400 text-purple-900 font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-yellow-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>"Multiplied by 3" correctly translates to the coefficient 3 in front of x.</li>
+                                    <li>"Increased by 8" correctly translates to adding the constant 8.</li>
+                                    <li>The expression <strong class="text-yellow-300">3x + 8</strong> follows the sequence given. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-red-500/20 border border-red-400/40 rounded-xl p-4 text-center"><p class="text-red-200 font-semibold text-sm">🎉 Problem 1 complete! Click <strong>Proceed</strong> to start Problem 2.</p></div>
+                        </div></div>
+                        <!-- P2 S1 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5" style="border-color:rgba(192,132,252,0.3);">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">1</span><p class="text-red-300 font-bold text-lg">STEP 1 — Read &amp; Understand</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-3"><p class="text-white/80 text-sm italic mb-2">"A number y is divided by 2 and then decreased by 5. Write the expression of the result."</p></div>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Given:</p>
+                            <ul class="list-disc list-inside text-white/80 text-sm ml-3 space-y-1 mb-3"><li>The starting number = <strong>y</strong></li><li>First operation = divided by 2</li><li>Second operation = decreased by 5</li></ul>
+                            <p class="text-white/90 text-sm font-semibold mb-1">Asked:</p><p class="text-white/80 text-sm ml-3">Write the expression of the result.</p>
+                        </div></div>
+                        <!-- P2 S2 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">2</span><p class="text-red-300 font-bold text-lg">STEP 2 — Represent the Unknown</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center">
+                                <p class="text-white/90 text-xl"><strong class="text-red-300 text-3xl">y</strong> = the original number</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S3 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">3</span><p class="text-red-300 font-bold text-lg">STEP 3 — Solve / Write the Expression</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 space-y-2">
+                                <p class="text-white/85 text-sm">Follow the sequence of operations as described in the problem.</p>
+                                <p class="text-white/80 text-sm">First, divide y by 2, written as <strong>y/2</strong>.</p>
+                                <p class="text-white/80 text-sm">Next, decrease that result by 5 (subtraction): <strong>y/2 − 5</strong>.</p>
+                                <p class="text-center mt-3">Expression: <strong class="text-red-300 text-2xl">y/2 − 5</strong></p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S4 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">4</span><p class="text-red-300 font-bold text-lg">STEP 4 — Answer</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-6 text-center flex flex-col items-center gap-3">
+                                <p class="text-white/80 text-sm">The algebraic expression for the <strong>result</strong> is:</p>
+                                <p class="text-red-300 text-5xl font-extrabold">y/2 − 5</p>
+                            </div>
+                        </div></div>
+                        <!-- P2 S5 -->
+                        <div style="min-width:100%;box-sizing:border-box;padding:0 2px;"><div class="step-card p-5">
+                            <div class="flex items-center gap-3 mb-4"><span class="w-9 h-9 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center flex-shrink-0">5</span><p class="text-red-300 font-bold text-lg">STEP 5 — Check</p></div>
+                            <div class="bg-red-500/10 border border-red-400/30 rounded-xl p-4 mb-4">
+                                <ul class="list-disc list-inside text-white/85 text-sm space-y-1.5">
+                                    <li>"Divided by 2" correctly translates to the fraction y/2.</li>
+                                    <li>"Decreased by 5" correctly translates to the subtraction of constant 5.</li>
+                                    <li>The expression <strong class="text-red-300">y/2 − 5</strong> follows the specific order of operations. ✅</li>
+                                </ul>
+                            </div>
+                            <div class="bg-yellow-400/20 border border-yellow-400/50 rounded-2xl p-4 text-center"><p class="text-3xl mb-1">🎉</p><p class="font-bold text-yellow-300 text-lg">All steps completed!</p><p class="text-white/70 text-sm mt-1">You've successfully solved both Multi-Step Problems.</p></div>
+                        </div></div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-7">
+                    <button onclick="showSlide(3)" class="bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full text-sm transition">&#8592; Back</button>
+                    <div class="flex gap-3">
+                        <button onclick="resetMS()" class="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-full text-sm border border-white/20"><i class="fas fa-undo-alt mr-1"></i> Reset</button>
+                        <button id="msProceedBtn" onclick="proceedMS()" class="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold px-7 py-2 rounded-full text-sm transition">Proceed &#8594;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Dots -->
+    <div class="fixed bottom-5 left-0 right-0 flex justify-center gap-3 z-20">
+        <div class="nav-dot" data-slide="0"></div><div class="nav-dot" data-slide="1"></div><div class="nav-dot" data-slide="2"></div><div class="nav-dot" data-slide="3"></div><div class="nav-dot" data-slide="4"></div><div class="nav-dot" data-slide="5"></div>
+    </div>
+
+    <footer class="bg-white/5 border-t border-white/10 py-4 text-center text-white/50 text-sm mt-8">© 2026 Storyboarding Portal — Visual-Strategic Problem-Solving Platform</footer>
+
+    <script>
+        // ---------- SESSION PROTECTION ----------
+        const studentId = localStorage.getItem('student_id');
+        const studentName = localStorage.getItem('student_name');
+        if (!studentId || !studentName) {
+            window.location.href = 'login.html';
+            throw new Error('Redirecting to login...');
+        }
+
+        let currentSlide = 0;
+        const totalMainSlides = 6; // slides 0-5 main, plus detail slides 6-12 accessible via problem buttons
+        function hideAllSlides() {
+            document.querySelectorAll('.slide').forEach(s => {
+                s.classList.add('opacity-0', 'invisible');
+                s.classList.remove('relative');
+                s.classList.add('absolute');
+            });
+        }
+        function showSlide(n) {
+            hideAllSlides();
+            const target = document.getElementById(`slide${n}`);
+            if (target) {
+                target.classList.remove('opacity-0', 'invisible', 'absolute');
+                target.classList.add('relative');
+            }
+            document.querySelectorAll('.nav-dot').forEach((dot,i) => dot.classList.toggle('active', i===n));
+            currentSlide = n;
+        }
+        function nextSlide() { if(currentSlide < 5) showSlide(currentSlide+1); }
+        function prevSlide() { if(currentSlide > 0) showSlide(currentSlide-1); }
+        function showProblem(type) { 
+            const map = { garden:6, age:7, number:8, rate:9, mixture:10, work:11, money:12 };
+            const target = map[type] || 6;
+            hideAllSlides();
+            const detail = document.getElementById(`slide${target}`);
+            if(detail) { detail.classList.remove('opacity-0', 'invisible', 'absolute'); detail.classList.add('relative'); }
+        }
+        function toggleProcess() { document.getElementById('processBox')?.classList.toggle('hidden'); }
+
+        // ---- STEP-BY-STEP LOGIC for slide 5 ----
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        function updateStepDots(active) {
+            document.querySelectorAll('.step-dot').forEach(dot => {
+                const s = parseInt(dot.getAttribute('data-step'));
+                if (s < active) {
+                    dot.className = 'step-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-green-400 bg-green-400/80 text-white';
+                } else if (s === active) {
+                    dot.className = 'step-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-yellow-400 bg-yellow-400 text-purple-900';
+                } else {
+                    dot.className = 'step-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50';
+                }
+            });
+        }
+
+        function proceedStep() {
+            if (currentStep >= totalSteps) return;
+            currentStep++;
+            const nextPanel = document.getElementById('panel' + currentStep);
+            if (nextPanel) {
+                nextPanel.classList.remove('hidden');
+                nextPanel.style.opacity = '0';
+                nextPanel.style.transform = 'translateY(10px)';
+                nextPanel.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                requestAnimationFrame(() => {
+                    nextPanel.style.opacity = '1';
+                    nextPanel.style.transform = 'translateY(0)';
+                });
+            }
+            updateStepDots(currentStep);
+            setTimeout(() => {
+                document.getElementById('slide5').scrollTo({ top: 99999, behavior: 'smooth' });
+            }, 100);
+            if (currentStep === totalSteps) {
+                setTimeout(() => {
+                    const cc = document.getElementById('completionCard');
+                    if (cc) { cc.classList.remove('hidden'); document.getElementById('slide5').scrollTo({ top: 99999, behavior: 'smooth' }); }
+                    const btn = document.getElementById('proceedBtn');
+                    if (btn) { btn.textContent = 'Done ✓'; btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); }
+                }, 450);
+            }
+        }
+
+        // ---- STEP-BY-STEP LOGIC for slide 2 (5 Steps for Solving Word Problems) ----
+        let currentStep2 = 1;
+        const totalSteps2 = 5;
+
+        function updateStepDots2(active) {
+            document.querySelectorAll('.step-dot2').forEach(dot => {
+                const s = parseInt(dot.getAttribute('data-step'));
+                if (s < active) {
+                    dot.className = 'step-dot2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-green-400 bg-green-400/80 text-white';
+                } else if (s === active) {
+                    dot.className = 'step-dot2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-yellow-400 bg-yellow-400 text-purple-900';
+                } else {
+                    dot.className = 'step-dot2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50';
+                }
+            });
+        }
+
+        function proceedStep2() {
+            if (currentStep2 >= totalSteps2) return;
+            currentStep2++;
+            const nextPanel = document.getElementById('spanel' + currentStep2);
+            if (nextPanel) {
+                nextPanel.classList.remove('hidden');
+                nextPanel.style.opacity = '0';
+                nextPanel.style.transform = 'translateY(10px)';
+                nextPanel.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                requestAnimationFrame(() => {
+                    nextPanel.style.opacity = '1';
+                    nextPanel.style.transform = 'translateY(0)';
+                });
+            }
+            updateStepDots2(currentStep2);
+            setTimeout(() => {
+                document.getElementById('slide2').scrollTo({ top: 99999, behavior: 'smooth' });
+            }, 100);
+            if (currentStep2 === totalSteps2) {
+                setTimeout(() => {
+                    const cc = document.getElementById('completionCard2');
+                    if (cc) { cc.classList.remove('hidden'); document.getElementById('slide2').scrollTo({ top: 99999, behavior: 'smooth' }); }
+                    const btn = document.getElementById('proceedBtn2');
+                    if (btn) { btn.textContent = 'Done ✓'; btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); }
+                }, 450);
+            }
+        }
+
+        function resetSteps2() {
+            for (let i = 2; i <= totalSteps2; i++) {
+                const panel = document.getElementById('spanel' + i);
+                if (panel) { panel.classList.add('hidden'); panel.style.opacity = ''; panel.style.transform = ''; }
+            }
+            const cc = document.getElementById('completionCard2');
+            if (cc) cc.classList.add('hidden');
+            currentStep2 = 1;
+            updateStepDots2(1);
+            const btn = document.getElementById('proceedBtn2');
+            if (btn) { btn.textContent = 'Proceed →'; btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); }
+            document.getElementById('slide2').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetSteps() {
+            for (let i = 2; i <= totalSteps; i++) {
+                const panel = document.getElementById('panel' + i);
+                if (panel) { panel.classList.add('hidden'); panel.style.opacity = ''; panel.style.transform = ''; }
+            }
+            const cc = document.getElementById('completionCard');
+            if (cc) cc.classList.add('hidden');
+            currentStep = 1;
+            updateStepDots(1);
+            const btn = document.getElementById('proceedBtn');
+            if (btn) { btn.textContent = 'Proceed →'; btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); }
+            document.getElementById('slide5').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Drag & Drop for slide4
+        let dragSrc = null;
+        function handleDragStart(e) { dragSrc = e.target; e.dataTransfer.setData('text/plain', dragSrc.getAttribute('data-value')); e.target.style.opacity = '0.5'; }
+        function handleDragEnd(e) { e.target.style.opacity = '1'; dragSrc = null; }
+        function handleDragOver(e) { e.preventDefault(); e.target.closest('.drop-zone')?.classList.add('drag-over'); }
+        function handleDrop(e) { e.preventDefault(); const drop = e.target.closest('.drop-zone'); if(!drop) return; drop.classList.remove('drag-over'); const val = e.dataTransfer.getData('text/plain'); const expected = drop.getAttribute('data-expected'); const fb = document.getElementById('dragFeedback'); if(val === expected) { drop.innerHTML = val; drop.classList.add('occupied'); drop.setAttribute('data-filled','true'); fb.innerHTML = '✅ Correct! Great job!'; fb.className = 'mt-4 text-center text-green-300 bg-green-500/20 p-2 rounded-xl'; setTimeout(()=>fb.style.display='none',1500); } else { fb.innerHTML = '❌ Incorrect match. Try again!'; fb.className = 'mt-4 text-center text-red-300 bg-red-500/20 p-2 rounded-xl'; setTimeout(()=>fb.style.display='none',1500); } }
+        function resetDragDrop() { document.querySelectorAll('.drop-zone').forEach(zone => { zone.innerHTML = '________'; zone.classList.remove('occupied'); zone.removeAttribute('data-filled'); }); document.getElementById('dragFeedback')?.classList.add('hidden'); }
+        document.querySelectorAll('.draggable-word').forEach(el => { el.setAttribute('draggable','true'); el.addEventListener('dragstart', handleDragStart); el.addEventListener('dragend', handleDragEnd); });
+        document.querySelectorAll('.drop-zone').forEach(zone => { zone.addEventListener('dragover', handleDragOver); zone.addEventListener('drop', handleDrop); });
+        document.querySelectorAll('.nav-dot').forEach((dot,idx) => dot.addEventListener('click',()=>showSlide(idx)));
+        showSlide(0);
+        const mobileBtn = document.getElementById('mobileMenuBtn'), mobileNav = document.getElementById('mobileNavMenu');
+        if(mobileBtn) mobileBtn.onclick = () => mobileNav.classList.toggle('hidden');
+        const logoImg = document.querySelector('nav img'); if(logoImg) logoImg.onerror = () => logoImg.src = 'https://placehold.co/40x40/667eea/white?text=NG';
+        
+        // ---------- USER LOGIN / LOGOUT (from localStorage) ----------
+        // references for display name and logout buttons (desktop + mobile)
+        const displayNameSpan = document.getElementById('displayName');
+        const displayNameMobile = document.getElementById('displayNameMobile');
+        const displayNameMobileMenu = document.getElementById('displayNameMobileMenu');
+        const userInfoDesktop = document.getElementById('userInfoDesktop');
+        const userInfoMobileNav = document.getElementById('userInfoMobileNav');
+        const logoutBtnDesktop = document.getElementById('logoutBtnDesktop');
+        const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+        
+        function updateUserUI() {
+            if (studentId && studentName) {
+                const welcomeText = `Welcome, ${studentName}`;
+                if (displayNameSpan) displayNameSpan.textContent = welcomeText;
+                if (displayNameMobile) displayNameMobile.textContent = welcomeText;
+                if (displayNameMobileMenu) displayNameMobileMenu.textContent = welcomeText;
+                if (userInfoDesktop) userInfoDesktop.classList.remove('hidden');
+                if (userInfoMobileNav) userInfoMobileNav.classList.remove('hidden');
+            } else {
+                if (userInfoDesktop) userInfoDesktop.classList.add('hidden');
+                if (userInfoMobileNav) userInfoMobileNav.classList.add('hidden');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('student_id');
+            localStorage.removeItem('student_name');
+            localStorage.removeItem('student_email');
+            localStorage.removeItem('student_section');
+            localStorage.removeItem('student_section_name');
+            localStorage.removeItem('student_grade');
+            window.location.href = 'login.html';
+        }
+        
+        if (logoutBtnDesktop) logoutBtnDesktop.addEventListener('click', logout);
+        if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', logout);
+        updateUserUI();
+
+        // ---- AGE PROBLEM HORIZONTAL CAROUSEL (10 panels: 5 per problem) ----
+        let ageCurrentPanel = 0; // 0-indexed, 0-4 = P1, 5-9 = P2
+        const ageTotalPanels = 10;
+
+        function updateAgeDots(panelIdx) {
+            const badge = document.getElementById('ageProblemBadge');
+            if (panelIdx < 5) {
+                if (badge) {
+                    badge.textContent = '\uD83D\uDCD8 Problem 1 of 2';
+                    badge.style.background = 'rgba(250,204,21,0.15)';
+                    badge.style.borderColor = 'rgba(250,204,21,0.5)';
+                    badge.style.color = '#fde68a';
+                }
+            } else {
+                if (badge) {
+                    badge.textContent = '\uD83D\uDCD8 Problem 2 of 2';
+                    badge.style.background = 'rgba(255, 0, 0, 0.15)';
+                    badge.style.borderColor = 'rgba(255, 0, 0, 0.5)';
+                    badge.style.color = '#ffd5d5';
+                }
+            }
+            document.querySelectorAll('.age-dot').forEach(dot => {
+                const p = parseInt(dot.getAttribute('data-panel'));
+                const isP2 = p >= 5;
+                const activeColor = isP2 ? 'border-red-400 bg-red-500 text-white' : 'border-yellow-400 bg-yellow-400 text-purple-900';
+                const doneColor = 'border-green-400 bg-green-400/80 text-white';
+                if (p < panelIdx) {
+                    dot.className = 'age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ' + doneColor;
+                } else if (p === panelIdx) {
+                    dot.className = 'age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ' + activeColor;
+                } else {
+                    dot.className = 'age-dot w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50';
+                }
+            });
+        }
+
+        function proceedAge() {
+            if (ageCurrentPanel >= ageTotalPanels - 1) return;
+            ageCurrentPanel++;
+            const track = document.getElementById('ageTrack');
+            if (track) track.style.transform = 'translateX(-' + ageCurrentPanel * 100 + '%)';
+            updateAgeDots(ageCurrentPanel);
+            if (ageCurrentPanel === ageTotalPanels - 1) {
+                const btn = document.getElementById('ageProceedBtn');
+                if (btn) { btn.textContent = 'Done \u2713'; btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); }
+            }
+        }
+
+        // ---- CAROUSEL FACTORY: creates proceed/reset/updateDots for any problem type ----
+        function makeCarousel(prefix, totalPanels, dotClass, badgeId, trackId, proceedBtnId, p1Color, p2Color) {
+            let current = 0;
+            function updateDots(idx) {
+                const badge = document.getElementById(badgeId);
+                if (badge) {
+                    if (idx < 5) { badge.textContent = '📘 Problem 1 of 2'; badge.style.background='rgba(250,204,21,0.15)'; badge.style.borderColor='rgba(250,204,21,0.5)'; badge.style.color='#fde68a'; }
+                    else { badge.textContent = '📘 Problem 2 of 2'; badge.style.background='rgba(192,132,252,0.15)'; badge.style.borderColor='rgba(192,132,252,0.5)'; badge.style.color='#e9d5ff'; }
+                }
+                document.querySelectorAll('.' + dotClass).forEach(dot => {
+                    const p = parseInt(dot.getAttribute('data-panel'));
+                    const isP2 = p >= 5;
+                    const activeColor = isP2 ? 'border-red-400 bg-red-500 text-white' : 'border-yellow-400 bg-yellow-400 text-purple-900';
+                    if (p < idx) dot.className = dotClass + ' w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-green-400 bg-green-400/80 text-white';
+                    else if (p === idx) dot.className = dotClass + ' w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ' + activeColor;
+                    else dot.className = dotClass + ' w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white/30 bg-white/10 text-white/50';
+                });
+            }
+            window['proceed' + prefix] = function() {
+                if (current >= totalPanels - 1) return;
+                current++;
+                const track = document.getElementById(trackId);
+                if (track) track.style.transform = 'translateX(-' + current * 100 + '%)';
+                updateDots(current);
+                if (current === totalPanels - 1) {
+                    const btn = document.getElementById(proceedBtnId);
+                    if (btn) { btn.textContent = 'Done ✓'; btn.disabled = true; btn.classList.add('opacity-50','cursor-not-allowed'); }
+                }
+            };
+            window['reset' + prefix] = function() {
+                current = 0;
+                const track = document.getElementById(trackId);
+                if (track) track.style.transform = 'translateX(0)';
+                updateDots(0);
+                const btn = document.getElementById(proceedBtnId);
+                if (btn) { btn.textContent = 'Proceed →'; btn.disabled = false; btn.classList.remove('opacity-50','cursor-not-allowed'); }
+            };
+            updateDots(0);
+        }
+        makeCarousel('Geo', 10, 'geo-dot', 'geoProblemBadge', 'geoTrack', 'geoProceedBtn');
+        makeCarousel('TQ',  10, 'tq-dot',  'tqProblemBadge',  'tqTrack',  'tqProceedBtn');
+        makeCarousel('Mot', 10, 'mot-dot', 'motProblemBadge', 'motTrack', 'motProceedBtn');
+        makeCarousel('Wrk', 10, 'wrk-dot', 'wrkProblemBadge', 'wrkTrack', 'wrkProceedBtn');
+        makeCarousel('Fin', 10, 'fin-dot', 'finProblemBadge', 'finTrack', 'finProceedBtn');
+        makeCarousel('MS',  10, 'ms-dot',  'msProblemBadge',  'msTrack',  'msProceedBtn');
+
+        function resetAge() {
+            ageCurrentPanel = 0;
+            const track = document.getElementById('ageTrack');
+            if (track) track.style.transform = 'translateX(0)';
+            updateAgeDots(0);
+            const btn = document.getElementById('ageProceedBtn');
+            if (btn) { btn.textContent = 'Proceed \u2192'; btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); }
+        }
+    </script>
+</body>
+</html>
