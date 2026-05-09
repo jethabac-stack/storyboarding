@@ -1,9 +1,9 @@
 <?php
 // Admin Database connection
-$host = 'sql301.infinityfree.com';
-$db = 'if0_41755367_kahoot_clone';
-$user = 'if0_41755367';
-$pass = 'aq64fp8eNfbJxeL';
+$host = 'mysql-2724c7d5-c3022134-6ea5.k.aivencloud.com';
+$db = 'defaultdb';
+$user = 'avnadmin';
+$pass = 'AVNS_rubctqa6LspXyXRQ7hB';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass);
