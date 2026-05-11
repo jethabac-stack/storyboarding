@@ -5,7 +5,7 @@
 define('DB_HOST', 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com');
 define('DB_NAME', 'test');
 define('DB_USER', '2oDdQwM3XwqpVFs.root');
-define('DB_PASS', 'TTHQUhSd6VldzkCJ');
+define('DB_PASS', 'g0FBvSpPO839qhiH');
 
 try {
     $pdo = new PDO(
