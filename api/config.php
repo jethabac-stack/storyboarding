@@ -2,10 +2,10 @@
 // Configuration file
 // Update these values to match your database setup
 
-define('DB_HOST', 'mysql-2724c7d5-c3022134-6ea5.k.aivencloud.com');
-define('DB_NAME', 'defaultdb');
-define('DB_USER', 'avnadmin');
-define('DB_PASS', 'AVNS_rubctqa6LspXyXRQ7hB');
+define('DB_HOST', 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com');
+define('DB_NAME', 'test');
+define('DB_USER', '2oDdQwM3XwqpVFs.root');
+define('DB_PASS', 'TTHQUhSd6VldzkCJ');
 
 try {
     $pdo = new PDO(
