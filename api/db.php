@@ -1,9 +1,9 @@
 <?php
 // Database connection
-$host = 'mysql-2724c7d5-c3022134-6ea5.k.aivencloud.com';
-$db = 'defaultdb';
-$user = 'avnadmin';
-$pass = 'AVNS_rubctqa6LspXyXRQ7hB';
+$host = 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com';
+$db = 'test';
+$user = '2oDdQwM3XwqpVFs.root';
+$pass = 'TTHQUhSd6VldzkCJ';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass);
