@@ -3,7 +3,7 @@
 $host = 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com';
 $db = 'test';
 $user = '2oDdQwM3XwqpVFs.root';
-$pass = 'TTHQUhSd6VldzkCJ';
+$pass = 'g0FBvSpPO839qhiH';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass);
