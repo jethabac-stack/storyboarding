@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Storyboarding Portal helps students learn algebraic problem-solving through visual storyboards and collaborative, strategic thinking exercises.">
     <title>Storyboarding Portal</title>
-    <link rel="icon" href="storyboarding/admin/image/logo.png" type="image/png">
+    <link rel="icon" href="logo.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -168,13 +168,13 @@
 </head>
 <body class="min-h-screen w-full gradient-bg">
     <!-- Hero voiceover -->
-    <audio id="heroVoice" src="storyboarding/landing_page_voice.mp3" preload="auto"></audio>
+    <audio id="heroVoice" src="landing_page_voice.mp3" preload="auto"></audio>
     <!-- Navigation -->
     <nav class="nav-bg backdrop-blur-md border-b border-[#8BDFDD] sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center gap-3">
-                    <img src="storyboarding/admin/image/logo.png" alt="Storyboarding Portal logo" class="h-10 w-auto" width="40" height="40">
+                    <img src="logo.png" alt="Storyboarding Portal logo" class="h-10 w-auto" width="40" height="40">
                     <span class="text-gray-900 text-2xl font-bold">Storyboarding Portal</span>
                 </div>
             </div>
@@ -192,7 +192,7 @@
                             <span class="absolute left-1/2 -translate-x-1/2 top-full w-3 h-3 bg-white border-b-2 border-r-2 border-[#F48F68] rotate-45 -mt-1.5"></span>
                         </button>
                         <div class="absolute left-1/2 bottom-[-0.25rem] -translate-x-1/2 w-32 sm:w-40 md:w-44 lg:w-60 h-8 sm:h-10 bg-white/90 blur-3xl rounded-full"></div>
-                        <img src="storyboarding/image/123456.png" alt="Cartoon illustration of a teacher pointing at the headline" width="800" height="1200" fetchpriority="high" decoding="async" class="relative w-40 sm:w-56 md:w-64 lg:w-72 xl:w-80 h-auto select-none pointer-events-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.12)]">
+                        <img src="123456.png" alt="Cartoon illustration of a teacher pointing at the headline" width="800" height="1200" fetchpriority="high" decoding="async" class="relative w-40 sm:w-56 md:w-64 lg:w-72 xl:w-80 h-auto select-none pointer-events-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.12)]">
                     </div>
                 </div>
                 <div class="max-w-3xl lg:max-w-4xl md:mt-6 lg:mt-8 text-center md:text-left md:order-1">
@@ -204,10 +204,10 @@
                         Let’s unlock the power of thinking visually and strategically in solving problems involving algebraic expressions!
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                        <a href="storyboarding/students/login.php" class="w-full sm:w-auto text-center btn-primary px-8 py-4 rounded-xl text-lg font-bold transition shadow-lg">
+                        <a href="https://storyboarding.unaux.com/storyboarding/students/login.php" class="w-full sm:w-auto text-center btn-primary px-8 py-4 rounded-xl text-lg font-bold transition shadow-lg">
                             <i class="fas fa-sign-in-alt mr-2"></i>Student Login
                         </a>
-                        <a href="storyboarding/admin/login.php" class="w-full sm:w-auto text-center btn-secondary px-8 py-4 rounded-xl text-lg font-semibold transition border border-[#F48F68]">
+                        <a href="https://storyboarding.unaux.com/storyboarding/admin/login.php" class="w-full sm:w-auto text-center btn-secondary px-8 py-4 rounded-xl text-lg font-semibold transition border border-[#F48F68]">
                             <i class="fas fa-user-shield mr-2"></i>Teacher Login
                         </a>
                     </div>
@@ -316,8 +316,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-12">
                     <div class="text-center">
                         <div class="researcher-photo mx-auto mb-5">
-                            <img src="storyboarding/image/12.png" alt="Ana Mae N. Calumpag" loading="lazy" decoding="async" width="160" height="160" class="researcher-thumb w-36 h-36 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-[#8BDFDD]">
-                            <img src="storyboarding/image/Anami.png" alt="Ana Mae N. Calumpag hover" loading="lazy" decoding="async" class="researcher-hover" />
+                            <img src="12.png" alt="Ana Mae N. Calumpag" loading="lazy" decoding="async" width="160" height="160" class="researcher-thumb w-36 h-36 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-[#8BDFDD]">
+                            <img src="Anami.png" alt="Ana Mae N. Calumpag hover" loading="lazy" decoding="async" class="researcher-hover" />
                         </div>
                         <p class="text-gray-900 font-bold text-2xl sm:text-3xl mb-2">ANA MAE N. CALUMPAG</p>
                         <p class="text-gray-600 text-base sm:text-lg mb-4">BSED-Mathematics 3A</p>
@@ -333,8 +333,8 @@
                     </div>
                     <div class="text-center">
                         <div class="researcher-photo mx-auto mb-5">
-                            <img src="storyboarding/image/13.png" alt="Veronica Shane O. Genoguin" loading="lazy" decoding="async" width="160" height="160" class="researcher-thumb w-36 h-36 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-[#F48F68]">
-                            <img src="storyboarding/image/Veron.png" alt="Veronica Shane O. Genoguin hover" loading="lazy" decoding="async" class="researcher-hover" />
+                            <img src="13.png" alt="Veronica Shane O. Genoguin" loading="lazy" decoding="async" width="160" height="160" class="researcher-thumb w-36 h-36 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-[#F48F68]">
+                            <img src="Veron.png" alt="Veronica Shane O. Genoguin hover" loading="lazy" decoding="async" class="researcher-hover" />
                         </div>
                         <p class="text-gray-900 font-bold text-2xl sm:text-3xl mb-2">VERONICA SHANE O. GENOGUIN</p>
                         <p class="text-gray-600 text-base sm:text-lg mb-4">BSED-Mathematics 3A</p>
